@@ -38,7 +38,7 @@ function Faq() {
       <ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}>
         {sss.map((item,index) => {
             return (
-                <>
+                <View key={index}>
                     <TouchableOpacity key={index} onPress={() => setAcik(acik == index ? 999 : index)}>
                         <View style={[tw`rounded-md mb-2 flex-row justify-between items-center p-3`,stil('bg2',data.app.theme)]}>
                             <Text style={[tw` text-base mb-1 ml-2 `,stil('text',data.app.theme)]}>
@@ -56,7 +56,7 @@ function Faq() {
                             </View>
                     </View>
                     : null }
-                </>
+                </View>
             )
         })}
       </ScrollView>

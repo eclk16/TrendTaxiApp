@@ -17,6 +17,7 @@ import Profile from './pages/other/profile';
 import Faq from './pages/other/faq';
 import Reports from './pages/other/reports';
 import StatusBarComponent from './components/global/status';
+import ProfileEdit from './pages/other/profileEdit';
 
 MaterialCommunityIcons.loadFont();
 const Drawer = createDrawerNavigator();
@@ -256,7 +257,7 @@ const Router = () => {
                     drawerItemStyle:{
                         display:'none'
                     },
-                    title: l[data.app.lang].settings,
+                    title: l[data.app.lang].reports,
                 })}/>
                 <Drawer.Screen name="Settings" component={Settings} options={() => ({
                     drawerItemStyle:{
@@ -287,7 +288,7 @@ const Router = () => {
                     title: l[data.app.lang].profile,  
                 })}
                 />	
-                <Drawer.Screen name="ProfileEdit" component={Profile} options={() => ({
+                <Drawer.Screen name="ProfileEdit" component={ProfileEdit} options={() => ({
                     drawerItemStyle:{
                         display:'none'
                     },

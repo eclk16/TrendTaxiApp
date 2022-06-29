@@ -1,5 +1,5 @@
 import React,{useEffect} from 'react';
-import {LogBox} from 'react-native';
+import {LogBox,BackHandler} from 'react-native';
 import { Provider,useDispatch,useSelector } from 'react-redux';
 import logger from 'redux-logger';
 import {createStore,applyMiddleware} from 'redux';
@@ -25,6 +25,19 @@ const App = () => {
 	const dispatch = useDispatch();
     const data = useSelector(state => state);
     const [loading,setLoading] = React.useState(true);
+
+
+    handleBackButtonClick = () => {
+		navigation.goBack();
+		return true;
+	}
+
+	useEffect(() => {
+		BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+		return () => {
+			BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+		};
+	}, []);
 
 	useEffect(() => {
         getValue('lang').then(lang => {

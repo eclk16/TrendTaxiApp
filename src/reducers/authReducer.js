@@ -14,6 +14,11 @@ const authReducer = (state = INITIAL_STATE, action) => {
             };
         case "setAuth":
             return action.payload;
+        case "setUser":
+            return {
+                ...state,
+                user:action.payload
+            }
         case "authRemove":
             return {
                 isAuth:false,
