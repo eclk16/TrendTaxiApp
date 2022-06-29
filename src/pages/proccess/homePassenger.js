@@ -111,14 +111,14 @@ function HomePage() {
     const getCurrentLocation = () => {
         Geolocation.getCurrentPosition(
 			(position) => {
-          if(position.coords.latitude != 0 && position.coords.longitude != 0){
-              setCurrentPosition(position);
-          }
+                if(position.coords.latitude != 0 && position.coords.longitude != 0){
+                    setCurrentPosition(position);
+                }
 			},
 			(error) => {
 				console.log(error.code, error.message);
 			},
-			{ enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+			{ enableHighAccuracy: false, timeout: 30000, maximumAge: 1000 }
 		);
     }
 
