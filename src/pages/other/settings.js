@@ -71,7 +71,7 @@ export default function Settings(){
 										<TouchableOpacity key={index} style={[stil('bg2',data.app.theme),tw`flex-row items-center mb-1 p-4 rounded-md justify-between`]} onPress={() => setLanguage(item.langCode)} >
 											<View style={[tw`flex-row items-center justify-between `]}>
 												<Image source={item.langFlag} style={[tw`h-8 w-10 rounded-md mr-4`]}/>
-												<Text style={[tw` text-base`,stil('text',data.app.theme)]}>{item.langName}</Text>
+												<Text style={[tw` font-semibold`,stil('text',data.app.theme)]}>{item.langName}</Text>
 											</View>
 											<View style={tw`flex-row justify-end items-end`}>
 												{data.app.lang == item.langCode ?
@@ -90,7 +90,7 @@ export default function Settings(){
 								<TouchableOpacity key={0} style={[stil('bg2',data.app.theme),tw`flex-row items-center  mb-1 p-4 rounded-md justify-between`]} onPress={() => setTheme('light')} >
 									<View style={[tw`flex-row items-center justify-between `]}>
 										<MaterialCommunityIcons name="white-balance-sunny" size={32} color={stil('text',data.app.theme).color}/>
-										<Text style={[tw` text-base ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].lightTheme}</Text>
+										<Text style={[tw` font-semibold ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].lightTheme}</Text>
 									</View>
 									<View style={tw`flex-row justify-end items-end`}>
 										{data.app.theme == 'light' ?
@@ -101,7 +101,7 @@ export default function Settings(){
 								<TouchableOpacity key={1} style={[stil('bg2',data.app.theme),tw`flex-row items-center  mb-1 p-4 rounded-md justify-between`]} onPress={() => setTheme('dark')} >
 									<View style={[tw`flex-row items-center justify-between `]}>
 										<MaterialCommunityIcons name="moon-waning-crescent" size={32} color={stil('text',data.app.theme).color}/>
-										<Text style={[tw` text-base ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].darkTheme}</Text>
+										<Text style={[tw` font-semibold ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].darkTheme}</Text>
 									</View>
 									<View style={tw`flex-row justify-end items-end`}>
 										{data.app.theme == 'dark' ?

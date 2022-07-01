@@ -70,14 +70,14 @@ function Trips() {
                 scrollEventThrottle={400}
               >
                     <View>
-                        {trips.length == 0 ? <Text style={[tw`text-center  text-base`,stil('text',data.app.theme)]}>{l[data.app.lang].gecmisYok}</Text> : null}
+                        {trips.length == 0 ? <Text style={[tw`text-center `,stil('text',data.app.theme)]}>{l[data.app.lang].gecmisYok}</Text> : null}
                         {trips.map((trip,index) => {
                             return (
                                 <TouchableOpacity key={index} 
                                 onPress={()=>{
                                     navigation.navigate('TripDetail', {trip_id: trip.id});
                                 }}>
-                                    <Text style={[tw`text-base mb-2 ml-2`,stil('text',data.app.theme)]}>
+                                    <Text style={[tw` mb-2 ml-2`,stil('text',data.app.theme)]}>
                                         {trip.trip_id}  {trip.start_time}
                                     </Text>
                                     <View style={[tw`flex rounded-md mb-5 bg-white px-2 py-4`,{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f9f9f7'}]}>

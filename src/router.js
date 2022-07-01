@@ -39,7 +39,7 @@ const Router = () => {
                         backgroundColor: stil('bg',data.app.theme).backgroundColor,
                         borderBottomWidth: 0,
                         shadowColor: stil('text',data.app.theme).color,
-                        height:Platform.OS == "ios" ? 110 : 70
+                        // height:Platform.OS == "ios" ? 110 : 70
                     },
                     headerTintColor: stil('text',data.app.theme).color,
                     drawerInactiveTintColor: stil('text',data.app.theme).color,
@@ -277,7 +277,7 @@ const Router = () => {
                     },
                     headerRight: () => (
                             <TouchableOpacity
-                                style={[tw`flex-row p-4`]}
+                                style={[tw`flex-row px-4`]}
                                 onPress={()=>{
                                     navigation.navigate('ProfileEdit');
                                 }}

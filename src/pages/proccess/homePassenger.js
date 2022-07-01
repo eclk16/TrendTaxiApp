@@ -224,8 +224,8 @@ function HomePage() {
                             setHaritadanSec(false);
                         }}
                         >
-                            <MaterialCommunityIcons name="delete" size={16} color={stil('text',data.app.theme).color} />
-                            <Text style={[tw`font-bold ml-2`,stil('text',data.app.theme)]}>İptal</Text>
+                            <MaterialCommunityIcons name="delete" size={20} color={stil('text',data.app.theme).color} />
+                            <Text style={[tw`font-medium ml-2`,stil('text',data.app.theme)]}>İptal</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                         onPress={() => {
@@ -233,10 +233,10 @@ function HomePage() {
                             setLocationModal(true);
                             setLocations([...locations,haritadanSecilen]);
                         }}
-                        style={[tw`flex-row items-center justify-between px-8`]}
+                        style={[tw`flex-row items-medium justify-between px-8`]}
                         >
-                            <Text style={[tw`font-bold mr-2`,stil('text',data.app.theme)]}>Konumu Onayla</Text>
-                            <MaterialCommunityIcons name="check" size={14} color={stil('text',data.app.theme).color} />
+                            <Text style={[tw`font-semibold mr-2`,stil('text',data.app.theme)]}>Konumu Onayla</Text>
+                            <MaterialCommunityIcons name="check" size={20} color={stil('text',data.app.theme).color} />
                         </TouchableOpacity>
                     </View>
                 :
@@ -252,13 +252,13 @@ function HomePage() {
                             elevation: 5,
                         },{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'},{position:'absolute',bottom:0,left:0,right:0}]}>
                         <TouchableOpacity
-                        style={[tw`flex-row items-center justify-center w-1/2 py-4`]}
+                        style={[tw`flex-row items-center justify-center w-1/2 py-3`]}
                         onPress={() => {
                             setLocationModal(true);
                         }}
                         >
-                            <MaterialCommunityIcons name="cog" size={24} color={stil('text',data.app.theme).color} />
-                            <Text style={[tw`font-bold ml-2`,stil('text',data.app.theme)]}>Düzenle</Text>
+                            <MaterialCommunityIcons name="cog" size={20} color={stil('text',data.app.theme).color} />
+                            <Text style={[tw`font-medium ml-2`,stil('text',data.app.theme)]}>Düzenle</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                         onPress={() => {
@@ -270,10 +270,10 @@ function HomePage() {
                             }
                             
                         }}
-                        style={[tw`flex-row items-center justify-center w-1/2 py-4`]}
+                        style={[tw`flex-row items-center justify-center w-1/2 py-3`]}
                         >
-                            <Text style={[tw`font-bold mr-2`,stil('text',data.app.theme)]}>Araç Bul</Text>
-                            <MaterialCommunityIcons name="car-connected" size={24} color={stil('text',data.app.theme).color} />
+                            <Text style={[tw`font-medium mr-2`,stil('text',data.app.theme)]}>Araç Bul</Text>
+                            <MaterialCommunityIcons name="car-connected" size={20} color={stil('text',data.app.theme).color} />
                         </TouchableOpacity>
                     </View>
                 } 
@@ -285,15 +285,14 @@ function HomePage() {
                 setTopHeight(ScreenHeight - (height));
                 setBottomHeight((height));
             }}
-            style={[tw` w-full flex items-center pt-1 px-3 pb-4`,stil('bg',data.app.theme)]}>
-                    <View style={[tw`  w-full items-start  rounded-md p-1`,{maxHeight:200,borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
-                        <Text style={[tw`font-bold my-1`,stil('text',data.app.theme)]}>Güzergah</Text>
+            style={[tw` w-full flex items-center pt-1 px-3 pb-1`,stil('bg',data.app.theme)]}>
+                    <View style={[tw`  w-full   rounded-md `,{maxHeight:150,borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
                         <FlatList
                             data={locations}
-                            style={[tw`px-2`]}
+                            style={[tw`px-2 `]}
                             ListEmptyComponent={() => (
                                 <View style={[tw``]}>
-                                    <Text style={[tw`opacity-40 font-bold`,stil('text',data.app.theme)]}>Henüz seçilmiş bir güzergah bulunamadı</Text>
+                                    <Text style={[tw`opacity-40 font-semibold ` ,stil('text',data.app.theme)]}>Henüz seçilmiş bir güzergah bulunamadı</Text>
                                 </View>
                             )}
                             renderItem={({item,index}) => {
@@ -303,7 +302,7 @@ function HomePage() {
                                             <MaterialCommunityIcons style={[tw`w-6 text-center`]} name={index == 0 ? 'home' : (index == (locations.length -1) ? 'flag' : 'map-marker')} size={24} color={stil('text',data.app.theme).color} />
                                         </View>
                                         <View style={[tw`ml-2`]}>
-                                            <Text style={[tw`text-xs font-bold`,stil('text',data.app.theme)]}>
+                                            <Text style={[tw`text-xs font-semibold`,stil('text',data.app.theme)]}>
                                                 {item.title}
                                             </Text>
                                             <Text style={[tw`text-xs`,stil('text',data.app.theme)]}>
@@ -316,22 +315,21 @@ function HomePage() {
                             keyExtractor={(item,index) => index.toString()}
                         />
                     </View>
-                    <View style={[tw`w-full  items-start mt-2 border-t rounded-md p-1 mb-6`,{borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
-                        <Text style={[tw`font-bold my-1`,stil('text',data.app.theme)]}>Araç</Text>
+                    <View style={[tw`w-full  items-start mt-4  rounded-md  mb-4`,{borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
                         <FlatList 
                             data={cars}
                             horizontal
                             style={[tw`px-2`]}
                             ListEmptyComponent={() => (
                                 <View style={[tw``]}>
-                                    <Text style={[tw`opacity-40 font-bold`,stil('text',data.app.theme)]}>Henüz seçilmiş bir araç bulunamadı</Text>
+                                    <Text style={[tw`opacity-40 font-semibold`,stil('text',data.app.theme)]}>Henüz seçilmiş bir araç bulunamadı</Text>
                                 </View>
                             )}
                             renderItem={({item,index}) => {
                                 return (
-                                    <View key={index} style={[tw`flex-row items-start mr-1 mt-1 border rounded-md p-1`,{borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
-                                        <View style={tw`items-start`}>
-                                            <Text style={[tw`text-md font-semibold`,stil('text',data.app.theme)]}>
+                                    <View key={index} style={[tw`flex${cars.length > 2 ? '' : '-row'} items-start mr-1 border rounded-md p-1`,{borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
+                                        <View style={tw`items-center justify-center flex`}>
+                                            <Text style={[tw`font-medium`,stil('text',data.app.theme)]}>
                                                 {item.title}
                                             </Text>
                                             <Image source={{uri:item.image}} style={[tw`h-15 w-20`,{
@@ -340,18 +338,18 @@ function HomePage() {
                                                 }]
                                             }]} resizeMode="contain"/>
                                         </View>
-                                        <View style={[tw`flex justify-between ml-2`]}>
+                                        <View style={[tw`flex justify-between ml-1`]}>
                                             <View style={[tw`flex-row items-center mb-1`,stil('text',data.app.theme)]}>
-                                                <MaterialCommunityIcons name="map-marker-path" style={[tw`w-8`]} size={20} color={stil('text',data.app.theme).color} />
-                                                <Text style={[tw`text-md font-semibold`,stil('text',data.app.theme)]}>{routeDistance} km</Text>
+                                                <MaterialCommunityIcons name="map-marker-path" style={[tw`w-6`]} size={20} color={stil('text',data.app.theme).color} />
+                                                <Text style={[tw`text-xs `,stil('text',data.app.theme)]}>{routeDistance} km</Text>
                                             </View>
                                             <View style={[tw`flex-row items-center`,stil('text',data.app.theme)]}>
-                                                <MaterialCommunityIcons name="clock-start" style={[tw`w-8`]} size={20} color={stil('text',data.app.theme).color} />
-                                                <Text style={[tw`text-md font-semibold`,stil('text',data.app.theme)]}>{routeTime}</Text>
+                                                <MaterialCommunityIcons name="clock-start" style={[tw`w-6`]} size={20} color={stil('text',data.app.theme).color} />
+                                                <Text style={[tw`text-xs `,stil('text',data.app.theme)]}>{routeTime}</Text>
                                             </View>
                                             <View style={[tw`flex-row items-center mt-1`,stil('text',data.app.theme)]}>
-                                                <MaterialCommunityIcons name="credit-card" style={[tw`w-8`]} size={20} color={stil('text',data.app.theme).color} />
-                                                <Text style={[tw`text-md font-semibold`,stil('text',data.app.theme)]}>{item.totalPrice} sum</Text>
+                                                <MaterialCommunityIcons name="credit-card" style={[tw`w-6`]} size={20} color={stil('text',data.app.theme).color} />
+                                                <Text style={[tw`text-xs `,stil('text',data.app.theme)]}>{item.totalPrice} sum</Text>
                                             </View>
                                         </View>
                                     </View>
@@ -376,7 +374,7 @@ function HomePage() {
                 <View style={[tw`h-full flex items-center justify-center`,{backgroundColor:'rgba(0,0,0,0.5)'}]}>
                     <View style={[tw` w-[95%] flex items-center justify-end rounded-md p-2`,stil('bg',data.app.theme)]}>
                     <View style={[tw`mb-12  w-full`]}>
-                        <Text style={[tw`font-bold text-center text-base my-2`,stil('text',data.app.theme)]}>Uygun Araçlar Aranıyor</Text>
+                        <Text style={[tw`font-semibold text-center text-base my-2`,stil('text',data.app.theme)]}>Uygun Araçlar Aranıyor</Text>
                         <View style={[tw`flex `]}>
                             {cars.map((car,index) => {
                                 return (
@@ -413,7 +411,7 @@ function HomePage() {
                         }}
                         >
                             <MaterialCommunityIcons name="cancel" size={16} color={stil('text',data.app.theme).color} />
-                            <Text style={[tw`font-bold ml-2`,stil('text',data.app.theme)]}>İptal</Text>
+                            <Text style={[tw`font-semibold ml-2`,stil('text',data.app.theme)]}>İptal</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -482,7 +480,7 @@ function HomePage() {
                             
                         }}
                         >
-                            <Text style={[tw` font-bold mr-2`,stil('text',data.app.theme)]}>Açık Adres</Text>
+                            <Text style={[tw` font-semibold mr-2`,stil('text',data.app.theme)]}>Açık Adres</Text>
                             <MaterialCommunityIcons name="road-variant" size={24} color={stil('text',data.app.theme).color}></MaterialCommunityIcons>
                         </TouchableOpacity>
 
@@ -492,7 +490,7 @@ function HomePage() {
                         }}
                         >
                             <MaterialCommunityIcons name="map-marker-account" size={24} color={stil('text',data.app.theme).color}></MaterialCommunityIcons>
-                            <Text style={[tw` font-bold ml-2`,stil('text',data.app.theme)]}>Konumum</Text>
+                            <Text style={[tw` font-semibold ml-2`,stil('text',data.app.theme)]}>Konumum</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -578,7 +576,7 @@ function HomePage() {
                                     </TouchableOpacity>
                                     <View style={[tw`flex-row items-start px-2 py-1`]}>
                                         <View style={tw`flex justify-between `}>
-                                            <Text style={[tw`text-xs font-bold`,stil('text',data.app.theme)]}>
+                                            <Text style={[tw`text-xs font-semibold`,stil('text',data.app.theme)]}>
                                                 <Text style={tw`opacity-75`}>{index == 0 ? 'Start' : (index == locations.length - 1 ? 'Finish' : 'Ara Durak')}</Text> - {item.title}
                                             </Text>
                                             <Text style={[tw`text-xs pr-8`,stil('text',data.app.theme)]}>
@@ -664,7 +662,7 @@ function HomePage() {
                                             <Image source={{uri:item.image}} style={tw`h-10 w-20`} resizeMode="contain"/>
                                         </View>
                                         <View style={tw`flex justify-between `}>
-                                            <Text style={[tw`text-xs font-bold`,stil('text',data.app.theme)]}>
+                                            <Text style={[tw`text-xs font-semibold`,stil('text',data.app.theme)]}>
                                                 {item.title}
                                             </Text>
                                             <Text style={[tw`text-xs pr-8`,stil('text',data.app.theme)]}>
@@ -703,7 +701,7 @@ function HomePage() {
                                 setCars(price);
                         }}
                     >
-                        <Text style={[tw`text-base font-bold`,stil('text',data.app.theme)]}>Uygula</Text>
+                        <Text style={[tw`text-base font-semibold`,stil('text',data.app.theme)]}>Uygula</Text>
                     </TouchableOpacity>
                 </ScrollView>
                 

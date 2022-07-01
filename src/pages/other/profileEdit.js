@@ -1,6 +1,6 @@
 import React,{useEffect} from 'react';
 import {useSelector,useDispatch} from 'react-redux';
-import {TouchableOpacity,View,Text, ScrollView,Image,TextInput,Modal} from 'react-native';
+import {TouchableOpacity,View,Text, ScrollView,Image,TextInput,KeyboardAvoidingView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import tw from 'twrnc';
 import { stil } from '../../utils';
@@ -119,7 +119,12 @@ export default function ProfileEdit(){
     }
 
     return (
-		<>
+		<KeyboardAvoidingView
+            style={tw`flex-1`}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+            enabled
+        >
 		<ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}>
 			<View style={[tw`rounded-md p-4 flex-row items-center justify-start`,stil('bg2',data.app.theme)]}>
 				<View style={[tw``]}>
@@ -133,43 +138,43 @@ export default function ProfileEdit(){
                     </TouchableOpacity>
 				</View>
 			</View>
-            <View style={[tw` rounded-md p-2 mt-4 flex-row items-center justify-between`,stil('bg2',data.app.theme)]}>
-                <Text style={[tw`w-1/6 text-base font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].first_name} : </Text>
-                <View style={tw`flex flex-row `}>
-                    <View style={[tw`w-[80%] rounded-md  ml-0  px-4 border-b-2 border-gray-500 `]}>
-                        <TextInput style={[stil('text',data.app.theme),tw`text-base p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userName} placeholder={l[data.app.lang].first_name} onChangeText={(text) => setUserName(text)}/>
+            <View style={[tw` rounded-md p-2 mt-4 flex  justify-between`,stil('bg2',data.app.theme)]}>
+                <Text style={[tw` font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].first_name} : </Text>
+                <View style={tw`flex flex-row justify-end`}>
+                    <View style={[tw`w-full rounded-md  mt-2   border `,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
+                        <TextInput style={[stil('text',data.app.theme),tw`p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userName} placeholder={l[data.app.lang].first_name} onChangeText={(text) => setUserName(text)}/>
                     </View>
                 </View>
             </View>
-            <View style={[tw` rounded-md p-2 mt-4 flex-row items-center justify-between`,stil('bg2',data.app.theme)]}>
-                <Text style={[tw`w-1/6 text-base font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].last_name} : </Text>
-                <View style={tw`flex flex-row `}>
-                    <View style={[tw`w-[80%] rounded-md  ml-0  px-4 border-b-2 border-gray-500 `]}>
-                        <TextInput style={[stil('text',data.app.theme),tw`text-base p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userSurname} placeholder={l[data.app.lang].last_name} onChangeText={(text) => setUserSurname(text)}/>
+            <View style={[tw` rounded-md p-2 mt-4 flex  justify-between`,stil('bg2',data.app.theme)]}>
+                <Text style={[tw` font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].last_name} : </Text>
+                <View style={tw`flex flex-row justify-end`}>
+                    <View style={[tw`w-full rounded-md  mt-2   border `,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
+                        <TextInput style={[stil('text',data.app.theme),tw`p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userSurname} placeholder={l[data.app.lang].last_name} onChangeText={(text) => setUserSurname(text)}/>
                     </View>
                 </View>
             </View>
-            <View style={[tw` rounded-md p-2 mt-4 flex-row items-center justify-between`,stil('bg2',data.app.theme)]}>
-                <Text style={[tw`w-1/6 text-base font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].phone} : </Text>
-                <View style={tw`flex flex-row `}>
-                    <View style={[tw`w-[80%] rounded-md  ml-0  px-4 border-b-2 border-gray-500 `]}>
-                        <TextInput style={[stil('text',data.app.theme),tw`text-base p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userPhone} placeholder={l[data.app.lang].phone} onChangeText={(text) => setUserPhone(text)}/>
+            <View style={[tw` rounded-md p-2 mt-4 flex  justify-between`,stil('bg2',data.app.theme)]}>
+                <Text style={[tw` font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].phone} : </Text>
+                <View style={tw`flex flex-row justify-end`}>
+                    <View style={[tw`w-full rounded-md  mt-2   border `,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
+                        <TextInput style={[stil('text',data.app.theme),tw`p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userPhone} placeholder={l[data.app.lang].phone} onChangeText={(text) => setUserPhone(text)}/>
                     </View>
                 </View>
             </View>
-            <View style={[tw` rounded-md p-2 mt-4 flex-row items-center justify-between`,stil('bg2',data.app.theme)]}>
-                <Text style={[tw`w-1/6 text-base font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].email} : </Text>
-                <View style={tw`flex flex-row `}>
-                    <View style={[tw`w-[80%] rounded-md  ml-0  px-4 border-b-2 border-gray-500 `]}>
-                        <TextInput style={[stil('text',data.app.theme),tw`text-base p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userEmail} placeholder={l[data.app.lang].email} onChangeText={(text) => setUserEmail(text)}/>
+            <View style={[tw` rounded-md p-2 mt-4 flex  justify-between`,stil('bg2',data.app.theme)]}>
+                <Text style={[tw` font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].email} : </Text>
+                <View style={tw`flex flex-row justify-end`}>
+                    <View style={[tw`w-full rounded-md  mt-2   border `,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
+                        <TextInput style={[stil('text',data.app.theme),tw`p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userEmail} placeholder={l[data.app.lang].email} onChangeText={(text) => setUserEmail(text)}/>
                     </View>
                 </View>
             </View>
-            <View style={[tw` rounded-md p-2 mt-4 flex-row items-center justify-between`,stil('bg2',data.app.theme)]}>
-                <Text style={[tw`w-1/6 text-base font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].address} : </Text>
-                <View style={tw`flex flex-row `}>
-                    <View style={[tw`w-[80%] rounded-md  ml-0  px-4 border-b-2 border-gray-500 `]}>
-                        <TextInput style={[stil('text',data.app.theme),tw`text-base p-2`]} placeholderTextColor={stil('text',data.app.theme).color} value={userAddress} placeholder={l[data.app.lang].address} onChangeText={(text) => setUserAddress(text)}/>
+            <View style={[tw` rounded-md p-2 mt-4 flex  justify-start`,stil('bg2',data.app.theme)]}>
+                <Text style={[tw`text-left font-medium`,{color:stil('text',data.app.theme).color}]}>{l[data.app.lang].address} : </Text>
+                <View style={tw`flex flex-row justify-end`}>
+                    <View style={[tw`w-full rounded-md  mt-2   border `,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
+                        <TextInput style={[stil('text',data.app.theme),tw`p-2`]} multiline={true} placeholderTextColor={stil('text',data.app.theme).color} value={userAddress} placeholder={l[data.app.lang].address} onChangeText={(text) => setUserAddress(text)}/>
                     </View>
                 </View>
             </View>
@@ -179,6 +184,6 @@ export default function ProfileEdit(){
                         <Text style={[tw`text-center text-xl android:text-xl p-2 ml-4 mr-4 `,stil('text',data.app.theme)]}>{l[data.app.lang].save}</Text>
                 </TouchableOpacity>
 		</ScrollView>
-		</>
+		</KeyboardAvoidingView>
     )
 }

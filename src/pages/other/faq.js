@@ -41,7 +41,7 @@ function Faq() {
                 <View key={index}>
                     <TouchableOpacity key={index} onPress={() => setAcik(acik == index ? 999 : index)}>
                         <View style={[tw`rounded-md mb-2 flex-row justify-between items-center p-3`,stil('bg2',data.app.theme)]}>
-                            <Text style={[tw` text-base mb-1 ml-2 `,stil('text',data.app.theme)]}>
+                            <Text style={[tw`  mb-1 ml-2 `,stil('text',data.app.theme)]}>
                                 {item.sss_title}
                             </Text>
                             <MaterialCommunityIcons name={acik == index ? 'chevron-up' : 'chevron-down'} size={24} color={stil('text',data.app.theme).color}/>
