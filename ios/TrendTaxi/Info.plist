@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
-	<key>NSCameraUsageDescription</key>
-	<string></string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Please Allow Location Services</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Please Allow Location Services</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -43,6 +35,14 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string></string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Please Allow Location Services</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Please Allow Location Services</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string></string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
