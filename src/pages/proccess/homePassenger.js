@@ -206,25 +206,15 @@ function HomePage() {
                     
                 </Harita>      
                 {haritadanSec ? 
-                    <View style={[tw`flex-row items-center justify-between px-4 py-4 `,
-                        {
-                            shadowColor: stil('text',data.app.theme).color,
-                            shadowOffset: {
-                                width: 0,
-                                height: 2,
-                            },
-                            shadowOpacity: 0.10,
-                            shadowRadius: 2,
-                            elevation: 5,
-                        },{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'},{position:'absolute',bottom:0,left:0,right:0}]}>
+                    <View style={[tw`flex-row items-center justify-between rounded-t-md`,stil('bg',data.app.theme),{position:'absolute',bottom:0,left:0,right:0}]}>
                         <TouchableOpacity
-                        style={[tw`flex-row items-center justify-between px-8`]}
+                        style={[tw`flex-row items-center justify-center  w-1/2 py-3 rounded-tl-md`,stil('bg2',data.app.theme)]}
                         onPress={() => {
                             setLocationModal(true);
                             setHaritadanSec(false);
                         }}
                         >
-                            <MaterialCommunityIcons name="delete" size={20} color={stil('text',data.app.theme).color} />
+                            <MaterialCommunityIcons name="cancel" size={20} color={stil('text',data.app.theme).color} />
                             <Text style={[tw`font-medium ml-2`,stil('text',data.app.theme)]}>İptal</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -233,26 +223,16 @@ function HomePage() {
                             setLocationModal(true);
                             setLocations([...locations,haritadanSecilen]);
                         }}
-                        style={[tw`flex-row items-medium justify-between px-8`]}
+                        style={[tw`flex-row items-center justify-center  w-1/2 py-3 rounded-tr-md`,stil('bg2',data.app.theme)]}
                         >
                             <Text style={[tw`font-semibold mr-2`,stil('text',data.app.theme)]}>Konumu Onayla</Text>
                             <MaterialCommunityIcons name="check" size={20} color={stil('text',data.app.theme).color} />
                         </TouchableOpacity>
                     </View>
                 :
-                    <View style={[tw`flex-row items-center justify-between `,
-                        {
-                            shadowColor: stil('text',data.app.theme).color,
-                            shadowOffset: {
-                                width: 0,
-                                height: 2,
-                            },
-                            shadowOpacity: 0.10,
-                            shadowRadius: 2,
-                            elevation: 5,
-                        },{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'},{position:'absolute',bottom:0,left:0,right:0}]}>
+                    <View style={[tw`flex-row items-center justify-between rounded-t-md`,stil('bg',data.app.theme),{position:'absolute',bottom:0,left:0,right:0}]}>
                         <TouchableOpacity
-                        style={[tw`flex-row items-center justify-center w-1/2 py-3`]}
+                        style={[tw`flex-row items-center justify-center w-1/2 py-3 rounded-tl-md`,stil('bg2',data.app.theme)]}
                         onPress={() => {
                             setLocationModal(true);
                         }}
@@ -270,7 +250,7 @@ function HomePage() {
                             }
                             
                         }}
-                        style={[tw`flex-row items-center justify-center w-1/2 py-3`]}
+                        style={[tw`flex-row items-center justify-center w-1/2 py-3 rounded-tr-md`,stil('bg2',data.app.theme)]}
                         >
                             <Text style={[tw`font-medium mr-2`,stil('text',data.app.theme)]}>Araç Bul</Text>
                             <MaterialCommunityIcons name="car-connected" size={20} color={stil('text',data.app.theme).color} />
@@ -286,27 +266,25 @@ function HomePage() {
                 setBottomHeight((height));
             }}
             style={[tw` w-full flex items-center pt-1 px-3 pb-1`,stil('bg',data.app.theme)]}>
-                    <View style={[tw`  w-full   rounded-md `,{maxHeight:150,borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
+                    <View style={[tw`  w-full   rounded-md `,{maxHeight:150},stil('text',data.app.theme)]}>
+                        <Text style={[tw`text-start font-semibold my-1`,stil('text',data.app.theme)]}>Rota ({locations.length})</Text>
                         <FlatList
                             data={locations}
                             style={[tw`px-2 `]}
                             ListEmptyComponent={() => (
                                 <View style={[tw``]}>
-                                    <Text style={[tw`opacity-40 font-semibold ` ,stil('text',data.app.theme)]}>Henüz seçilmiş bir güzergah bulunamadı</Text>
+                                    <Text style={[tw`text-start text-xs`,stil('text',data.app.theme)]}>Henüz seçilmiş bir güzergah bulunamadı</Text>
                                 </View>
                             )}
                             renderItem={({item,index}) => {
                                 return (
-                                    <View key={index} style={[tw`flex-row items-center mt-2`]}>
+                                    <View key={index} style={[tw`flex-row w-[100%] rounded-md items-center p-1 mt-1`,stil('bg2',data.app.theme)]}>
                                         <View style={[tw`items-center`]}>
                                             <MaterialCommunityIcons style={[tw`w-6 text-center`]} name={index == 0 ? 'home' : (index == (locations.length -1) ? 'flag' : 'map-marker')} size={24} color={stil('text',data.app.theme).color} />
                                         </View>
                                         <View style={[tw`ml-2`]}>
                                             <Text style={[tw`text-xs font-semibold`,stil('text',data.app.theme)]}>
                                                 {item.title}
-                                            </Text>
-                                            <Text style={[tw`text-xs`,stil('text',data.app.theme)]}>
-                                                {item.description}
                                             </Text>
                                         </View>
                                     </View>
@@ -315,41 +293,42 @@ function HomePage() {
                             keyExtractor={(item,index) => index.toString()}
                         />
                     </View>
-                    <View style={[tw`w-full  items-start mt-4  rounded-md  mb-4`,{borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
+                    <View style={[tw`w-full  mt-2  rounded-md  mb-8`,{maxHeight:150},stil('text',data.app.theme)]}>
+                        <Text style={[tw`text-start font-semibold my-1`,stil('text',data.app.theme)]}>Araçlar ({cars.length})</Text>
                         <FlatList 
                             data={cars}
-                            horizontal
+                            // horizontal
                             style={[tw`px-2`]}
                             ListEmptyComponent={() => (
                                 <View style={[tw``]}>
-                                    <Text style={[tw`opacity-40 font-semibold`,stil('text',data.app.theme)]}>Henüz seçilmiş bir araç bulunamadı</Text>
+                                    <Text style={[tw`text-start text-xs`,stil('text',data.app.theme)]}>Henüz seçilmiş bir araç bulunamadı</Text>
                                 </View>
                             )}
                             renderItem={({item,index}) => {
                                 return (
-                                    <View key={index} style={[tw`flex${cars.length > 2 ? '' : '-row'} items-start mr-1 border rounded-md p-1`,{borderColor:data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}>
-                                        <View style={tw`items-center justify-center flex`}>
+                                    <View key={index} style={[tw`flex-row  items-center justify-between mt-1 border rounded-md`,stil('bg2',data.app.theme)]}>
+                                        <View style={tw`items-center w-1/3 justify-between px-1 flex`}>
                                             <Text style={[tw`font-medium`,stil('text',data.app.theme)]}>
                                                 {item.title}
                                             </Text>
-                                            <Image source={{uri:item.image}} style={[tw`h-15 w-20`,{
+                                            <Image source={{uri:item.image}} style={[tw`h-10 w-15`,{
                                                 transform: [{
                                                     rotateY: '180deg',
                                                 }]
                                             }]} resizeMode="contain"/>
                                         </View>
-                                        <View style={[tw`flex justify-between ml-1`]}>
-                                            <View style={[tw`flex-row items-center mb-1`,stil('text',data.app.theme)]}>
-                                                <MaterialCommunityIcons name="map-marker-path" style={[tw`w-6`]} size={20} color={stil('text',data.app.theme).color} />
-                                                <Text style={[tw`text-xs `,stil('text',data.app.theme)]}>{routeDistance} km</Text>
+                                        <View style={[tw`flex-row w-2/3 justify-between px-1 items-center`]}>
+                                            <View style={[tw`flex items-center justify-center `,stil('text',data.app.theme)]}>
+                                                <MaterialCommunityIcons name="map-marker-path"  size={20} color={stil('text',data.app.theme).color} />
+                                                <Text style={[tw`text-xs mt-1`,stil('text',data.app.theme)]}>{routeDistance} km</Text>
                                             </View>
-                                            <View style={[tw`flex-row items-center`,stil('text',data.app.theme)]}>
-                                                <MaterialCommunityIcons name="clock-start" style={[tw`w-6`]} size={20} color={stil('text',data.app.theme).color} />
-                                                <Text style={[tw`text-xs `,stil('text',data.app.theme)]}>{routeTime}</Text>
+                                            <View style={[tw`flex items-center justify-center`,stil('text',data.app.theme)]}>
+                                                <MaterialCommunityIcons name="clock-start"  size={20} color={stil('text',data.app.theme).color} />
+                                                <Text style={[tw`text-xs mt-1`,stil('text',data.app.theme)]}>{routeTime}</Text>
                                             </View>
-                                            <View style={[tw`flex-row items-center mt-1`,stil('text',data.app.theme)]}>
-                                                <MaterialCommunityIcons name="credit-card" style={[tw`w-6`]} size={20} color={stil('text',data.app.theme).color} />
-                                                <Text style={[tw`text-xs `,stil('text',data.app.theme)]}>{item.totalPrice} sum</Text>
+                                            <View style={[tw`flex items-center justify-center`,stil('text',data.app.theme)]}>
+                                                <MaterialCommunityIcons name="credit-card"  size={20} color={stil('text',data.app.theme).color} />
+                                                <Text style={[tw`text-xs mt-1`,stil('text',data.app.theme)]}>{item.totalPrice} sum</Text>
                                             </View>
                                         </View>
                                     </View>
@@ -443,7 +422,7 @@ function HomePage() {
                             <TextInput 
                             placeholderTextColor={stil('text',data.app.theme).color}
                             placeholder="Search for place"
-                            style={[tw`h-10 rounded p-2 text-xs bg-white w-full`,stil('text',data.app.theme),{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f9f9f7'}]}
+                            style={[tw`h-10 rounded p-2 text-xs bg-white w-full`,stil('text',data.app.theme),stil('bg2',data.app.theme)]}
                             onChangeText={(text) => {
                                 setSearchText(text);
                                 if(text == ''){
@@ -495,7 +474,7 @@ function HomePage() {
 
                     </View>
                     <View style={tw`flex-row mt-2`}>
-                        <View style={[tw`w-4/4`,{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f9f9f7'},tw`px-2 rounded`]}>
+                        <View style={[tw`w-4/4`,result.length != 0 && stil('bg2',data.app.theme),tw`px-2 rounded`]}>
                             {result.length == 0 && searchText.length>2 ?
                                 <View style={[tw`flex-row  items-center justify-center font-semibold p-2`,stil('text',data.app.theme)]}>
                                     {resultType ? 
@@ -572,7 +551,7 @@ function HomePage() {
                                         setLocations(remainingItems);
                                     }}      
                                     >
-                                        <MaterialCommunityIcons name="delete" size={24} color={data.app.theme == 'dark' ? '#c44d56' : '#c44d56'} />
+                                        <MaterialCommunityIcons name="delete" size={24} color={data.app.theme == 'dark' ? '#f66' : '#f66'} />
                                     </TouchableOpacity>
                                     <View style={[tw`flex-row items-start px-2 py-1`]}>
                                         <View style={tw`flex justify-between `}>
@@ -627,7 +606,7 @@ function HomePage() {
                                             shadowOpacity: 0.10,
                                             shadowRadius: 0,
                                             elevation: 5,
-                                        },{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f9f9f7'},tw`px-6 rounded`]}>
+                                        },stil('bg2',data.app.theme),tw`px-6 rounded`]}>
                                             <Image source={{uri:item.image}} style={tw`h-20 w-40`} resizeMode="contain"/>
                                             <View style={tw`flex justify-between items-center`}>
                                                 <Text style={[tw` font-semibold`,stil('text',data.app.theme)]}>
@@ -655,7 +634,7 @@ function HomePage() {
                                         setCars(remainingItems);
                                     }}      
                                     >
-                                        <MaterialCommunityIcons name="delete" size={24} color={data.app.theme == 'dark' ? '#c44d56' : '#c44d56'} />
+                                        <MaterialCommunityIcons name="delete" size={24} color={data.app.theme == 'dark' ? '#f66' : '#f66'} />
                                     </TouchableOpacity>
                                     <View style={[tw`flex-row items-center px-2 py-1`]}>
                                         <View style={tw`flex justify-between mr-4`}>
@@ -685,7 +664,7 @@ function HomePage() {
                             shadowOpacity: 0.10,
                             shadowRadius: 0,
                             elevation: 5,
-                        },{backgroundColor:data.app.theme == 'dark' ? '#255382' : '#f9f9f7'},tw` rounded`]}
+                        },stil('bg2',data.app.theme),tw` rounded`]}
                         onPress={() => {
                             setLocationModal(!locationModal);
                             setHaritadanSec(false);

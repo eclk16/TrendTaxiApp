@@ -13,7 +13,6 @@ function Faq() {
     const [theme, setTheme] = React.useState(data.app.currentTheme);
     const [lang, setLang] = React.useState(data.app.currentLanguage);
 
-
     useEffect(() => {
         getSss();
     }, []);
