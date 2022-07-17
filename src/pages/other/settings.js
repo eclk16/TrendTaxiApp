@@ -6,6 +6,7 @@ import tw from 'twrnc';
 import { stil } from '../../utils';
 import l from '../../languages.json';
 import { setValue } from '../../async';
+import StatusBarComponent from '../../components/global/status';
 MaterialCommunityIcons.loadFont();
 
 
@@ -64,6 +65,7 @@ export default function Settings(){
     return (
 		<ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}>
 						<>
+							<StatusBarComponent/>
 							<Text style={[tw`m-4 text-center`,stil('text',data.app.theme)]}>{l[data.app.lang].dilSec}</Text>
 							<View style={[tw` flex justify-center rounded-md`]}>
 								{LANGS.map((item,index) => {

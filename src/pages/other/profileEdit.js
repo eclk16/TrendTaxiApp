@@ -10,6 +10,7 @@ import {useNavigation} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 MaterialCommunityIcons.loadFont();
 import axios from 'axios';
+import StatusBarComponent from '../../components/global/status';
 
 export default function ProfileEdit(){
 	const navigation = useNavigation(); 
@@ -125,6 +126,7 @@ export default function ProfileEdit(){
             keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
             enabled
         >
+            <StatusBarComponent/>
 		<ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}>
 			<View style={[tw`rounded-md p-4 flex-row items-center justify-start`,stil('bg2',data.app.theme)]}>
 				<View style={[tw``]}>
@@ -134,7 +136,7 @@ export default function ProfileEdit(){
                     <TouchableOpacity
                     onPress={() => getPhotoWithPhone() }
                     >
-                    <Text style={[tw`text-lg p-8`,stil('text',data.app.theme)]}> Upload İmage</Text>
+                    <Text style={[tw`text-lg p-8`,stil('text',data.app.theme)]}>{l[data.app.lang].imageUpload}</Text>
                     </TouchableOpacity>
 				</View>
 			</View>

@@ -38,17 +38,19 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string></string>
+	<string>Please Allow Library Usage Services</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Please Allow Location Services</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Please Allow Location Services</string>
 	<key>NSLocationUsageDescription</key>
-	<string></string>
+	<string>Please Allow Location Services</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Please Allow Location Services</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Please Allow Library Usage Services</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
+	<string>Please Allow Library Usage Services</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

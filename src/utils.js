@@ -8,7 +8,7 @@ export const useTheme = StyleSheet.create({
         bg2:{
             backgroundColor:'rgba(16,107,172,.4)',
             borderWidth:.5,
-            borderColor:'rgba(16,107,172,.5)'
+            borderColor:'rgba(16,107,172,.5)',
         },
         text:{
             color:'rgba(194,228,255,1)',

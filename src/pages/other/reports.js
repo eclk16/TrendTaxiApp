@@ -5,6 +5,8 @@ import {ActivityIndicator,View,Text, ScrollView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import tw from 'twrnc';
 import { stil } from '../../utils';
+import l from '../../languages.json';
+import StatusBarComponent from '../../components/global/status';
 MaterialCommunityIcons.loadFont();
 
 function Reports() {
@@ -44,32 +46,33 @@ function Reports() {
 
     return (
       <ScrollView style={[stil('bg',data.app.theme),tw`p-2 flex-1`]}>
+          <StatusBarComponent/>
         {loading ? <ActivityIndicator size="large"/> : <>
             <View style={[tw`flex-row `]}>
                 <View style={[tw`p-2 w-1/1`]}>
                     <View style={[tw`  rounded-md p-4 flex`,stil('bg2',data.app.theme)]}>
                         <View style={[tw`rounded-md mb-2`,stil('bg',data.app.theme)]}>
-                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>Daily</Text>
+                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>{l[data.app.lang].daily}</Text>
                         </View>
                         
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Count</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].count}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.day.count}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Kilometer</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].kilometer}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.day.km}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Time</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].time}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.day.time}</Text>
                         </View>
                         <View style={[tw`flex justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Price</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].price}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.day.price}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Fee</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].fee}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.day.feePrice}</Text>
                         </View>
                     </View>
@@ -80,26 +83,26 @@ function Reports() {
                 <View style={[tw`p-2 w-1/2`]}>
                     <View style={[tw`  rounded-md p-4 flex`,stil('bg2',data.app.theme)]}>
                         <View style={[tw`rounded-md mb-2`,stil('bg',data.app.theme)]}>
-                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>Yesterday</Text>
+                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>{l[data.app.lang].yesterday}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Count</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].count}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.yesterday.count}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Kilometer</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].kilometer}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.yesterday.km}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Time</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].time}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.yesterday.time}</Text>
                         </View>
                         <View style={[tw`flex justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Price</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].price}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.yesterday.price}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Fee</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].fee}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.yesterday.feePrice}</Text>
                         </View>
                     </View>
@@ -107,26 +110,26 @@ function Reports() {
                 <View style={[tw`p-2 w-1/2`]}>
                     <View style={[tw`  rounded-md  p-4 flex`,stil('bg2',data.app.theme)]}>
                         <View style={[tw`rounded-md mb-2`,stil('bg',data.app.theme)]}>
-                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>Weekly</Text>
+                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>{l[data.app.lang].weekly}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Count</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].count}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.week.count}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Kilometer</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].kilometer}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.week.km}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Time</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].time}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.week.time}</Text>
                         </View>
                         <View style={[tw`flex justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Price</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].price}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.week.price}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Fee</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].fee}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.week.feePrice}</Text>
                         </View>
                     </View>
@@ -136,26 +139,26 @@ function Reports() {
                 <View style={[tw`p-2 w-1/2`]}>
                     <View style={[tw`  rounded-md p-4 flex`,stil('bg2',data.app.theme)]}>
                         <View style={[tw`rounded-md mb-2`,stil('bg',data.app.theme)]}>
-                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>Monthly</Text>
+                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>{l[data.app.lang].monthly}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Count</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].count}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.month.count}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Kilometer</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].kilometer}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.month.km}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Time</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].time}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.month.time}</Text>
                         </View>
                         <View style={[tw`flex justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Price</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].price}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.month.price}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Fee</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].fee}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.month.feePrice}</Text>
                         </View>
                     </View>
@@ -163,26 +166,26 @@ function Reports() {
                 <View style={[tw`p-2 w-1/2`]}>
                     <View style={[tw` rounded-md p-4 flex`,stil('bg2',data.app.theme)]}>
                         <View style={[tw`rounded-md mb-2`,stil('bg',data.app.theme)]}>
-                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>Yearly</Text>
+                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>{l[data.app.lang].yearly}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Count</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].count}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.year.count}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Kilometer</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].kilometer}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.year.km}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Time</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].time}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.year.time}</Text>
                         </View>
                         <View style={[tw`flex justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Price</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].price}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.year.price}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Fee</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].fee}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.year.feePrice}</Text>
                         </View>
                     </View>
@@ -192,26 +195,26 @@ function Reports() {
                 <View style={[tw`p-2 w-1/1`]}>
                     <View style={[tw`  rounded-md p-4 flex`,stil('bg2',data.app.theme)]}>
                         <View style={[tw`rounded-md mb-2`,stil('bg',data.app.theme)]}>
-                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>All Time</Text>
+                            <Text style={[stil('text',data.app.theme),tw`text-center  p-2 font-medium`]}>{l[data.app.lang].allTime}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Count</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].count}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.alltime.count}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Kilometer</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].kilometer}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.alltime.km}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Time</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].time}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.alltime.time}</Text>
                         </View>
                         <View style={[tw`flex justify-between items-center border-b-2 pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Price</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].price}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.alltime.price}</Text>
                         </View>
                         <View style={[tw`flex-row justify-between items-center pb-1`,{borderColor:stil('bg',data.app.theme).backgroundColor}]}>
-                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>Fee</Text>
+                            <Text style={[stil('text',data.app.theme),tw`font-medium`]}>{l[data.app.lang].fee}</Text>
                             <Text style={[stil('text',data.app.theme),tw``]}>{reports.alltime.feePrice}</Text>
                         </View>
                     </View>

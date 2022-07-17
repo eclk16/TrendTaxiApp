@@ -5,6 +5,7 @@ import {TouchableOpacity,View,Text, ScrollView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import tw from 'twrnc';
 import { stil } from '../../utils';
+import StatusBarComponent from '../../components/global/status';
 MaterialCommunityIcons.loadFont();
 
 function Faq() {
@@ -35,6 +36,7 @@ function Faq() {
 
     return (
       <ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}>
+          <StatusBarComponent/>
         {sss.map((item,index) => {
             return (
                 <View key={index}>

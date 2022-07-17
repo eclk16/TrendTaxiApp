@@ -9,6 +9,7 @@ import {stil} from '../../utils';
 import {useNavigation,useRoute} from '@react-navigation/native';
 import l from '../../languages.json';
 import { useSelector} from 'react-redux';
+import StatusBarComponent from '../../components/global/status';
 
 function TripDetail() {
 
@@ -106,25 +107,26 @@ function TripDetail() {
     
     return (
         <ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}>
+            <StatusBarComponent/>
 			<View style={[tw`rounded-md px-4 py-2 mt-4 flex items-start justify-start`,stil('bg2',data.app.theme)]}>
 				<View style={[tw`flex-row w-full mb-2`]}>
-					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>Trip Id</Text>
+					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>#</Text>
 					<Text style={[stil('text',data.app.theme),tw``]}> : {tripId}</Text>
 				</View>
 				<View style={[tw`flex-row w-full mb-2`]}>
-					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>Trip Price</Text>
+					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>{l[data.app.lang].price}</Text>
 					<Text style={[stil('text',data.app.theme),tw``]}> : {tripPrice} sum</Text>
 				</View>
 				<View style={[tw`flex-row w-full mb-2`]}>
-					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>Trip Distance</Text>
+					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>{l[data.app.lang].distance}</Text>
 					<Text style={[stil('text',data.app.theme),tw``]}> : {tripDistance}</Text>
 				</View>
 				<View style={[tw`flex-row w-full mb-2`]}>
-					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>Trip Duration</Text>
+					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>{l[data.app.lang].duration}</Text>
 					<Text style={[stil('text',data.app.theme),tw``]}> : {tripTime}</Text>
 				</View>
 				<View style={[tw`flex-row w-full mb-2`]}>
-					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>Trip Score</Text>
+					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>{l[data.app.lang].score}</Text>
 					<Text style={[stil('text',data.app.theme),tw``]}> : 
 						<Ionicons name="ios-star" size={20} color={tripScore>0 ? "#ffd700" : "#ccc"} />
 						<Ionicons name="ios-star" size={20} color={tripScore>1 ? "#ffd700" : "#ccc"} />
@@ -135,19 +137,19 @@ function TripDetail() {
 				</View>
 				{reward > 0 ?
 				<View style={[tw`flex-row w-full mb-2`]}>
-					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>Trip Reward</Text>
+					<Text style={[stil('text',data.app.theme),tw` w-1/2`]}>{l[data.app.lang].reward}</Text>
 					<Text style={[stil('text',data.app.theme),tw``]}> : {reward} TT</Text>
 				</View>
 				: null}
 			</View>
-			<Text style={[stil('text',data.app.theme),tw`mt-4 `,stil('bg',data.app.theme)]}>Start Location - {tripStartTime}</Text>
+			<Text style={[stil('text',data.app.theme),tw`mt-4 `,stil('bg',data.app.theme)]}>{l[data.app.lang].start} - {tripStartTime}</Text>
 			<View style={[tw`rounded-md px-4 py-2 my-2 flex items-start justify-start`,stil('bg2',data.app.theme)]}>
 				<View style={[tw`flex w-full mb-2`]}>
 					
 					<Text style={[stil('text',data.app.theme),tw`text-xs`]}>{tripStartPoint}</Text>
 				</View>
 			</View>
-			<Text style={[stil('text',data.app.theme),tw`mt-2 `]}>End Location - {tripEndTime}</Text>
+			<Text style={[stil('text',data.app.theme),tw`mt-2 `]}>{l[data.app.lang].end} - {tripEndTime}</Text>
 			<View style={[tw`rounded-md px-4 py-2 my-2 flex items-start justify-start`,stil('bg2',data.app.theme)]}>
 				<View style={[tw`flex w-full mb-2`]}>
 					

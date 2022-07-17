@@ -8,6 +8,7 @@ import l from '../../languages.json';
 import { setValue } from '../../async';
 MaterialCommunityIcons.loadFont();
 import axios from 'axios';
+import StatusBarComponent from '../../components/global/status';
 
 export default function Profile(){
     const dispatch = useDispatch();
@@ -41,6 +42,7 @@ export default function Profile(){
     }
     return (
 		<>
+			<StatusBarComponent/>
 		<ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}>
 			<View style={[tw`rounded-md p-4 flex items-center justify-center`,]}>
 				<View style={[tw`flex items-center justify-center`]}>

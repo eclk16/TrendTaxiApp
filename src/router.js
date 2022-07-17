@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import { removeValue } from './async'
 import Passenger from './pages/proccess/homePassenger';
 import Driver from './pages/proccess/homeDriver';
+import Harita from './pages/proccess/map';
 import Trips from './pages/other/trips';
 import Settings from './pages/other/settings';
 import TripDetail from './pages/other/tripDetail';
@@ -73,7 +74,7 @@ const Router = () => {
                                     <View style={[tw`w-full`]}>
                                         <View style={[tw` py-2 flex-row items-center`,{paddingLeft:20}]}>
                                             <View style={[tw`rounded-md p-1`]}>
-                                                <MaterialCommunityIcons name="map-plus" size={24} color={stil('text',data.app.theme).color} />
+                                                <MaterialCommunityIcons name="arch" size={24} color={stil('text',data.app.theme).color} />
                                             </View>
                                             <Text style={[stil('text',data.app.theme),tw` text-base`,{paddingLeft:2}]}>  {l[data.app.lang].start}</Text>
                                         </View>
@@ -86,7 +87,7 @@ const Router = () => {
                                     <View style={[tw`w-full`]}>
                                         <View style={[tw` py-2 flex-row items-center`,{paddingLeft:20}]}>
                                             <View style={[tw`rounded-md p-1`]}>
-                                                <MaterialCommunityIcons name="ray-start-arrow" size={24} color={stil('text',data.app.theme).color} />
+                                                <MaterialCommunityIcons name="arch" size={24} color={stil('text',data.app.theme).color} />
                                             </View>
                                             <Text style={[stil('text',data.app.theme),tw` text-base`,{paddingLeft:2}]}>  {l[data.app.lang].start}</Text>
                                         </View>
@@ -190,8 +191,35 @@ const Router = () => {
                     )
                 }}
             >
+                <Drawer.Screen name="Harita" component={Harita}
+                               options={{
+                                   drawerItemStyle:{
+                                       display:'none'
+                                   },
+                                   headerTitleStyle: {
+                                       color: 'transparent',
+                                   },
+                                   headerTransparent: true,
+                                   headerTintColor: stil('text',data.app.theme).color,
+                                   headerLeftContainerStyle: {
+                                       backgroundColor: data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
+                                       borderTopRightRadius: 10,
+                                       borderBottomRightRadius: 10,
+                                       marginRight: '50%',
+                                       height:50,
+                                       shadowColor: data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
+                                       shadowOffset: {
+                                           width: 1,
+                                           height: 1,
+                                       },
+                                       shadowOpacity: 0.7,
+                                       shadowRadius: 1,
+                                       elevation: 5,
+                                   },
+                               }}
+                />
                 {data.auth.userType == 'passenger' ?
-                    <Drawer.Screen name="Home" component={Passenger} 
+                    <Drawer.Screen name="Home" component={data.trip.isTrip ? Harita : Passenger}
                         options={{
                             drawerItemStyle:{
                                 display:'none'
@@ -219,7 +247,7 @@ const Router = () => {
                         }}
                     />
                 :
-                    <Drawer.Screen name="HomeDriverPage" component={Driver}
+                    <Drawer.Screen name="HomeDriverPage" component={data.trip.isTrip ? Harita : Driver}
                         options={{
                             drawerItemStyle:{
                                 display:'none'
@@ -233,7 +261,7 @@ const Router = () => {
                                 backgroundColor: data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
                                 borderTopRightRadius: 10,
                                 borderBottomRightRadius: 10,
-                                marginRight: '50%',
+                                marginRight: '30%',
                                 height:50,
                                 shadowColor: data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
                                 shadowOffset: {

@@ -63,16 +63,23 @@ export default function Welcome(){
         dispatch({type: 'theme', payload: theme});
 	}
 
-	function getLocation(){
+	const getCurrentLocation = () => {
+		Geolocation.requestAuthorization();
 		Geolocation.getCurrentPosition(
 			(position) => {
-                setMyLocation(true);
+				if(position.coords.latitude != 0 && position.coords.longitude != 0){
+					setMyLocation(true);
+				}
 			},
 			(error) => {
 				console.log(error.code, error.message);
 			},
-			{ enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-		);	
+			{ enableHighAccuracy: true, timeout: 30000, maximumAge: 1000 }
+		);
+	}
+
+	function getLocation(){
+		getCurrentLocation();
 	}
 
 	const loginFunction = () => {
@@ -120,7 +127,6 @@ export default function Welcome(){
             });
         }
         else{
-            alert('12 hane girin');
         }
     };
 

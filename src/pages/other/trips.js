@@ -9,6 +9,7 @@ import { stil } from '../../utils';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import l from '../../languages.json';
+import StatusBarComponent from '../../components/global/status';
 
 function Trips() {
   const navigation = useNavigation(); 
@@ -60,6 +61,7 @@ function Trips() {
 
     return (
         <>
+            <StatusBarComponent/>
             <ScrollView style={[stil('bg',data.app.theme),tw`p-4 flex-1`]}
                 onScroll={({nativeEvent}) => {
                     if (isCloseToBottom(nativeEvent)) {
