@@ -1,5 +1,5 @@
 import React,{useEffect} from 'react';
-import {LogBox,BackHandler} from 'react-native';
+import {LogBox} from 'react-native';
 import { Provider,useDispatch,useSelector } from 'react-redux';
 import logger from 'redux-logger';
 import {createStore,applyMiddleware} from 'redux';
@@ -9,6 +9,7 @@ import Router from './src/router';
 import Welcome from './src/pages/auth/welcome';
 import Loading from './src/components/global/loading';
 import axios from 'axios';
+
 
 LogBox.ignoreAllLogs();
 
@@ -23,22 +24,13 @@ const AppWrapper = () => {
   }
 
 const App = () => {
+
 	const dispatch = useDispatch();
     const data = useSelector(state => state);
     const [loading,setLoading] = React.useState(true);
 
 
-    handleBackButtonClick = () => {
-		navigation.goBack();
-		return true;
-	}
 
-	useEffect(() => {
-		BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
-		return () => {
-			BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-		};
-	}, []);
 
     const getTrip = (id,userToken,userType) => {
         const config = {
@@ -57,6 +49,7 @@ const App = () => {
                 dispatch({type:'setTrip',payload:response.data.data});
             }
             else{
+                dispatch({type:'removeTrip',payload:{}});
             }
         })
         .catch(error => {

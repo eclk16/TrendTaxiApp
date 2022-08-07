@@ -40,13 +40,13 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Please Allow Library Usage Services</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Please Allow Location Services</string>
+	<string>We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Please Allow Location Services</string>
+	<string>We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Please Allow Location Services</string>
+	<string>We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Please Allow Location Services</string>
+	<string>We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Please Allow Library Usage Services</string>
 	<key>NSPhotoLibraryUsageDescription</key>

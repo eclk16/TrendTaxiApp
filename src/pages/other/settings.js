@@ -33,11 +33,11 @@ export default function Settings(){
             "langName":'English',
             "langFlag":require('../../assets/img/gb.png')
         },
-        {
-            "langCode":'tr',
-            "langName":'Türkçe',
-            "langFlag":require('../../assets/img/tr.png')
-        },
+        // {
+        //     "langCode":'tr',
+        //     "langName":'Türkçe',
+        //     "langFlag":require('../../assets/img/tr.png')
+        // },
     ];
 
 	function setLanguage(code){

@@ -49,6 +49,18 @@ function HomePage() {
     Geolocation.watchPosition(
         (position) => {
             setCurrent(position.coords.longitude + ',' + position.coords.latitude);
+            if(data.auth.userType == 'driver'){
+                axios.defaults.headers.common['Accept'] = 'application/json';
+                axios.defaults.headers.common['Content-Type'] = 'application/json';
+                console.log('https://trendtaxi.uz/event?prc=hesapla&type='+data.auth.userType+'_id&user=' + data.auth.userId + '&location=' + current);
+                axios.get('https://trendtaxi.uz/event?prc=hesapla&type='+data.auth.userType+'_id&user=' + data.auth.userId + '&location=' + current).then(
+                    response => {
+
+                    }
+                );
+
+            }
+
         },
         (error) => {
             console.log('HATA ====== '+error);
@@ -69,6 +81,7 @@ function HomePage() {
             (position) => {
                 if (position.coords.latitude != 0 && position.coords.longitude != 0) {
                     setCurrent(position.coords.longitude + ',' + position.coords.latitude);
+
                 }
             },
             (error) => {
@@ -84,19 +97,75 @@ function HomePage() {
             cluster: 'ap2'
         });
         var channel = pusher.subscribe('TripEvents_'+data.auth.userId);
-        channel.bind('trip', function(data) {
-
+        channel.bind('trip', function(data2) {
+            if(data2.trip.prc == 'delete_trip'){
+                try {
+                    dispatch({type:'tripRemove',payload:{}});
+                }catch (e) {
+                    console.log('EEE = ',e);
+                }
+                navigation.navigate(data.auth.userType == 'passenger' ? 'Home' : 'HomeDriverPage');
+            }
+            if(data2.trip.prc == 'delete_trip'){
+                try {
+                    dispatch({type:'tripRemove',payload:{}});
+                }catch (e) {
+                    console.log('EEE = ',e);
+                }
+                navigation.navigate(data.auth.userType == 'passenger' ? 'Home' : 'HomeDriverPage');
+            }
+            if(data2.trip.prc == 'binildi'){
+                getTrip(data.auth.userId,data.auth.userToken,data.auth.userType);
+                getSource();
+            }
         });
         return () => {
             pusher?.disconnect();
         }
     },[]);
+    const getTrip = (id,userToken,userType) => {
+        const config = {
+            headers: { Authorization: `Bearer ${userToken}` }
+        };
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Content-Type"] = "application/json";
+        axios.defaults.headers.common["Authorization"] = "Bearer "+userToken;
+        axios.post('https://trendtaxi.uz/api/isActiveTrip',{
+            id:id,
+            lang:data.app.lang,
+            type:userType+'_id'
+        })
+            .then(response => {
+                if(!response.data.data.hata) {
+                    dispatch({type:'setTrip',payload:response.data.data});
+                    getSource(response.data.data.status2);
+                }
+                else{
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 
-    const deleteTrip = () => {
+    const binildi = () => {
         axios.defaults.headers.common['Accept'] = 'application/json';
         axios.defaults.headers.common['Content-Type'] = 'application/json';
-        console.log('https://trendtaxi.uz/event?prc=delete_trip&iptal=1&user=' + data.trip.trip.passenger_id);
-        axios.get('https://trendtaxi.uz/event?prc=delete_trip&iptal=1&user=' + data.trip.trip.passenger_id)
+        console.log('https://trendtaxi.uz/event?prc=binildi&type='+data.auth.userType+'_id&user=' + data.auth.userId);
+        axios.get('https://trendtaxi.uz/event?prc=binildi&type='+data.auth.userType+'_id&user=' + data.auth.userId)
+            .then(response => {
+                getTrip(data.auth.userId,data.auth.userToken,data.auth.userType);
+                getSource();
+            })
+            .catch(error => {
+            });
+    };
+
+    const deleteTrip = (bitti = null) => {
+        axios.defaults.headers.common['Accept'] = 'application/json';
+        axios.defaults.headers.common['Content-Type'] = 'application/json';
+        console.log('https://trendtaxi.uz/event?prc=delete_trip'+(bitti == null ? '&iptal=1' : '&bitti=1')+'&type='+data.auth.userType+'_id&user=' + data.auth.userId);
+        axios.get('https://trendtaxi.uz/event?prc=delete_trip'+(bitti == null ? '&iptal=1' : '&bitti=1')+'&type='+data.auth.userType+'_id&user=' + data.auth.userId)
         .then(response => {
             try {
                 dispatch({type:'tripRemove',payload:{}});
@@ -110,7 +179,7 @@ function HomePage() {
         });
     };
 
-    const [source, setSource] = React.useState({uri: 'https://trendtaxi.uz/maps?me=' + current + '&token=' + data.auth.userToken});
+    const [source, setSource] = React.useState({uri: 'https://trendtaxi.uz/navigation?me=' + current + '&token=' + data.auth.userToken});
 
     const debugging = `
     const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
@@ -196,15 +265,18 @@ function HomePage() {
         }
     };
 
-    useEffect(() => {
-        if(data.trip.trip.status2 == 2 && data.auth.userType=='driver'){
+    const getSource = (status2 = null) => {
+        if(status2 == null){
+            status2 = data.trip.trip.status2;
+        }
+        if(status2 == 2 && data.auth.userType=='driver'){
             let loc = '';
             loc = loc + data.trip.trip.first_location.split('-')[0].split(',')[1] + ',' + data.trip.trip.first_location.split('-')[0].split(',')[0];
             setSource(
                 {uri: 'https://trendtaxi.uz/navigation?me=' + current + '&token=' + data.auth.userToken+'&points='+loc}
             )
         }
-        else{
+        else if(data.trip.isTrip){
             let loc = '';
             data.trip.trip.first_location.split('-').map((location, index) => {
                 if(location != ''){
@@ -215,6 +287,11 @@ function HomePage() {
         }
 
         console.log(source);
+    }
+
+    useEffect(() => {
+        getTrip(data.auth.userId,data.auth.userToken,data.auth.userType);
+        getSource();
 
     },[current])
 
@@ -227,24 +304,21 @@ function HomePage() {
                     <Text style={[tw`my-1 pb-2 font-semibold`,stil('text',data.app.theme)]}>{rotate.outcoming_path_comment}</Text>
                 </View>
 
-                <View style={[{position:'absolute',bottom:90,right:0,left:0,zIndex:999999},tw`flex-row justify-between items-center mx-[5%] opacity-85 rounded-md h-16 w-[90%] p-4`,stil('bg',data.app.theme)]}>
-                    <Text style={[tw`font-bold`,stil('text',data.app.theme)]}>{data.trip.trip.est_distance}</Text>
-                    <Text style={[tw`font-bold`,stil('text',data.app.theme)]}>{data.trip.trip.est_time}</Text>
-                    <Text style={[tw`font-bold`,stil('text',data.app.theme)]}>sum</Text>
+
+                <View style={[{position:'absolute',bottom:80,right:0,left:0,zIndex:999999},tw`flex-row justify-between items-center mx-[5%] opacity-85 rounded-md h-12 w-[90%] px-4`,stil('bg',data.app.theme)]}>
+                    <Text style={[tw`font-semibold`,stil('text',data.app.theme)]}>{(data.trip.trip.act_distance / 1000).toFixed(2)} km</Text>
+                    <Text style={[tw`font-semibold`,stil('text',data.app.theme)]}>{(data.trip.trip.act_time / 60).toFixed(2)} min</Text>
+                    <Text style={[tw`font-semibold`,stil('text',data.app.theme)]}>{data.trip.trip.act_price} sum</Text>
                     <View style={[{position:'absolute',bottom:0,right:0,left:0,zIndex:1},tw`flex-row justify-between items-center opacity-90 rounded-tr-md w-[${yuzde}%] p-1 bg-green-400`]}>
                     </View>
                 </View>
-
-
-
-                {current != '' ? <WebView
+                <WebView
                     ref={map}
                     source={source}
                     injectedJavaScript={debugging}
                     onMessage={onMessage}
 
                 />
-                : null}
                 <View style={[tw`flex-row items-center justify-between rounded-t-md`, stil('bg', data.app.theme), {
                     position: 'absolute',
                     bottom: 0,
@@ -252,60 +326,117 @@ function HomePage() {
                     right: 0,
                     zIndex:2
                 }]}>
-                    <TouchableOpacity
-                        style={[tw`flex-row items-center justify-center  w-1/2 py-6 rounded-tl-md`, stil('bg2', data.app.theme)]}
-                        onPress={() => {
-                            Alert.alert(
-                                'İşlem iptal edilecek.',
-                                '',
-                                [
-                                    {
-                                        text: 'Geri',
-                                        onPress: () => console.log('Cancel Pressed'),
-                                        style: 'cancel',
-                                    },
-                                    {
-                                        text: 'Evet iptal et',
-                                        onPress: () => {
-                                            Alert.alert(
-                                                'İptal Sebebi Nedir ?',
-                                                '',
-                                                [
-                                                    {
-                                                        text: 'Diğer',
-                                                        onPress: () => {
-                                                            deleteTrip();
-                                                        },
+                    {data.trip.trip.status2 == 2 ?
+                        <>
+                            <TouchableOpacity
+                                style={[tw`flex-row items-center justify-center  w-1/2 py-5 rounded-tl-md`, stil('bg2', data.app.theme)]}
+                                onPress={() => {
+                                    Alert.alert(
+                                        l[data.app.lang].onayli,
+                                        '',
+                                        [
+                                            {
+                                                text: l[data.app.lang].back,
+                                                onPress: () => console.log('Cancel Pressed'),
+                                                style: 'cancel',
+                                            },
+                                            {
+                                                text: l[data.app.lang].onay,
+                                                onPress: () => {
+                                                    Alert.alert(
+                                                        l[data.app.lang].iptalsebeb,
+                                                        '',
+                                                        [
+                                                            {
+                                                                text: l[data.app.lang].other,
+                                                                onPress: () => {
+                                                                    deleteTrip();
+                                                                },
 
-                                                    },
-                                                    {
-                                                        text: data.auth.userType == 'passenger' ? 'Araç Yok' : 'Yolcu Yok',
-                                                        onPress: () => {
-                                                            deleteTrip();
-                                                        },
-                                                    },
-                                                ],
-                                                {cancelable: false},
-                                            );
-                                        },
-                                    },
-                                ],
-                                {cancelable: false},
-                            );
-                        }}
-                    >
-                        <MaterialCommunityIcons name="cancel" size={20} color={stil('text', data.app.theme).color}/>
-                        <Text style={[tw`font-medium ml-2`, stil('text', data.app.theme)]}>İptal</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => {
+                                                            },
+                                                            {
+                                                                text: data.auth.userType == 'passenger' ? l[data.app.lang].nocar : l[data.app.lang].nopas,
+                                                                onPress: () => {
+                                                                    deleteTrip();
+                                                                },
+                                                            },
+                                                        ],
+                                                        {cancelable: false},
+                                                    );
+                                                },
+                                            },
+                                        ],
+                                        {cancelable: false},
+                                    );
+                                }}
+                            >
+                                <MaterialCommunityIcons name="cancel" size={20} color={stil('text', data.app.theme).color}/>
+                                <Text style={[tw`font-medium ml-2`, stil('text', data.app.theme)]}>{l[data.app.lang].cancel}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    Alert.alert(
+                                        l[data.app.lang].onayli,
+                                        '',
+                                        [
+                                            {
+                                                text: l[data.app.lang].back,
+                                                onPress: () => console.log('Cancel Pressed'),
+                                                style: 'cancel',
 
-                        }}
-                        style={[tw`flex-row items-center justify-center  w-1/2 py-6 rounded-tr-md`, stil('bg2', data.app.theme)]}
-                    >
-                        <Text style={[tw`font-semibold mr-2`, stil('text', data.app.theme)]}>{data.auth.userType == 'passenger' ? 'Araca Bindim' : 'Yolcu Bindi'}</Text>
-                        <MaterialCommunityIcons name="check" size={20} color={stil('text', data.app.theme).color}/>
-                    </TouchableOpacity>
+                                            },
+                                            {
+                                                text: l[data.app.lang].onay,
+                                                onPress: () => {
+                                                    binildi();
+                                                },
+                                            },
+                                        ],
+                                        {cancelable: false},
+                                    );
+
+                                }}
+                                style={[tw`flex-row items-center justify-center  w-1/2 py-5 rounded-tr-md`, stil('bg2', data.app.theme)]}
+                            >
+                                <Text style={[tw`font-semibold mr-2`, stil('text', data.app.theme)]}>{data.auth.userType == 'passenger' ? l[data.app.lang].incar : l[data.app.lang].pcar}</Text>
+                                <MaterialCommunityIcons name="check" size={20} color={stil('text', data.app.theme).color}/>
+                            </TouchableOpacity>
+                        </>
+                    :
+                        <>
+                            {data.auth.userType == 'driver' ?
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        Alert.alert(
+                                            l[data.app.lang].onayli,
+                                            '',
+                                            [
+                                                {
+                                                    text: l[data.app.lang].back,
+                                                    onPress: () => console.log('Cancel Pressed'),
+                                                    style: 'cancel',
+
+                                                },
+                                                {
+                                                    text: l[data.app.lang].onay,
+                                                    onPress: () => {
+                                                        deleteTrip('bitti');
+                                                    },
+                                                },
+                                            ],
+                                            {cancelable: false},
+                                        );
+
+                                    }}
+                                    style={[tw`flex-row items-center justify-center  w-2/2 py-5 rounded-tr-md`, stil('bg2', data.app.theme)]}
+                                >
+                                    <Text style={[tw`font-semibold mr-2`, stil('text', data.app.theme)]}>{l[data.app.lang].tripover}</Text>
+                                    <MaterialCommunityIcons name="check" size={20} color={stil('text', data.app.theme).color}/>
+                                </TouchableOpacity>
+                                : null}
+                        </>
+                    }
+
                 </View>
             </View>
 

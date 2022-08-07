@@ -46,7 +46,11 @@ function HomePage() {
     const [routeDistance, setRouteDistance] = React.useState('0 ');
     const [resultType, setResultType] = React.useState(false);
 
-
+    if(typeof String.prototype.replaceAll === "undefined") {
+        String.prototype.replaceAll = function(match, replace) {
+            return this.replace(new RegExp(match, 'g'), () => replace);
+        }
+    }
     useEffect(() => {
         Geolocation.getCurrentPosition(
             (position) => {
@@ -68,12 +72,26 @@ function HomePage() {
     }, [locations, current]);
 
     useEffect(() => {
+       
         getCars();
     }, []);
 
     useEffect(() => {
-        getCurrentLocation();
+        Geolocation.getCurrentPosition(
+            (position) => {
+                if (position.coords.latitude != 0 && position.coords.longitude != 0) {
+
+                    setCurrent(position.coords.longitude + ',' + position.coords.latitude);
+                }
+            },
+            (error) => {
+                console.log(error.code, error.message);
+            },
+            {enableHighAccuracy: false, timeout: 30000, maximumAge: 1000},
+        );
     }, []);
+
+
 
     const mapConfiguration = (me = '') => {
 
@@ -164,9 +182,7 @@ function HomePage() {
     const getCurrentLocation = () => {
         Geolocation.getCurrentPosition(
             (position) => {
-                alert('b');
                 if (position.coords.latitude != 0 && position.coords.longitude != 0) {
-                    alert('c');
                     setCurrentPosition(position);
                     setCurrent(position.coords.longitude + ',' + position.coords.latitude);
                 }
@@ -224,20 +240,8 @@ function HomePage() {
         locations.map((location, index) => {
             loc = loc + location.lat + ',' + location.lon + ',' + location.title.replaceAll(',', ' ').replaceAll('-', ' ').replaceAll("'", ' ') + ',' + location.description.replaceAll(',', ' ').replaceAll('-', ' ').replaceAll("'", ' ') + '-';
         });
-        console.log(
-            'https://trendtaxi.uz/event?' +
-            'prc=trip_create&' +
-            'km_price=' + cars[cari].km + '&' +
-            'paid_price=' + cars[cari].paid + '&' +
-            'start_price=' + cars[cari].price + '&' +
-            'car_id=' + cars[cari].title + '&' +
-            'start=' + loc + '&' +
-            'car=' + cars[cari].title + '&' +
-            'duration=' + routeTime + '&' +
-            'distance=' + routeDistance + '&' +
-            'price=' + cars[cari].totalPrice + '&' +
-            'user=' + data.auth.userId,
-        );
+        
+
         axios.get(
             'https://trendtaxi.uz/event?' +
             'prc=trip_create&' +
@@ -253,16 +257,17 @@ function HomePage() {
             'user=' + data.auth.userId,
         )
             .then(response => {
+
                 const istekler = response.data.drivers;
                 let wait = 0;
                 istekler.forEach(element => {
+                    
                     setTimeout(() => {
-                        if (!kabul['car' + cari]) {
-                            soforeIstek(response.data.trip.id,element,response.data.start);
-                        }
+                        soforeIstek(response.data.trip.id,element,response.data.start);
                     }, wait);
-                    wait = wait + 15000;
+                    wait = wait + 17000;
                 });
+
             })
             .catch(error => {
                 console.log(error);
@@ -312,14 +317,19 @@ function HomePage() {
                 console.log(error);
             });
     }
-
+    const [cagir,setCagir] = React.useState(1);
     const onaylandi = () => {
-        getTrip(data.auth.userId,data.auth.userToken,data.auth.userType);
 
+
+        getTrip(data.auth.userId,data.auth.userToken,data.auth.userType);
+       
+        
+
+        
 
     };
 
-
+    const [istekCar,setIstekCar] = React.useState(0);
     const soforeIstek = (trip_id,id,start) => {
         axios.defaults.headers.common['Accept'] = 'application/json';
         axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -480,7 +490,7 @@ function HomePage() {
                                     setFindVehicle(true);
                                     createTrip();
                                 } else {
-                                    alert(l[data.app.lang].enaz);
+                                    Alert.alert('',l[data.app.lang].enaz);
                                 }
 
                             }}
@@ -499,7 +509,7 @@ function HomePage() {
                     setTopHeight(ScreenHeight - (height));
                     setBottomHeight((height));
                 }}
-                style={[tw` w-full flex  pt-2`, {maxHeight: '30%'}, stil('bg', data.app.theme)]}>
+                style={[tw` w-full flex  pt-2`,  stil('bg', data.app.theme)]}>
 
                 {acik == 1 ?
                     <View
@@ -542,7 +552,7 @@ function HomePage() {
                         <TouchableOpacity onPress={() => {
                             setLocationModal(true);
                             setModalType('adres');
-                        }} style={[tw`flex-row w-full items-center justify-center pt-2 pb-4`, stil('bg', data.app.theme)]}>
+                        }} style={[tw`flex-row w-full items-center justify-center pt-2 pb-4`, stil('bg2', data.app.theme)]}>
                             <MaterialCommunityIcons name="pencil" size={24} color={stil('text', data.app.theme).color}/>
                             <Text style={[tw`p-2 font-semibold`, stil('text', data.app.theme)]}>{l[data.app.lang].address} {l[data.app.lang].edit}</Text>
                         </TouchableOpacity>
@@ -605,7 +615,7 @@ function HomePage() {
                         <TouchableOpacity onPress={() => {
                             setLocationModal(true);
                             setModalType('araç');
-                        }} style={[tw`flex-row w-full items-center justify-center pt-2 pb-4`, stil('bg', data.app.theme)]}>
+                        }} style={[tw`flex-row w-full items-center justify-center pt-2 pb-4`, stil('bg2', data.app.theme)]}>
                             <MaterialCommunityIcons name="pencil" size={24} color={stil('text', data.app.theme).color}/>
                             <Text style={[tw`p-2 font-semibold`, stil('text', data.app.theme)]}>{l[data.app.lang].car} {l[data.app.lang].edit}</Text>
                         </TouchableOpacity>
@@ -640,9 +650,9 @@ function HomePage() {
                                                    resizeMode="contain"/>
                                             <Text
                                                 style={[stil('text', data.app.theme), tw`font-semibold mr-4`]}>{car.title}</Text>
-                                            {kabul['car' + index] ? <MaterialCommunityIcons name="check" size={16}
+                                            {!car.load ? <MaterialCommunityIcons name="check" size={16}
                                                                                             color={stil('text', data.app.theme).color}/> :
-                                                <ActivityIndicator animating={kabul['car' + index] ? false : true}
+                                                <ActivityIndicator animating={car.load ? true : true}
                                                                    size="small"
                                                                    color={stil('text', data.app.theme).color}/>}
                                         </View>
@@ -889,7 +899,7 @@ function HomePage() {
                                                     onPress={() => {
                                                         if (cars.length < 4) {
                                                             setCars([...cars, {
-                                                                id: item.title,
+                                                                id: Math.random(1000000,9999999),
                                                                 title: item.title,
                                                                 description: item.start.description,
                                                                 alt: item.alt,
@@ -898,6 +908,7 @@ function HomePage() {
                                                                 km: item.km.price,
                                                                 image: item.image,
                                                                 totalPrice: ((item.km.price * routeDistance.split(' ')[0]) - item.km.price) + item.start.price,
+                                                                load:true,
                                                             }]);
                                                         }
 

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {useSelector} from 'react-redux';
+import {useSelector,useDispatch} from 'react-redux';
 import tw from 'twrnc';
 import {
     View,
@@ -21,6 +21,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import axios from 'axios';
 import {WebView} from 'react-native-webview';
 import Pusher from 'pusher-js/react-native';
+import {useNavigation} from '@react-navigation/native';
 
 
 MaterialCommunityIcons.loadFont();
@@ -28,6 +29,8 @@ MaterialCommunityIcons.loadFont();
 function Driver() {
     const data = useSelector(state => state);
     const map = React.createRef();
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
     const [locations, setLocations] = React.useState([]);
     const [cars, setCars] = React.useState([]);
     const [bottomHeight, setBottomHeight] = React.useState(0);
@@ -53,8 +56,16 @@ function Driver() {
     };
 
     useEffect(() => {
-        getTrips(data.auth.userId, data.auth.userToken, data.auth.userType);
+        if(typeof String.prototype.replaceAll === "undefined") {
+            String.prototype.replaceAll = function(match, replace) {
+                return this.replace(new RegExp(match, 'g'), () => replace);
+            }
+        }
         getCurrentLocation();
+    }, []);
+
+    useEffect(() => {
+        getTrips(data.auth.userId,data.auth.userToken,data.auth.userType);
     }, []);
 
     const getCurrentLocation = () => {
@@ -125,10 +136,11 @@ function Driver() {
     };
 
     const getTrips = (id, userToken, type) => {
-        setLoading(true);
+
         axios.defaults.headers.common['Accept'] = 'application/json';
         axios.defaults.headers.common['Content-Type'] = 'application/json';
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + userToken;
+
         axios.post('https://trendtaxi.uz/api/getTrips', {
             who: type + '_id',
             id: id,
@@ -136,16 +148,17 @@ function Driver() {
             getReports: 1,
         })
             .then(response => {
+
                 if (!response.data.data.hata) {
                     setReports(response.data.data);
                     console.log(response.data.data);
                 } else {
                 }
-                setLoading(false);
+
             })
             .catch(error => {
                 console.log(error);
-                setLoading(false);
+
             });
     };
 
@@ -220,11 +233,42 @@ function Driver() {
         .then(response => {
             if(response.data.status = 'OK'){
                 setIsWait(false);
+
+
+                getTrip(data.auth.userId,data.auth.userToken,data.auth.userType);
             }
         })
         .catch(error => {
             console.log(error);
         });
+    }
+    const getTrip = (id,userToken,userType) => {
+        const config = {
+            headers: { Authorization: `Bearer ${userToken}` }
+        };
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Content-Type"] = "application/json";
+        axios.defaults.headers.common["Authorization"] = "Bearer "+userToken;
+        axios.post('https://trendtaxi.uz/api/isActiveTrip',{
+            id:id,
+            lang:data.app.lang,
+            type:userType+'_id'
+        })
+            .then(response => {
+                if(!response.data.data.hata) {
+                    dispatch({type:'setTrip',payload:response.data.data});
+                    try {
+                        navigation.navigate('Harita');
+                    }catch (e) {
+                        console.log('eror' , e);
+                    }
+                }
+                else{
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 
     return (

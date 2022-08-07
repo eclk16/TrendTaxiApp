@@ -19,11 +19,33 @@ import Faq from './pages/other/faq';
 import Reports from './pages/other/reports';
 import StatusBarComponent from './components/global/status';
 import ProfileEdit from './pages/other/profileEdit';
-
+import axios from 'axios';
 MaterialCommunityIcons.loadFont();
 const Drawer = createDrawerNavigator();
 
 const Router = () => {
+
+    const deleteAccount = () => {
+
+        const config = {
+            headers: { Authorization: `Bearer ${data.auth.userToken}` }
+        };
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Content-Type"] = "application/json";
+        axios.defaults.headers.common["Authorization"] = "Bearer "+data.auth.userToken;
+        axios.post('https://trendtaxi.uz/api/updateUserData',{
+            id:data.auth.userId
+        })
+        .then(response => {
+            alert('your account has been deleted');
+            dispatch({type: 'authRemove'});
+            dispatch({type:'isLogin',payload:false});
+            removeValue('userData');
+        })
+        .catch(error => {
+        });
+       
+    };
     
     const dispatch = useDispatch();
     const data = useSelector(state => state);
@@ -191,33 +213,7 @@ const Router = () => {
                     )
                 }}
             >
-                <Drawer.Screen name="Harita" component={Harita}
-                               options={{
-                                   drawerItemStyle:{
-                                       display:'none'
-                                   },
-                                   headerTitleStyle: {
-                                       color: 'transparent',
-                                   },
-                                   headerTransparent: true,
-                                   headerTintColor: stil('text',data.app.theme).color,
-                                   headerLeftContainerStyle: {
-                                       backgroundColor: data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
-                                       borderTopRightRadius: 10,
-                                       borderBottomRightRadius: 10,
-                                       marginRight: '50%',
-                                       height:50,
-                                       shadowColor: data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
-                                       shadowOffset: {
-                                           width: 1,
-                                           height: 1,
-                                       },
-                                       shadowOpacity: 0.7,
-                                       shadowRadius: 1,
-                                       elevation: 5,
-                                   },
-                               }}
-                />
+
                 {data.auth.userType == 'passenger' ?
                     <Drawer.Screen name="Home" component={data.trip.isTrip ? Harita : Passenger}
                         options={{
@@ -320,6 +316,36 @@ const Router = () => {
                     drawerItemStyle:{
                         display:'none'
                     },
+                    headerRight: () => (
+                        <TouchableOpacity
+                                style={[tw`flex-row px-4 items-center `]}
+                                onPress={()=>{
+                                    Alert.alert(
+                                        "You want to delete your account",
+                                        "Since deleting your account requires you to re-open, all your current information will be lost.",
+                                        [
+                                            {
+                                                text: l[data.app.lang].cancel,
+                                                onPress: () => console.log('Cancel Pressed'),
+                                                style: 'cancel',
+                                            },
+                                            {
+                                                text: "Yes ,Delete", 
+                                                onPress: () => {
+                                                    deleteAccount();
+                                                   
+                                                }
+                                            },
+                                        ],
+                                        {cancelable: false},
+                                    );
+                                    
+                                }}
+                            >
+                            <MaterialCommunityIcons name="delete" size={12} color={stil('text',data.app.theme).color}/>
+                            <Text style={[stil('text',data.app.theme),tw`ml-1 text-xs`]}>Delete Account</Text>
+                        </TouchableOpacity>
+                    ),
                     title: l[data.app.lang].profile,  
                 })}
                 />	
@@ -329,7 +355,34 @@ const Router = () => {
                     },
                     title: l[data.app.lang].faq,  
                 })}
-                />	
+                />
+                <Drawer.Screen name="Harita" component={Harita}
+                               options={{
+                                   drawerItemStyle:{
+                                       display:'none'
+                                   },
+                                   headerTitleStyle: {
+                                       color: 'transparent',
+                                   },
+                                   headerTransparent: true,
+                                   headerTintColor: stil('text',data.app.theme).color,
+                                   headerLeftContainerStyle: {
+                                       backgroundColor: data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
+                                       borderTopRightRadius: 10,
+                                       borderBottomRightRadius: 10,
+                                       marginRight: '50%',
+                                       height:50,
+                                       shadowColor: data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
+                                       shadowOffset: {
+                                           width: 1,
+                                           height: 1,
+                                       },
+                                       shadowOpacity: 0.7,
+                                       shadowRadius: 1,
+                                       elevation: 5,
+                                   },
+                               }}
+                />
             </Drawer.Navigator>
         </NavigationContainer>
 	);
