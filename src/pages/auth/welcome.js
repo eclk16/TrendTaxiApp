@@ -108,7 +108,7 @@ export default function Welcome(){
             setLoading(true);
             axios.defaults.headers.common["Accept"] = "application/json";
             axios.defaults.headers.common["Content-Type"] = "application/json";
-            axios.post('https://trendtaxi.uz/api/login',{phone:userPhone,deviceToken:'deviceToken'})
+            axios.post('https://trendtaxi.uz/api/login',{phone:userPhone,deviceToken:'deviceToken',userType:isDriverRegister ? 'driver' : 'passenger'})
             .then(response => {
                 if(!response.data.data.hata) {
                     dispatch({type:'setAuth',payload:{
@@ -136,7 +136,7 @@ export default function Welcome(){
                         dispatch({type:'isAuth',payload:true});
                     }
                     else{
-                        setStep(5);
+                        setStep(6);
                     }
                 }
                 else{
@@ -206,42 +206,7 @@ export default function Welcome(){
 		]
 	};
 	const [isDriverRegister,setIsDriverRegister] = React.useState(false);
-	const [time,setTime] = React.useState(0);
 
-	useEffect(() => {
-
-		var countDownDate = new Date("Sept 05, 2022 12:00:00").getTime();
-		var x = setInterval(function() {
-			var now = new Date().getTime();
-			var distance = countDownDate - now;
-			var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-			var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-			var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-			var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-			if(data.app.lang == 'uz'){
-				setTime(
-					"Biz hurmatli mijozlarimizga yaxshi xizmat ko'rsatish uchun haydovchilarimizni ro'yxatdan o'tkazishda davom etamiz. "+days + " kun " + hours + " soat "
-					+ minutes + " daq " + seconds + " son "+" so'ng xizmatingizdamiz."
-				);
-			}
-			if(data.app.lang == 'ru'){
-				setTime(
-					"Мы продолжаем регистрировать наших водителей, чтобы предоставлять лучший сервис нашим уважаемым клиентам. Через "+days + " день " + hours + " час "
-					+ minutes + " мин " + seconds + " сек "+" время мы к вашим услугам."
-				);
-			}
-			if(data.app.lang == 'gb'){
-				setTime(
-					"We are continuing to register drivers to provide better service to our server. "+days + " d " + hours + " h "
-					+ minutes + " m " + seconds + " s " + " we are at your service."
-				);
-			}
-
-		}, 1000);
-		return () => {
-			clearInterval(x);
-		}
-	},[]);
     return (
 		<KeyboardAvoidingView
             style={tw`flex-1`}
@@ -250,11 +215,11 @@ export default function Welcome(){
             enabled
         >
 			<StatusBarComponent/>
-			{isDriverRegister ? 
+			{/* {isDriverRegister ? 
 				<>
 					<DriverRegister isRegister={isDriverRegister} setIsDriver={setIsDriverRegister}/>
 				</>
-			:
+			: */}
 				<SafeAreaView style={pt.sav}>
 					<View style={pt.v}>
 						<Image style={pt.bgImage} resizeMode="contain" source={data.app.theme == 'dark' ? require('../../assets/img/uzbekistanBGA.png') : require('../../assets/img/uzbekistanBGR.png')} />
@@ -266,8 +231,9 @@ export default function Welcome(){
 							<MaterialCommunityIcons name={step == 1 ? 'alphabetical-variant' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
 							<MaterialCommunityIcons name={step == 2 ? 'theme-light-dark' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
 							<MaterialCommunityIcons name={step == 3 ? 'security' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
-							<MaterialCommunityIcons name={step == 4 ? 'phone' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
-							<MaterialCommunityIcons name={step == 5 ? 'android-messages' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
+							<MaterialCommunityIcons name={step == 4 ? 'human' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
+							<MaterialCommunityIcons name={step == 5 ? 'phone' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
+							<MaterialCommunityIcons name={step == 6 ? 'android-messages' : 'circle-small'} size={40} color={stil('text',data.app.theme).color}/>
 						</View>
 						<View>
 							{step == 1 &&
@@ -279,7 +245,7 @@ export default function Welcome(){
 												<TouchableOpacity key={index} style={[stil('bg2',data.app.theme),tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`]} onPress={() => setLanguage(item.langCode)} >
 													<View style={[tw`flex-row items-center justify-between `]}>
 														<Image source={item.langFlag} style={[tw`h-8 w-10 rounded-md mr-4`]}/>
-														<Text style={[tw`font-semibold`,stil('text',data.app.theme)]}>{item.langName}</Text>
+														<Text style={[tw``,stil('text',data.app.theme)]}>{item.langName}</Text>
 													</View>
 													<View style={tw`flex-row justify-end items-end`}>
 														{data.app.lang == item.langCode ?
@@ -299,7 +265,7 @@ export default function Welcome(){
 										<TouchableOpacity key={0} style={[stil('bg2',data.app.theme),tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`]} onPress={() => setTheme('light')} >
 											<View style={[tw`flex-row items-center justify-between `]}>
 												<MaterialCommunityIcons name="white-balance-sunny" size={32} color={stil('text',data.app.theme).color}/>
-												<Text style={[tw` font-semibold ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].lightTheme}</Text>
+												<Text style={[tw`  ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].lightTheme}</Text>
 											</View>
 											<View style={tw`flex-row justify-end items-end`}>
 												{data.app.theme == 'light' ?
@@ -310,7 +276,7 @@ export default function Welcome(){
 										<TouchableOpacity key={1} style={[stil('bg2',data.app.theme),tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`]} onPress={() => setTheme('dark')} >
 											<View style={[tw`flex-row items-center justify-between `]}>
 												<MaterialCommunityIcons name="moon-waning-crescent" size={32} color={stil('text',data.app.theme).color}/>
-												<Text style={[tw` font-semibold ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].darkTheme}</Text>
+												<Text style={[tw` ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].darkTheme}</Text>
 											</View>
 											<View style={tw`flex-row justify-end items-end`}>
 												{data.app.theme == 'dark' ?
@@ -361,8 +327,34 @@ export default function Welcome(){
 							}
 							{step == 4 &&
 								<>
+									<Text style={[tw`my-2 text-center`,stil('text',data.app.theme)]}>{l[data.app.lang].temaSec}</Text>
+									<View style={[tw`m-4 flex justify-center rounded-md`]}>
+										<TouchableOpacity key={0} style={[stil('bg2',data.app.theme),tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`]} onPress={() => {
+											setIsDriverRegister(true);
+											setStep(5);
+											}} >
+											<View style={[tw`flex-row items-center justify-between `]}>
+												<MaterialCommunityIcons name="car-key" size={32} color={stil('text',data.app.theme).color}/>
+												<Text style={[tw`  ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].dregister}</Text>
+											</View>
+										</TouchableOpacity>
+										<TouchableOpacity key={1} style={[stil('bg2',data.app.theme),tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`]} onPress={() => {
+											setIsDriverRegister(false);
+											setStep(5);
+											}} >
+											<View style={[tw`flex-row items-center justify-between `]}>
+												<MaterialCommunityIcons name="login" size={32} color={stil('text',data.app.theme).color}/>
+												<Text style={[tw` ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].passengerLogin}</Text>
+											</View>
+										</TouchableOpacity>
+									</View>
+								</>
+							}
+							{step == 5 &&
+								<>
 									<Text style={[tw`my-2 text-center`,stil('text',data.app.theme)]}>{l[data.app.lang].TelefonGir}</Text>
-									<Text style={[tw`my-2 mx-4 text-xs text-center`,stil('text',data.app.theme)]}>{time}</Text>
+									<Text style={[tw`my-2 mx-4 text-xs text-center`,stil('text',data.app.theme)]}>{l[data.app.lang].loginMesaj}</Text>
+								
 									<View style={[stil('bg2',data.app.theme),tw`mx-8 my-4 flex justify-center rounded-md`]}>
 										<View key={0} style={[tw`flex-row items-center m-4 justify-between`]} onPress={() => getLocation()} >
 											<View style={[tw`flex-row items-center justify-between `]}>
@@ -371,7 +363,7 @@ export default function Welcome(){
 													keyboardType='numeric'
 													placeholder="+___ - _________"
 													placeholderTextColor={stil('text',data.app.theme).color}
-													style={[stil('text',data.app.theme),tw`ml-4 text-xl w-full`]}
+													style={[stil('text',data.app.theme),tw`ml-4 w-full`]}
 													value={userPhone ? userPhone : ''}
 													onChangeText={(masked, unmasked) => {
 														setUserPhone(unmasked); 
@@ -383,7 +375,7 @@ export default function Welcome(){
 									</View>
 								</>
 							}
-							{step == 5 &&
+							{step == 6 &&
 								<>
 									<Text style={[tw`my-2 text-center`,stil('text',data.app.theme)]}>{l[data.app.lang].smsGir}</Text>
 									<View style={[stil('bg2',data.app.theme),tw`mx-8 my-4 flex justify-center rounded-md`]}>
@@ -412,7 +404,8 @@ export default function Welcome(){
 							
 							
 							<View style={[tw`flex-row`]}>
-								<TouchableOpacity style={[tw`flex-row items-center px-4 py-2`]} onPress={() => {
+								{step != 1 ?
+								<TouchableOpacity style={[tw`flex-row items-center px-4 py-2  ${step == 4 ? 'w-2/2' : 'w-1/2'}`]} onPress={() => {
 									if(step == 1){
 										setIsDriverRegister(!isDriverRegister);
 									}else{
@@ -420,28 +413,28 @@ export default function Welcome(){
 									}
 									}}>
 									<MaterialCommunityIcons name={step == 1 ? "car-key" : "arrow-left-drop-circle-outline"} size={16} style={[tw`${step == 1 ? 'opacity-80' : ''}`]} color={stil('text',data.app.theme).color} />
-									<Text style={[stil('text',data.app.theme),tw`my-2 ml-2 text-xs ${step == 1 ? 'opacity-80' : ''}`]}>
+									<Text style={[stil('text',data.app.theme),tw`my-2 ml-2  ${step == 1 ? 'opacity-80' : ''}`]}>
 									{step == 1 ? l[data.app.lang].dregister : l[data.app.lang].back}
 
 									</Text>
 								</TouchableOpacity>
-								<TouchableOpacity disabled={step == 4 && userPhone.length<12 ? true : (step == 5 && userPhone.length<6 ? true : false) } style={[tw`flex-row ${step == 4 && userPhone.length<12 ? 'opacity-10' : (step == 5 && userPhone.length<6 ? 'opacity-10' : '')} items-center px-4 py-2 rounded-md`,stil('bg2',data.app.theme)]} onPress={() => {
-									if(step == 4){
-										if(userPhone == '998444444444' || userPhone == '998666666666'){
-											loginFunction();
-										}
+								: null }
+								{step != 4 ?
+								<TouchableOpacity disabled={step == 5 && userPhone.length<12 ? true : (step == 5 && userPhone.length<6 ? true : false) } style={[tw`flex-row ${step == 1 ? 'w-full justify-between' : 'w-1/2 justify-between'} ${step == 4 && userPhone.length<12 ? 'opacity-10' : (step == 5 && userPhone.length<6 ? 'opacity-10' : '')} items-center px-4 py-2 rounded-md`,stil('bg2',data.app.theme)]} onPress={() => {
+									if(step == 5){
 										
+										loginFunction();
 										
 									}
-									else if(step == 5){
+									else if(step == 6){
 										smsFunction();
 									}
 									else{
 										setStep(step + 1);
 									}
 									}}>
-									<Text style={[stil('text',data.app.theme),tw`my-2 mr-2  text-xs`]}>
-										{step == 4 ? l[data.app.lang].login : (step == 5 ? l[data.app.lang].check : (step == 1 ? l[data.app.lang].login : l[data.app.lang].next))}
+									<Text style={[stil('text',data.app.theme),tw`my-2 mr-2  `]}>
+										{step == 5 ? l[data.app.lang].login : (step == 6 ? l[data.app.lang].check : (step == 1 ? l[data.app.lang].next : l[data.app.lang].next))}
 									</Text>
 									{loading ? 
 										<ActivityIndicator size={18} color={stil('text',data.app.theme).color}/>
@@ -449,11 +442,12 @@ export default function Welcome(){
 										<MaterialCommunityIcons name={step == 4 ? 'account-circle-outline' : ( step == 5 ? 'check-circle-outline' : 'arrow-right-drop-circle-outline')} size={24} color={stil('text',data.app.theme).color} />
 									}
 								</TouchableOpacity>
+								: null}
 							</View>
 						</View>
 					</View>
 				</SafeAreaView>
-			}
+	
 		</KeyboardAvoidingView>
     )
 }

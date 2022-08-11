@@ -9,6 +9,8 @@ import Router from './src/router';
 import Welcome from './src/pages/auth/welcome';
 import Loading from './src/components/global/loading';
 import axios from 'axios';
+import TimerPage from './src/pages/auth/timer';
+import DriverRegister from './src/pages/auth/driverRegister';
 
 
 LogBox.ignoreAllLogs();
@@ -89,7 +91,15 @@ const App = () => {
                 :
                 <>
                     {data.auth.isAuth ?
-                        <Router/>
+                        // <Router/>
+                        <>
+                        {console.log('GİRİŞÇİ ==',data.auth.user)}
+                            {data.auth.user.passenger.status == 1 ?
+                                <TimerPage/>
+                                :
+                                <DriverRegister/>
+                            }
+                        </>
                         :
                         <Welcome />
                     }

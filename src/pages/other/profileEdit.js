@@ -26,12 +26,12 @@ export default function ProfileEdit(){
 
     useEffect(() => {
         getUserData(data.auth.userId,data.auth.userToken);
-        setUserName(data.auth.user.passenger.first_name);
-        setUserSurname(data.auth.user.passenger.last_name);
-        setUserPhone(data.auth.user.passenger.phone);
-        if(data.auth.user.passenger.image) setUserImage({uri:'https://trendtaxi.uz'+data.auth.user.passenger.image });
-        setUserEmail(data.auth.user.passenger.email);
-        setUserAddress(data.auth.user.passenger.contact_address);
+        setUserName(data.auth.user.passenger?.first_name);
+        setUserSurname(data.auth.user.passenger?.last_name);
+        setUserPhone(data.auth.user.passenger?.phone);
+        if(data.auth.user.passenger?.image) setUserImage({uri:'https://trendtaxi.uz'+data.auth.user.passenger?.image });
+        setUserEmail(data.auth.user.passenger?.email);
+        setUserAddress(data.auth.user.passenger?.contact_address);
     }, []);
 
     const getPhotoWithPhone = () => {

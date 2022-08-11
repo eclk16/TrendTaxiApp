@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView,DrawerItemList,DrawerItem  } from '@react-navigation/drawer';
 import { View,Text,TouchableOpacity,Image,Alert } from 'react-native';
@@ -20,6 +20,7 @@ import Reports from './pages/other/reports';
 import StatusBarComponent from './components/global/status';
 import ProfileEdit from './pages/other/profileEdit';
 import axios from 'axios';
+import TimerPage from './pages/auth/timer';
 MaterialCommunityIcons.loadFont();
 const Drawer = createDrawerNavigator();
 
@@ -49,10 +50,12 @@ const Router = () => {
     
     const dispatch = useDispatch();
     const data = useSelector(state => state);
+
+    
 	return (
         <NavigationContainer>
             <StatusBarComponent/>
-            <Drawer.Navigator initialRouteName="Home"
+            <Drawer.Navigator initialRouteName="Timer"
                 screenOptions={{
                     drawerStyle: {
                         backgroundColor:stil('bg',data.app.theme).backgroundColor,
@@ -213,7 +216,12 @@ const Router = () => {
                     )
                 }}
             >
-
+                <Drawer.Screen name="Timer" component={TimerPage} options={{
+                    drawerItemStyle:{
+                        display:'none'
+                    },
+                    headerShown: false
+                }}/>
                 {data.auth.userType == 'passenger' ?
                     <Drawer.Screen name="Home" component={data.trip.isTrip ? Harita : Passenger}
                         options={{
