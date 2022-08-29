@@ -1,6 +1,6 @@
 import React,{useEffect} from 'react';
 import { useDispatch,useSelector } from 'react-redux';
-import { setValue,getValue } from '../../async';
+import { setValue,removeValue } from '../../async';
 import { stil } from '../../utils';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -41,6 +41,7 @@ export default function DriverRegister({isDriver,setIsDriver}){
 	}
 
 	useEffect(() => {
+        getUserData();
 		BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
 		return () => {
 			BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
@@ -168,7 +169,7 @@ export default function DriverRegister({isDriver,setIsDriver}){
 
     const [firstName,setFirstName] = React.useState('');
     const [lastName,setLastName] = React.useState('');
-    const [phone,setPhone] = React.useState('');
+    const [phone,setPhone] = React.useState(data.auth.user.phone);
     const [plaka,setPlaka] = React.useState('');
     const [gender,setGender] = React.useState('male');
 
@@ -188,8 +189,8 @@ export default function DriverRegister({isDriver,setIsDriver}){
         axios.defaults.headers.common["Accept"] = "application/json";
         axios.defaults.headers.common["Content-Type"] = "application/json";
         axios.defaults.headers.common["Authorization"] = "Bearer "+data.auth.userToken;
-
         axios.post('https://trendtaxi.uz/api/driverApply',{
+            userId:data.auth.userId,
             name:firstName,
             surname:lastName,
             phone:phone,
@@ -200,13 +201,12 @@ export default function DriverRegister({isDriver,setIsDriver}){
             ehliyet_image:uploadDriverLicenseImage,
             arac_image:uploadDriverCarImage,
             arac_image2:uploadDriverCarImage2,
-            arac_image3:uploadDriverCarImage3,
-            arac_image4:uploadDriverCarImage4,
-            carCertificate:uploadCarCertificateImage,
+            carCertificate:uploadCarCertificateImage
         })
         .then(response => {
             if(!response.data.data.hata){
                 setModalOpen(true);
+                getUserData();
                 // Alert.alert(
                 //     l[data.app.lang].balindi,
                 //     l[data.app.lang].sonucSms,
@@ -238,15 +238,38 @@ export default function DriverRegister({isDriver,setIsDriver}){
                     {cancelable: false},
                 );
             }
-            
-
         })
         .catch(error => {
-            console.log(error);
+            console.log(error,'a');
         });
             
     };
     const [modalOpen,setModalOpen] = React.useState(false);
+
+    const getUserData = (userId = data.auth.userId,token = data.auth.userToken) => {
+
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Content-Type"] = "application/json";
+        axios.defaults.headers.common["Authorization"] = "Bearer "+token;
+        axios.get('https://trendtaxi.uz/api/getUserData/'+userId,config)
+        .then(response => {
+            if(!response.data.data.hata) {
+                let json = {
+                    userId:response.data.data.id, 
+                    userToken:data.auth.userToken,
+                    userType:response.data.data.user_type,
+                    user:response.data.data,
+                    currentTheme:data.app.theme,
+                    lang:data.app.lang,
+                };
+                json = JSON.stringify(json);
+                // setValue('userData',json);
+                console.log(response.data.data);
+                dispatch({type:'setUser',payload:response.data.data});
+            }
+        });
+    }
     return (
         <>
             <SafeAreaView style={pt.sav}>
@@ -258,11 +281,30 @@ export default function DriverRegister({isDriver,setIsDriver}){
                 </View>
                 <View style={[tw`flex justify-end`]}>
                 <TouchableOpacity style={[tw`flex-row items-center px-4 py-2`]} onPress={() => {
-                                setIsDriver(false);
+                                Alert.alert(
+                                    l[data.app.lang].logout,
+                                    l[data.app.lang].areyouokayLogout,
+                                    [
+                                        {
+                                            text: l[data.app.lang].cancel,
+                                            onPress: () => console.log('Cancel Pressed'),
+                                            style: 'cancel',
+                                        },
+                                        {
+                                            text: l[data.app.lang].confirm, 
+                                            onPress: () => {
+                                                dispatch({type: 'authRemove'});
+                                                dispatch({type:'isLogin',payload:false});
+                                                removeValue('userData');
+                                            }
+                                        },
+                                    ],
+                                    {cancelable: false},
+                                );
                                 }}>
                                 <MaterialCommunityIcons name="chevron-left" size={24} color={stil('text',data.app.theme).color} />
                                 <Text style={[stil('text',data.app.theme),tw`my-2 text-xs`]}>
-                                    {l[data.app.lang].login}
+                                    {l[data.app.lang].logout}
 
                                 </Text>
                             </TouchableOpacity>
@@ -465,7 +507,8 @@ export default function DriverRegister({isDriver,setIsDriver}){
                         <TouchableOpacity
                             style={[tw`flex-row items-center justify-center p-4 rounded-md w-full`, {backgroundColor: data.app.theme == 'dark' ? '#255382' : '#f1f1f1'}]}
                             onPress={() => {
-                                setIsDriver(false);
+                                // setIsDriver(false);
+                                getUserData();
                             }}
                         >
                             <MaterialCommunityIcons name="check" size={20} color={stil('text', data.app.theme).color}/>

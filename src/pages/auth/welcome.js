@@ -9,6 +9,8 @@ import MaskInput from 'react-native-mask-input';
 import axios from 'axios';
 import l from '../../languages.json';
 import {BackHandler, Linking, ScrollView, Alert} from 'react-native';
+import { getUniqueId, getManufacturer } from 'react-native-device-info';
+
 
 MaterialCommunityIcons.loadFont();
 
@@ -108,7 +110,7 @@ export default function Welcome(){
             setLoading(true);
             axios.defaults.headers.common["Accept"] = "application/json";
             axios.defaults.headers.common["Content-Type"] = "application/json";
-            axios.post('https://trendtaxi.uz/api/login',{phone:userPhone,deviceToken:'deviceToken',userType:isDriverRegister ? 'driver' : 'passenger'})
+            axios.post('https://trendtaxi.uz/api/login',{phone:userPhone,deviceToken:getUniqueId(),userType:isDriverRegister ? 'driver' : 'passenger'})
             .then(response => {
                 if(!response.data.data.hata) {
                     dispatch({type:'setAuth',payload:{

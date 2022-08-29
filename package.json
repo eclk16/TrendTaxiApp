@@ -25,6 +25,7 @@
     "pusher-js": "^7.0.6",
     "react": "^17.0.2",
     "react-native": "0.68.2",
+    "react-native-dropdown-picker":"5.4.2",
     "react-native-device-info": "^8.5.0",
     "react-native-gesture-handler": "^2.5.0",
     "react-native-gradle-plugin": "^0.70.0",

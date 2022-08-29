@@ -4,13 +4,13 @@ import { Provider,useDispatch,useSelector } from 'react-redux';
 import logger from 'redux-logger';
 import {createStore,applyMiddleware} from 'redux';
 import rootReducer from './src/reducers/index';
-import { getValue } from './src/async';
 import Router from './src/router';
 import Welcome from './src/pages/auth/welcome';
 import Loading from './src/components/global/loading';
 import axios from 'axios';
 import TimerPage from './src/pages/auth/timer';
 import DriverRegister from './src/pages/auth/driverRegister';
+import { setValue,getValue } from './src/async';
 
 
 LogBox.ignoreAllLogs();
@@ -75,29 +75,52 @@ const App = () => {
                 dispatch({type:'isAuth',payload:true});
                 setLoading(false);
                 getTrip(JSON.parse(res).userId,JSON.parse(res).userToken,JSON.parse(res).userType);
+                getUserData(JSON.parse(res).userId,JSON.parse(res).userToken);
             }
             else{
                 dispatch({type: 'authRemove'});
                 dispatch({type: 'isAuth',payload:false});
                 setLoading(false);
+            } 
+        });
+    }, []); 
+
+    const getUserData = (userId,token) => {
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        axios.defaults.headers.common["Accept"] = "application/json";
+        axios.defaults.headers.common["Content-Type"] = "application/json";
+        axios.defaults.headers.common["Authorization"] = "Bearer "+token;
+        axios.get('https://trendtaxi.uz/api/getUserData/'+userId,config)
+        .then(response => {
+            if(!response.data.data.hata) {
+                let json = {
+                    userId:response.data.data.id, 
+                    userToken:data.auth.userToken,
+                    userType:response.data.data.user_type,
+                    user:response.data.data,
+                    currentTheme:data.app.theme,
+                    lang:data.app.lang,
+                };
+                json = JSON.stringify(json);
+                // setValue('userData',json);
+                dispatch({type:'setUser',payload:response.data.data});
             }
         });
-    }, []);
+    }
 
 	return (
         <>
             {loading ?
                 <Loading />
-                :
+                : 
                 <>
                     {data.auth.isAuth ?
-                        // <Router/>
+                        // 
                         <>
-                        {console.log('GİRİŞÇİ ==',data.auth.user)}
-                            {data.auth.user.passenger.status == 1 ?
-                                <TimerPage/>
-                                :
+                            {data.auth.user.passenger.status == 0 ?
                                 <DriverRegister/>
+                                :
+                                <Router/>
                             }
                         </>
                         :

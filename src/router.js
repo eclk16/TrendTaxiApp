@@ -94,7 +94,8 @@ const Router = () => {
                             <DrawerItemList {...props} />
                             {data.auth.userType == 'passenger' ?
                                 <TouchableOpacity style={[tw` rounded`,{borderColor:stil('text',data.app.theme).color}]} onPress={() => {
-                                        props.navigation.navigate('Home');
+                                        // props.navigation.navigate('Home');
+                                        props.navigation.navigate('Timer');
                                     }}>
                                     <View style={[tw`w-full`]}>
                                         <View style={[tw` py-2 flex-row items-center`,{paddingLeft:20}]}>
@@ -107,7 +108,8 @@ const Router = () => {
                                 </TouchableOpacity>
                             :
                                 <TouchableOpacity style={[tw` rounded`,{borderColor:stil('text',data.app.theme).color}]} onPress={() => {
-                                        props.navigation.navigate('HomeDriverPage');
+                                        // props.navigation.navigate('HomeDriverPage');
+                                        props.navigation.navigate('Timer');
                                     }}>
                                     <View style={[tw`w-full`]}>
                                         <View style={[tw` py-2 flex-row items-center`,{paddingLeft:20}]}>
@@ -120,7 +122,8 @@ const Router = () => {
                                 </TouchableOpacity>
                             }
                             <TouchableOpacity style={[tw` rounded`,{borderColor:stil('text',data.app.theme).color}]} onPress={() => {
-                                    props.navigation.navigate('Trips');
+                                    // props.navigation.navigate('Trips');
+                                    props.navigation.navigate('Timer');
                                 }}>
                                 <View style={[tw`w-full`]}>
                                     <View style={[tw` py-2 flex-row items-center`,{paddingLeft:20}]}>
@@ -145,7 +148,8 @@ const Router = () => {
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity style={[tw` rounded`,{borderColor:stil('text',data.app.theme).color}]} onPress={() => {
-                                    props.navigation.navigate('Reports');
+                                    // props.navigation.navigate('Reports');
+                                    props.navigation.navigate('Timer');
                                 }}>
                                 <View style={[tw`w-full`]}>
                                     <View style={[tw` py-2 flex-row items-center`,{paddingLeft:20}]}>
@@ -220,7 +224,8 @@ const Router = () => {
                     drawerItemStyle:{
                         display:'none'
                     },
-                    headerShown: false
+                    title: '',
+                    // headerShown: false
                 }}/>
                 {data.auth.userType == 'passenger' ?
                     <Drawer.Screen name="Home" component={data.trip.isTrip ? Harita : Passenger}
