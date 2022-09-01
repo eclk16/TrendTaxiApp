@@ -5,6 +5,7 @@ platform :ios, '11.0'
 install! 'cocoapods', :deterministic_uuids => false
 
 target 'TrendTaxi' do
+
   config = use_native_modules!
 
   # Flags change depending on the env values.

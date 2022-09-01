@@ -24,6 +24,7 @@
 		4114E768DCCA49DB828A93FE /* Roboto-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 501FD77235334F9590C765F6 /* Roboto-LightItalic.ttf */; };
 		4356307A6F334F77AD07515F /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DA4AD34AB5CA4B6485BB32E9 /* FontAwesome5_Regular.ttf */; };
 		43FEA8620F5A491AA0DDD1A8 /* Poppins-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5EF0FA847A0E44F7805C222D /* Poppins-SemiBoldItalic.ttf */; };
+		441D5EC82B747D9B7A645410 /* libPods-TrendTaxi-TrendTaxiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0EB0841F0ECB9620BB18AF1 /* libPods-TrendTaxi-TrendTaxiTests.a */; };
 		442ADF45C2C24E98A16A51C8 /* Poppins-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D8ABC00A69C44F95824A6CF8 /* Poppins-LightItalic.ttf */; };
 		44EC76CED9374757AF5D3304 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A40E24E5261D42588A228467 /* Roboto-Bold.ttf */; };
 		49AA6D7F8DB647559D80E23D /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F3687FC756E84E0D9A883584 /* Roboto-Light.ttf */; };
@@ -42,8 +43,7 @@
 		A9B361437AB04098925E3789 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 13CB1F39D78B431899846B5A /* Poppins-SemiBold.ttf */; };
 		AA537094929F44D2B30FCF4C /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B89E28E9B60C496FA90792C6 /* EvilIcons.ttf */; };
 		AEF46F4FD14140AFBBF042A2 /* Poppins-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 191C2FD0ECC2494797572C12 /* Poppins-BlackItalic.ttf */; };
-		B675B5AEF712052D1503C5B6 /* libPods-TrendTaxi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81D5CCBEB4ADEFBB21948389 /* libPods-TrendTaxi.a */; };
-		BB03C00F9D41FD1D1CDD5C31 /* libPods-TrendTaxi-TrendTaxiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 51FA242B40ADF72F29CCAC16 /* libPods-TrendTaxi-TrendTaxiTests.a */; };
+		BB473AA2AF0731DE9118D8BF /* libPods-TrendTaxi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2E574664D721A02335D1B6B /* libPods-TrendTaxi.a */; };
 		BD9B0E2FB6AF40A1AE516859 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 41B4917105FD4781820C4455 /* Octicons.ttf */; };
 		C8E18585143640A1A825AB89 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8A5033B441C14B4CB5A89C78 /* Feather.ttf */; };
 		C933FE7317014D61B3FA5BB7 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 698483CF3EC64A88B8AC51AA /* Entypo.ttf */; };
@@ -86,9 +86,9 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = TrendTaxi/main.m; sourceTree = "<group>"; };
 		13CB1F39D78B431899846B5A /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../src/assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
 		16227611B02A4167BDD78B72 /* Roboto-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Italic.ttf"; path = "../src/assets/fonts/Roboto-Italic.ttf"; sourceTree = "<group>"; };
-		16B4517B8A53F17ABAC9F03C /* Pods-TrendTaxi-TrendTaxiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi-TrendTaxiTests.release.xcconfig"; path = "Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests.release.xcconfig"; sourceTree = "<group>"; };
 		1896FE747E76407D8F225026 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../src/assets/fonts/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		191C2FD0ECC2494797572C12 /* Poppins-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BlackItalic.ttf"; path = "../src/assets/fonts/Poppins-BlackItalic.ttf"; sourceTree = "<group>"; };
+		3813BA043305CFEF899BC8B4 /* Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig"; path = "Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3D9B64CB971F4C488E38419A /* Roboto-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Thin.ttf"; path = "../src/assets/fonts/Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		41B4917105FD4781820C4455 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = ../src/assets/fonts/Octicons.ttf; sourceTree = "<group>"; };
 		4369A9C8126048F08082989E /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = ../src/assets/fonts/FontAwesome.ttf; sourceTree = "<group>"; };
@@ -96,25 +96,23 @@
 		45D55F71A1934DE79272C846 /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLight.ttf"; path = "../src/assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
 		4DF05F62E62C4494A6E2329B /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../src/assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
 		501FD77235334F9590C765F6 /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-LightItalic.ttf"; path = "../src/assets/fonts/Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
-		51FA242B40ADF72F29CCAC16 /* libPods-TrendTaxi-TrendTaxiTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TrendTaxi-TrendTaxiTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ECAC89CB635411CB7B5C9E4 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = ../src/assets/fonts/MaterialCommunityIcons.ttf; sourceTree = "<group>"; };
 		5EF0FA847A0E44F7805C222D /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		698483CF3EC64A88B8AC51AA /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = ../src/assets/fonts/Entypo.ttf; sourceTree = "<group>"; };
-		69894961DE8BFD845AAE850C /* Pods-TrendTaxi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi.debug.xcconfig"; path = "Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi.debug.xcconfig"; sourceTree = "<group>"; };
 		6C45A0C1F0874D99A5774C7E /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = ../src/assets/fonts/Fontisto.ttf; sourceTree = "<group>"; };
+		6D3A621CEC3798A256ACEA43 /* Pods-TrendTaxi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi.release.xcconfig"; path = "Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi.release.xcconfig"; sourceTree = "<group>"; };
 		7B3EA33C1D5A4B6CA8B64EFE /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../src/assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
 		7ED1CB16738A459481FA7048 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = ../src/assets/fonts/SimpleLineIcons.ttf; sourceTree = "<group>"; };
 		7FCDC414E7FB4F40A328F9E2 /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../src/assets/fonts/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = TrendTaxi/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		81D5CCBEB4ADEFBB21948389 /* libPods-TrendTaxi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TrendTaxi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		84D2CB08B20042B396527626 /* Poppins-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Thin.ttf"; path = "../src/assets/fonts/Poppins-Thin.ttf"; sourceTree = "<group>"; };
 		85725AFAD6BC409783EC0CB7 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Medium.ttf"; path = "../src/assets/fonts/Roboto-Medium.ttf"; sourceTree = "<group>"; };
 		86B19981FCF54F43A9624A1B /* Poppins-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BoldItalic.ttf"; path = "../src/assets/fonts/Poppins-BoldItalic.ttf"; sourceTree = "<group>"; };
 		8A5033B441C14B4CB5A89C78 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = ../src/assets/fonts/Feather.ttf; sourceTree = "<group>"; };
 		8AB7FBFDF20B4B54946DDDEB /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BlackItalic.ttf"; path = "../src/assets/fonts/Roboto-BlackItalic.ttf"; sourceTree = "<group>"; };
 		8AFFD04D250F44D3A05EA6A3 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = ../src/assets/fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
+		902C3194352E89A6F8A08282 /* Pods-TrendTaxi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi.debug.xcconfig"; path = "Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi.debug.xcconfig"; sourceTree = "<group>"; };
 		942B2FB97A17408D9460DCA9 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../src/assets/fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; };
-		97CAE9ABD98918B8A42A3B8D /* Pods-TrendTaxi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi.release.xcconfig"; path = "Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi.release.xcconfig"; sourceTree = "<group>"; };
 		9969E5FB2864956900AF23D5 /* Poppins-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Poppins-Black.ttf"; path = "../src/assets/fonts/Poppins-Black.ttf"; sourceTree = "<group>"; };
 		9969E5FE286495D500AF23D5 /* Poppins-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Black.ttf"; sourceTree = "<group>"; };
 		9CBD4A51703F47568A66D405 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = ../src/assets/fonts/Ionicons.ttf; sourceTree = "<group>"; };
@@ -123,17 +121,19 @@
 		A7F57B6AD42D4A4DA49B993C /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = ../src/assets/fonts/Foundation.ttf; sourceTree = "<group>"; };
 		ADBAC4C7C19D44B9B4A446A3 /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../src/assets/fonts/Poppins-Italic.ttf"; sourceTree = "<group>"; };
 		B03E4BF2B76D4C9BB277B9DA /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ThinItalic.ttf"; path = "../src/assets/fonts/Poppins-ThinItalic.ttf"; sourceTree = "<group>"; };
-		B62EE37A1E262FAED4919523 /* Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig"; path = "Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B89E28E9B60C496FA90792C6 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = ../src/assets/fonts/EvilIcons.ttf; sourceTree = "<group>"; };
 		BCA04E6D1DC347C5A2C4BD24 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../src/assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		BDC94EEF759B46948221BFD4 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BoldItalic.ttf"; path = "../src/assets/fonts/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
 		C28FCCA9EC6340ECB437E301 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = ../src/assets/fonts/FontAwesome5_Brands.ttf; sourceTree = "<group>"; };
 		CC282B0EA20846FB9660A4DA /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		D0EB0841F0ECB9620BB18AF1 /* libPods-TrendTaxi-TrendTaxiTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TrendTaxi-TrendTaxiTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8ABC00A69C44F95824A6CF8 /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../src/assets/fonts/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
 		D9AA112160EF41D294D193B7 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../src/assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		DA4AD34AB5CA4B6485BB32E9 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = ../src/assets/fonts/FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
 		DA6475DB1F4B4AB787097641 /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-MediumItalic.ttf"; path = "../src/assets/fonts/Roboto-MediumItalic.ttf"; sourceTree = "<group>"; };
+		E206E4413A3644B4D912BABC /* Pods-TrendTaxi-TrendTaxiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrendTaxi-TrendTaxiTests.release.xcconfig"; path = "Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F2E574664D721A02335D1B6B /* libPods-TrendTaxi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TrendTaxi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3687FC756E84E0D9A883584 /* Roboto-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Light.ttf"; path = "../src/assets/fonts/Roboto-Light.ttf"; sourceTree = "<group>"; };
 		F4AB67D1EBD847F0938741D4 /* Roboto-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Black.ttf"; path = "../src/assets/fonts/Roboto-Black.ttf"; sourceTree = "<group>"; };
 		F85C02C887044ADA8F3708FE /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = ../src/assets/fonts/AntDesign.ttf; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB03C00F9D41FD1D1CDD5C31 /* libPods-TrendTaxi-TrendTaxiTests.a in Frameworks */,
+				441D5EC82B747D9B7A645410 /* libPods-TrendTaxi-TrendTaxiTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,7 +152,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B675B5AEF712052D1503C5B6 /* libPods-TrendTaxi.a in Frameworks */,
+				BB473AA2AF0731DE9118D8BF /* libPods-TrendTaxi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,8 +247,8 @@
 			children = (
 				9969E5FB2864956900AF23D5 /* Poppins-Black.ttf */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				81D5CCBEB4ADEFBB21948389 /* libPods-TrendTaxi.a */,
-				51FA242B40ADF72F29CCAC16 /* libPods-TrendTaxi-TrendTaxiTests.a */,
+				F2E574664D721A02335D1B6B /* libPods-TrendTaxi.a */,
+				D0EB0841F0ECB9620BB18AF1 /* libPods-TrendTaxi-TrendTaxiTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -288,10 +288,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				69894961DE8BFD845AAE850C /* Pods-TrendTaxi.debug.xcconfig */,
-				97CAE9ABD98918B8A42A3B8D /* Pods-TrendTaxi.release.xcconfig */,
-				B62EE37A1E262FAED4919523 /* Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig */,
-				16B4517B8A53F17ABAC9F03C /* Pods-TrendTaxi-TrendTaxiTests.release.xcconfig */,
+				902C3194352E89A6F8A08282 /* Pods-TrendTaxi.debug.xcconfig */,
+				6D3A621CEC3798A256ACEA43 /* Pods-TrendTaxi.release.xcconfig */,
+				3813BA043305CFEF899BC8B4 /* Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig */,
+				E206E4413A3644B4D912BABC /* Pods-TrendTaxi-TrendTaxiTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -303,12 +303,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "TrendTaxiTests" */;
 			buildPhases = (
-				1CF3B556885638E26CA8558A /* [CP] Check Pods Manifest.lock */,
+				78BB42E757C06B7D41E62AEF /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				BF766FE99EEE80DB5E290468 /* [CP] Embed Pods Frameworks */,
-				8EC9F05120CD64874175C312 /* [CP] Copy Pods Resources */,
+				229ED94926146B93497FF1CD /* [CP] Embed Pods Frameworks */,
+				5D5AFD96BFD05DFBEEC777AE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -324,14 +324,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "TrendTaxi" */;
 			buildPhases = (
-				93B706885AD4315D63064EF6 /* [CP] Check Pods Manifest.lock */,
+				98DC0279AFE16413525D4DD8 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				E127DD78233FDA8B96338AB2 /* [CP] Embed Pods Frameworks */,
-				9F8A059C96D02B058540A02D /* [CP] Copy Pods Resources */,
+				5BE90DB860DC3F7398A721B8 /* [CP] Embed Pods Frameworks */,
+				820620E69DF2289DB4006E5A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -447,7 +447,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -458,8 +458,60 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			showEnvVarsInLog = 0;
 		};
-		1CF3B556885638E26CA8558A /* [CP] Check Pods Manifest.lock */ = {
+		229ED94926146B93497FF1CD /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5BE90DB860DC3F7398A721B8 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5D5AFD96BFD05DFBEEC777AE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		78BB42E757C06B7D41E62AEF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -481,24 +533,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8EC9F05120CD64874175C312 /* [CP] Copy Pods Resources */ = {
+		820620E69DF2289DB4006E5A /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		93B706885AD4315D63064EF6 /* [CP] Check Pods Manifest.lock */ = {
+		98DC0279AFE16413525D4DD8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -518,57 +570,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9F8A059C96D02B058540A02D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BF766FE99EEE80DB5E290468 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi-TrendTaxiTests/Pods-TrendTaxi-TrendTaxiTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E127DD78233FDA8B96338AB2 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -623,7 +624,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B62EE37A1E262FAED4919523 /* Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig */;
+			baseConfigurationReference = 3813BA043305CFEF899BC8B4 /* Pods-TrendTaxi-TrendTaxiTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
@@ -654,7 +655,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 16B4517B8A53F17ABAC9F03C /* Pods-TrendTaxi-TrendTaxiTests.release.xcconfig */;
+			baseConfigurationReference = E206E4413A3644B4D912BABC /* Pods-TrendTaxi-TrendTaxiTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
@@ -681,11 +682,11 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 69894961DE8BFD845AAE850C /* Pods-TrendTaxi.debug.xcconfig */;
+			baseConfigurationReference = 902C3194352E89A6F8A08282 /* Pods-TrendTaxi.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_TEAM = 59RU5858GL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TrendTaxi/Info.plist;
@@ -693,7 +694,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -710,18 +711,18 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97CAE9ABD98918B8A42A3B8D /* Pods-TrendTaxi.release.xcconfig */;
+			baseConfigurationReference = 6D3A621CEC3798A256ACEA43 /* Pods-TrendTaxi.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_TEAM = 59RU5858GL;
 				INFOPLIST_FILE = TrendTaxi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

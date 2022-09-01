@@ -29,6 +29,7 @@ export default function Welcome(){
 	const [userPhone,setUserPhone] = React.useState('');
 	const [userSms,setUserSms] = React.useState('');
 	const [loading,setLoading] = React.useState(false);
+	const [wusertype,SetWUserType] = React.useState('passenger');
 
 
 
@@ -105,13 +106,18 @@ export default function Welcome(){
 		getCurrentLocation();
 	}
 
+	
+
+
+
 	const loginFunction = () => {
         if(userPhone.length == 12) {
             setLoading(true);
             axios.defaults.headers.common["Accept"] = "application/json";
             axios.defaults.headers.common["Content-Type"] = "application/json";
-            axios.post('https://trendtaxi.uz/api/login',{phone:userPhone,deviceToken:getUniqueId(),userType:isDriverRegister ? 'driver' : 'passenger'})
+            axios.post('http://92.63.206.165/api/login',{phone:userPhone,deviceToken:getUniqueId(),userType:wusertype})
             .then(response => {
+
                 if(!response.data.data.hata) {
                     dispatch({type:'setAuth',payload:{
                         userId:response.data.data.id,
@@ -142,7 +148,8 @@ export default function Welcome(){
                     }
                 }
                 else{
-                    alert(err[data.app.lang]);
+
+                    alert(response.data.message[data.app.lang]);
                 }
                 setLoading(false);
             })
@@ -157,7 +164,7 @@ export default function Welcome(){
         setLoading(true);
         axios.defaults.headers.common["Accept"] = "application/json";
         axios.defaults.headers.common["Content-Type"] = "application/json";
-        axios.post('https://trendtaxi.uz/api/SmsCheck',{smsCode:userSms,id:data.auth.userId})
+        axios.post('http://92.63.206.165/api/SmsCheck',{smsCode:userSms,id:data.auth.userId})
         .then(response => {
             if(!response.data.data.hata) {
                 let json = {
@@ -342,6 +349,17 @@ export default function Welcome(){
 										</TouchableOpacity>
 										<TouchableOpacity key={1} style={[stil('bg2',data.app.theme),tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`]} onPress={() => {
 											setIsDriverRegister(false);
+											SetWUserType('driver');
+											setStep(5);
+											}} >
+											<View style={[tw`flex-row items-center justify-between `]}>
+												<MaterialCommunityIcons name="login" size={32} color={stil('text',data.app.theme).color}/>
+												<Text style={[tw` ml-4`,stil('text',data.app.theme)]}>{l[data.app.lang].driverLogin}</Text>
+											</View>
+										</TouchableOpacity>
+										<TouchableOpacity key={2} style={[stil('bg2',data.app.theme),tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`]} onPress={() => {
+											setIsDriverRegister(false);
+											SetWUserType('passenger');
 											setStep(5);
 											}} >
 											<View style={[tw`flex-row items-center justify-between `]}>
