@@ -19,7 +19,6 @@ target 'TrendTaxi' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
 
   target 'TrendTaxiTests' do

@@ -187,7 +187,7 @@ export default function DriverRegister({isDriver, setIsDriver}) {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + data.auth.userToken;
     axios
-      .post('http://92.63.206.165/api/driverApply', {
+      .post('https://trendtaxi.uz/api/driverApply', {
         userId: data.auth.userId,
         name: firstName,
         surname: lastName,
@@ -244,7 +244,7 @@ export default function DriverRegister({isDriver, setIsDriver}) {
     axios.defaults.headers.common['Accept'] = 'application/json';
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-    axios.get('http://92.63.206.165/api/getUserData/' + userId, config).then((response) => {
+    axios.get('https://trendtaxi.uz/api/getUserData/' + userId, config).then((response) => {
       if (!response.data.data.hata) {
         let json = {
           userId: response.data.data.id,
