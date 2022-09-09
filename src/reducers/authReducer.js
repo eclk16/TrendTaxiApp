@@ -1,31 +1,46 @@
 const INITIAL_STATE = {
-    isAuth:false,
-    userId:null,
-    userToken:null,
-    userType:null,
-    user:{}
+    isAuth: false,
+    userId: null,
+    userToken: null,
+    userType: null,
+    user: {},
 };
 const authReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case "isAuth":
+        case 'isAuth':
             return {
                 ...state,
-                isAuth:action.payload
+                isAuth: action.payload,
             };
-        case "setAuth":
+        case 'setAuth':
             return action.payload;
-        case "setUser":
+        case 'setUser':
             return {
                 ...state,
-                user:action.payload
-            }
-        case "authRemove":
+                user: action.payload,
+            };
+        case 'setId':
             return {
-                isAuth:false,
-                userId:null,
-                userToken:null,
-                userType:null,
-                user:{}
+                ...state,
+                userId: action.payload,
+            };
+        case 'setToken':
+            return {
+                ...state,
+                userToken: action.payload,
+            };
+        case 'setType':
+            return {
+                ...state,
+                userType: action.payload,
+            };
+        case 'authRemove':
+            return {
+                isAuth: false,
+                userId: null,
+                userToken: null,
+                userType: null,
+                user: {},
             };
         default:
             return state;

@@ -19,24 +19,24 @@ import {launchImageLibrary} from 'react-native-image-picker';
 MaterialCommunityIcons.loadFont();
 import axios from 'axios';
 import StatusBarComponent from '../../components/global/status';
+import config from '../../app.json';
+import {apiPost} from '../../axios';
+import {getUniqueId} from 'react-native-device-info';
 
 export default function ProfileEdit() {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     const [userName, setUserName] = React.useState(null);
-    const [userSurname, setUserSurname] = React.useState(null);
     const [userPhone, setUserPhone] = React.useState(null);
-    const [userEmail, setUserEmail] = React.useState(null);
     const [uploadedImage, setUploadedImage] = React.useState(null);
     const [userImage, setUserImage] = React.useState(null);
 
     useEffect(() => {
-        setUserName(data.auth.user.name);
-        setUserPhone(data.auth.user.phone);
-        if (data.auth.user.image)
-            setUserImage({uri: 'http://92.63.206.165' + data.auth.user.image});
-        setUserEmail(data.auth.user.email);
+        setUserName(data.auth.user.user_name);
+        setUserPhone(data.auth.user.user_phone);
+        if (data.auth.user.user_data.user_image)
+            setUserImage({uri: config.imageBaseUrl + data.auth.user.user_data.user_image});
     }, []);
 
     const getPhotoWithPhone = () => {
@@ -65,55 +65,22 @@ export default function ProfileEdit() {
         });
     };
 
-    const getUserData = (userId, token) => {
-        const config = {headers: {Authorization: `Bearer ${token}`}};
-        axios.defaults.headers.common['Accept'] = 'application/json';
-        axios.defaults.headers.common['Content-Type'] = 'application/json';
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-
-        axios.get('http://92.63.206.165/api/getUserData/' + userId, config).then((response) => {
-            console.log(response.data);
-            if (!response.data.data.hata) {
-                let json = {
-                    userId: response.data.data.id,
-                    userToken: data.auth.userToken,
-                    userType: response.data.data.user_type,
-                    user: response.data.data,
-                    currentTheme: data.app.theme,
-                    lang: data.app.lang,
-                };
-                json = JSON.stringify(json);
-                setValue('userData', json);
-                dispatch({type: 'setUser', payload: response.data.data});
-            }
-        });
-    };
-
     const saveUserInfo = () => {
-        const config = {
-            headers: {Authorization: `Bearer ${data.auth.userToken}`},
-        };
-        axios.defaults.headers.common['Accept'] = 'application/json';
-        axios.defaults.headers.common['Content-Type'] = 'application/json';
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + data.auth.userToken;
-        axios
-            .post('http://92.63.206.165/api/updateUserData', {
-                id: data.auth.userId,
-                name: userName,
-                phone: userPhone,
-                email: userEmail,
-                uploadImage: uploadedImage,
-            })
+        apiPost('updateUser', {
+            id: data.auth.userId,
+            user_name: userName,
+            user_device: getUniqueId(),
+            user_image: uploadedImage,
+            token: data.auth.userToken,
+        })
             .then((response) => {
-                console.log(response.data.data);
-                if (!response.data.data.hata) {
-                    getUserData(data.auth.userId, data.auth.userToken);
-                    alert(response.data.message[data.app.lang]);
-                    navigation.navigate('Profile', {referer: 'edit'});
-                } else {
-                    alert(response.data.message[data.app.lang]);
-                    navigation.navigate('Profile', {referer: 'edit'});
-                }
+                dispatch({type: 'setUser', payload: response.data.response});
+                setUserName(response.data.response.user_name);
+                setUserPhone(response.data.response.user_phone);
+                if (data.auth.user.user_data.user_image)
+                    setUserImage({
+                        uri: config.imageBaseUrl + response.data.response.user_data.user_image,
+                    });
             })
             .catch((error) => {
                 console.log(error);
@@ -194,30 +161,6 @@ export default function ProfileEdit() {
                                 value={userPhone}
                                 placeholder={l[data.app.lang].phone}
                                 onChangeText={(text) => setUserPhone(text)}
-                            />
-                        </View>
-                    </View>
-                </View>
-                <View
-                    style={[
-                        tw` rounded-md p-2 mt-4 flex  justify-between`,
-                        stil('bg2', data.app.theme),
-                    ]}>
-                    <Text style={[tw` font-medium`, {color: stil('text', data.app.theme).color}]}>
-                        {l[data.app.lang].email} :{' '}
-                    </Text>
-                    <View style={tw`flex flex-row justify-end`}>
-                        <View
-                            style={[
-                                tw`w-full rounded-md  mt-2   border `,
-                                {borderColor: stil('bg', data.app.theme).backgroundColor},
-                            ]}>
-                            <TextInput
-                                style={[stil('text', data.app.theme), tw`p-2`]}
-                                placeholderTextColor={stil('text', data.app.theme).color}
-                                value={userEmail}
-                                placeholder={l[data.app.lang].email}
-                                onChangeText={(text) => setUserEmail(text)}
                             />
                         </View>
                     </View>

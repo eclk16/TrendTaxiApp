@@ -13,41 +13,42 @@ import l from './languages.json';
 import {stil} from './utils';
 import {useDispatch, useSelector} from 'react-redux';
 import {removeValue} from './async';
-import Passenger from './pages/proccess/homePassenger';
-import Driver from './pages/proccess/homeDriver';
-import Harita from './pages/proccess/map';
-import Trips from './pages/other/trips';
-import Settings from './pages/other/settings';
-import TripDetail from './pages/other/tripDetail';
-import Profile from './pages/other/profile';
-import Faq from './pages/other/faq';
-import Reports from './pages/other/reports';
+import Passenger from './screens/proccess/homePassenger';
+import Driver from './screens/proccess/homeDriver';
+import Harita from './screens/proccess/map';
+import Trips from './screens/other/trips';
+import Settings from './screens/other/settings';
+import TripDetail from './screens/other/tripDetail';
+import Profile from './screens/other/profile';
+import Faq from './screens/other/faq';
+import Reports from './screens/other/reports';
 import StatusBarComponent from './components/global/status';
-import ProfileEdit from './pages/other/profileEdit';
+import ProfileEdit from './screens/other/profileEdit';
 import axios from 'axios';
-import TimerPage from './pages/auth/timer';
+import config from './app.json';
+
 MaterialCommunityIcons.loadFont();
 const Drawer = createDrawerNavigator();
 
 const Router = () => {
     const deleteAccount = () => {
-        const config = {
-            headers: {Authorization: `Bearer ${data.auth.userToken}`},
-        };
-        axios.defaults.headers.common['Accept'] = 'application/json';
-        axios.defaults.headers.common['Content-Type'] = 'application/json';
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + data.auth.userToken;
-        axios
-            .post('https://trendtaxi.uz/api/updateUserData', {
-                id: data.auth.userId,
-            })
-            .then((response) => {
-                alert('your account has been deleted');
-                dispatch({type: 'authRemove'});
-                dispatch({type: 'isLogin', payload: false});
-                removeValue('userData');
-            })
-            .catch((error) => {});
+        // const config = {
+        //     headers: {Authorization: `Bearer ${data.auth.userToken}`},
+        // };
+        // axios.defaults.headers.common['Accept'] = 'application/json';
+        // axios.defaults.headers.common['Content-Type'] = 'application/json';
+        // axios.defaults.headers.common['Authorization'] = 'Bearer ' + data.auth.userToken;
+        // axios
+        //     .post('https://trendtaxi.uz/api/updateUserData', {
+        //         id: data.auth.userId,
+        //     })
+        //     .then((response) => {
+        //         alert('your account has been deleted');
+        //         dispatch({type: 'authRemove'});
+        //         dispatch({type: 'isLogin', payload: false});
+        //         removeValue('userData');
+        //     })
+        //     .catch((error) => {});
     };
 
     const dispatch = useDispatch();
@@ -57,17 +58,17 @@ const Router = () => {
         {
             icon: 'map-marker-distance',
             text: l[data.app.lang].trips,
-            navigate: 'Timer',
+            navigate: 'Trips',
         },
         {
             icon: 'account',
             text: l[data.app.lang].profile,
-            navigate: 'Timer',
+            navigate: 'Profile',
         },
         {
             icon: 'google-analytics',
             text: l[data.app.lang].reports,
-            navigate: 'Timer',
+            navigate: 'Reports',
         },
         {
             icon: 'cog',
@@ -91,8 +92,8 @@ const Router = () => {
 
     list.unshift(
         data.auth.userType == 'passenger'
-            ? {icon: 'arch', text: l[data.app.lang].start, navigate: 'Timer'}
-            : {icon: 'arch', text: l[data.app.lang].start, navigate: 'Timer'},
+            ? {icon: 'arch', text: l[data.app.lang].start, navigate: 'Home'}
+            : {icon: 'arch', text: l[data.app.lang].start, navigate: 'HomeDriverPage'},
     );
 
     const menuButton = ({icon, text, navigate, index, props}) => {
@@ -115,8 +116,8 @@ const Router = () => {
                                     text: l[data.app.lang].confirm,
                                     onPress: () => {
                                         dispatch({type: 'authRemove'});
-                                        dispatch({type: 'isLogin', payload: false});
-                                        removeValue('userData');
+                                        dispatch({type: 'isAuth', payload: false});
+                                        removeValue('TrendTaxiUser');
                                     },
                                 },
                             ],
@@ -154,7 +155,7 @@ const Router = () => {
         <NavigationContainer>
             <StatusBarComponent />
             <Drawer.Navigator
-                initialRouteName="Timer"
+                initialRouteName={data.auth.userType == 'driver' ? 'HomeDriverPage' : 'Home'}
                 screenOptions={{
                     drawerStyle: {
                         backgroundColor: stil('bg', data.app.theme).backgroundColor,
@@ -164,7 +165,6 @@ const Router = () => {
                         backgroundColor: stil('bg', data.app.theme).backgroundColor,
                         borderBottomWidth: 0,
                         shadowColor: stil('text', data.app.theme).color,
-                        // height:Platform.OS == "ios" ? 110 : 70
                     },
                     headerTintColor: stil('text', data.app.theme).color,
                     drawerInactiveTintColor: stil('text', data.app.theme).color,
@@ -193,13 +193,13 @@ const Router = () => {
                                                         {
                                                             width: 50,
                                                             height: 50,
-                                                            resizeMode: 'contain',
+                                                            // resizeMode: 'contain',
                                                         },
                                                     ]}
                                                     source={{
                                                         uri:
-                                                            'https://trendtaxi.uz/' +
-                                                            data.auth.user.image,
+                                                            config.imageBaseUrl +
+                                                            data.auth.user.user_data.user_image,
                                                     }}
                                                 />
                                                 <View style={tw`justify-center`}>
@@ -208,7 +208,7 @@ const Router = () => {
                                                             tw` text-base`,
                                                             stil('text', data.app.theme),
                                                         ]}>
-                                                        {data.auth.user.name}
+                                                        {data.auth.user.user_name}
                                                     </Text>
                                                     <Text
                                                         style={[
@@ -222,7 +222,7 @@ const Router = () => {
                                                                 stil('text', data.app.theme).color
                                                             }
                                                         />{' '}
-                                                        {data.auth.user.balance}
+                                                        {data.auth.user.user_balance}
                                                     </Text>
                                                 </View>
                                             </View>
@@ -237,12 +237,15 @@ const Router = () => {
                                 return item?.type === 'separator' ? (
                                     <View
                                         key={index}
-                                        style={{
-                                            height: 1,
-                                            width: '100%',
-                                            backgroundColor: stil('bg2', data.app.theme)
-                                                .backgroundColor,
-                                        }}></View>
+                                        style={[
+                                            {
+                                                height: 1,
+                                                width: '100%',
+                                                backgroundColor: stil('bg2', data.app.theme)
+                                                    .backgroundColor,
+                                            },
+                                            tw`my-4`,
+                                        ]}></View>
                                 ) : (
                                     menuButton({...item, index, props})
                                 );
@@ -254,7 +257,7 @@ const Router = () => {
                 {data.auth.userType == 'passenger' ? (
                     <Drawer.Screen
                         name="Home"
-                        component={data.trip.isTrip ? TimerPage : TimerPage}
+                        component={data.trip.isTrip ? Harita : Passenger}
                         options={{
                             drawerItemStyle: {
                                 display: 'none',
@@ -286,7 +289,7 @@ const Router = () => {
                 ) : (
                     <Drawer.Screen
                         name="HomeDriverPage"
-                        component={data.trip.isTrip ? TimerPage : TimerPage}
+                        component={data.trip.isTrip ? Harita : Driver}
                         options={{
                             drawerItemStyle: {
                                 display: 'none',
@@ -344,16 +347,6 @@ const Router = () => {
                             display: 'none',
                         },
                         title: l[data.app.lang].settings,
-                    })}
-                />
-                <Drawer.Screen
-                    name="Timer"
-                    component={TimerPage}
-                    options={() => ({
-                        drawerItemStyle: {
-                            display: 'none',
-                        },
-                        // title: l[data.app.lang].details,
                     })}
                 />
                 <Drawer.Screen
