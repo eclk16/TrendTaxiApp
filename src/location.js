@@ -1,5 +1,6 @@
 import Geolocation from '@react-native-community/geolocation';
 import {Alert, Linking, PermissionsAndroid, Platform} from 'react-native';
+import {useDispatch} from 'react-redux';
 
 const openSetting = () => {
     Linking.openSettings().catch(() => {
@@ -68,17 +69,14 @@ const hasLocationPermission = async () => {
 };
 
 export const myCurrentLocation = async (locationTitle = false) => {
+    const dispatch = useDispatch();
     const hasPermission = await hasLocationPermission();
     Geolocation.getCurrentPosition(
         (position) => {
+            console.log(position.coords);
             if (locationTitle) {
             } else {
-                return {
-                    lat: position.coords.latitude,
-                    lon: position.coords.longitude,
-                };
             }
-            console.log(position);
         },
         (error) => {
             return false;

@@ -9,6 +9,7 @@ import {getValue, removeValue} from './src/async';
 import {apiPost} from './src/axios';
 import Router from './src/router';
 import Welcome from './src/screens/auth/welcome';
+import {myCurrentLocation} from './src/location';
 
 LogBox.ignoreAllLogs();
 
@@ -27,6 +28,7 @@ const App = () => {
     const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
+        // myCurrentLocation();
         getValue('TrendTaxiLang').then((lang) => {
             if (lang) dispatch({type: 'lang', payload: lang});
         });

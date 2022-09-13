@@ -1,5 +1,7 @@
 {
     "apiBaseUrl": "http://127.0.0.1:8000/api/",
     "displayName": "Trend Taxi",
-    "imageBaseUrl": "http://127.0.0.1:8000/"
+    "imageBaseUrl": "http://127.0.0.1:8000/",
+    "mapBaseUrl": "https://map.trendtaxi.uz/",
+    "navigationBaseUrl": "https://navigation.trendtaxi.uz/"
   }
