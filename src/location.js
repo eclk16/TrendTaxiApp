@@ -68,4 +68,5 @@ const hasLocationPermission = async () => {
 
 export const izinal = async () => {
     const hasPermission = await hasLocationPermission();
+    return hasPermission;
 };

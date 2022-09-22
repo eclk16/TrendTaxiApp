@@ -12,8 +12,9 @@ import Welcome from './src/screens/auth/welcome';
 import Pusher from 'pusher-js/react-native';
 import l from './src/languages.json';
 import KeepAwake from 'react-native-keep-awake';
+import notifee from '@notifee/react-native';
 
-LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
+LogBox.ignoreLogs(['new NativeEventEmitter']);
 LogBox.ignoreAllLogs();
 
 const AppWrapper = () => {
@@ -30,6 +31,29 @@ const App = () => {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     const [loading, setLoading] = React.useState(true);
+
+    async function onDisplayNotification(title, body) {
+        // Request permissions (required for iOS)
+        await notifee.requestPermission();
+
+        // Create a channel (required for Android)
+        const channelId = await notifee.createChannel({
+            id: 'default',
+            name: 'Default Channel',
+        });
+
+        // Display a notification
+        await notifee.displayNotification({
+            title: title,
+            body: body,
+            android: {
+                channelId,
+                pressAction: {
+                    id: 'default',
+                },
+            },
+        });
+    }
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -50,7 +74,6 @@ const App = () => {
                     id: user.id,
                 })
                     .then((response) => {
-                        console.log('a');
                         if (response != false) {
                             dispatch({type: 'setId', payload: user.id});
                             dispatch({type: 'setToken', payload: user.token});
@@ -94,6 +117,7 @@ const App = () => {
     }, []);
 
     useEffect(() => {
+        notifee.cancelAllNotifications();
         const abortController = new AbortController();
         if (data.app.isActive || data.trip.trip != null) {
             KeepAwake.activate();
@@ -107,8 +131,16 @@ const App = () => {
             });
             var channel = pusher.subscribe('tripevent-' + data.auth.userId);
             channel.bind('trip', function (socket) {
+                if (socket.message.prc == 'bildirim') {
+                    onDisplayNotification(socket.message.title, socket.message.body);
+                }
                 if (socket.message.prc == 'driver_request') {
                     if (data.app.isActive) {
+                        onDisplayNotification(
+                            l[data.app.lang].yenitripTitle,
+                            socket.message.trip.passenger.user_name,
+                        );
+
                         dispatch({type: 'ia', payload: false});
                         dispatch({type: 'setRequest', payload: socket.message.trip});
                     }
@@ -133,23 +165,28 @@ const App = () => {
                     dispatch({type: 'isLoading', payload: false});
                 }
                 if (socket.message.prc == 'driverLocation') {
-                    dispatch({
-                        type: 'setTrip',
-                        payload: {
-                            ...data.trip.trip,
-                            act_price: socket.message.price ?? data.trip.trip.act_price,
-                            act_distance: socket.message.km ?? data.trip.trip.act_distance,
-                            driver: {
-                                ...data.trip.trip.driver,
-                                last_latitude: socket.message.locations
-                                    ? socket.message.locations[0]
-                                    : data.trip.trip.driver.last_latitude,
-                                last_longitude: socket.message.locations
-                                    ? socket.message.locations[1]
-                                    : data.trip.trip.driver.last_longitude,
+                    if (socket.message.price) {
+                        dispatch({
+                            type: 'setTrip',
+                            payload: {
+                                ...data.trip.trip,
+                                act_price: socket.message.price,
+                                act_distance: socket.message.km,
                             },
-                        },
-                    });
+                        });
+                    } else {
+                        dispatch({
+                            type: 'setTrip',
+                            payload: {
+                                ...data.trip.trip,
+                                driver: {
+                                    ...data.trip.trip.driver,
+                                    last_latitude: socket.message.locations[0],
+                                    last_longitude: socket.message.locations[1],
+                                },
+                            },
+                        });
+                    }
                 }
             });
         } else {

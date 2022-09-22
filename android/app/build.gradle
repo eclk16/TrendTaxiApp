@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.google.gms.google-services'
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -279,7 +280,6 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation project(path: ':@pusher_pusher-websocket-react-native')
     implementation project(path: ':@react-native-community_geolocation')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {

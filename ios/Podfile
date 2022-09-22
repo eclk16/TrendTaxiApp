@@ -1,11 +1,13 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+$RNFirebaseAsStaticFramework = true
 
 platform :ios, '14.0'
 install! 'cocoapods', :deterministic_uuids => false
 
 target 'TrendTaxi' do
-
+  # use_frameworks!
+  
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -19,9 +21,10 @@ target 'TrendTaxi' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+ 
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
   
-  pod 'react-native-restart', :path => '../node_modules/react-native-restart'
+
 
   pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'
 

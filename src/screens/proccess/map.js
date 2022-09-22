@@ -36,26 +36,8 @@ function MapPage() {
 
     const sendJS = (js) => {
         try {
-            webViewRef.current?.injectJavaScript(`try {` + js + `true;} catch (error) {}`);
+            webViewRef.current?.injectJavaScript(js + `true;`);
         } catch (error) {}
-    };
-
-    const scripts = `
-        const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
-        console = {
-                log: (log) => consoleLog('log', log),
-                debug: (log) => consoleLog('debug', log),
-                info: (log) => consoleLog('info', log),
-                warn: (log) => consoleLog('warn', log),
-                error: (log) => consoleLog('error', log),
-            };
-        `;
-
-    const onMessage = (payload) => {
-        // console.log(payload);
-        try {
-            let datas = JSON.parse(JSON.parse(payload.nativeEvent.data).data.log);
-        } catch (e) {}
     };
 
     const yonIcon = (iconu) => {
@@ -104,7 +86,7 @@ function MapPage() {
                 return setIcon('ray-start-arrow');
         }
     };
-
+    const [geo, setGeo] = React.useState(null);
     const wP = () => {
         const wid = Geolocation.watchPosition(
             (position) => {
@@ -128,6 +110,7 @@ function MapPage() {
                 distanceFilter: 5,
             },
         );
+        setGeo(wid);
     };
     useEffect(() => {
         const abortController = new AbortController();
@@ -163,7 +146,7 @@ function MapPage() {
         return () => {
             abortController.abort();
         };
-    });
+    }, [data.trip.trip.driver.last_latitude, geo]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -275,8 +258,6 @@ function MapPage() {
                             source={{uri: source}}
                             javaScriptEnabled={true}
                             javaScriptEnabledAndroid={true}
-                            injectedJavaScript={scripts}
-                            onMessage={onMessage}
                             onTouchMove={() => {
                                 setOrtala(false);
                             }}

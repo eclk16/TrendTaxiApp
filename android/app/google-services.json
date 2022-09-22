@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "129323982676",
-    "project_id": "trendtaxi",
-    "storage_bucket": "trendtaxi.appspot.com"
+    "project_number": "539477539401",
+    "project_id": "push-21b50",
+    "storage_bucket": "push-21b50.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:129323982676:android:2030137a939bf8136232c1",
+        "mobilesdk_app_id": "1:539477539401:android:b3ca461315fc58930e5d98",
         "android_client_info": {
           "package_name": "com.trendtaxiuz"
         }
       },
       "oauth_client": [
         {
-          "client_id": "129323982676-1no59i2tonu9tb2581b850h6qv5gvn9u.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.trendtaxiuz",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "129323982676-pod71fv617l4bkf65fgc5vl7obj6oim3.apps.googleusercontent.com",
+          "client_id": "539477539401-stt0urmpa9opf0m6vdf7n5r81nqokedl.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAXAtLnu0sOGIcP11uA2c4ZOnkr83bvUfg"
+          "current_key": "AIzaSyAex1KEGHcX15T3iuSzMeLJ8ZJocdOzFko"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "129323982676-pod71fv617l4bkf65fgc5vl7obj6oim3.apps.googleusercontent.com",
+              "client_id": "539477539401-stt0urmpa9opf0m6vdf7n5r81nqokedl.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

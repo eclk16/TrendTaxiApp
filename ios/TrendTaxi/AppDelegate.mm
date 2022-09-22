@@ -1,3 +1,4 @@
+
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
@@ -15,6 +16,9 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 #import <react/config/ReactNativeConfig.h>
+
+
+
 
 
 
@@ -57,6 +61,7 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
   
   return YES;
 }

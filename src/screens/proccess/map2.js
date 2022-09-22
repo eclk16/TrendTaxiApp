@@ -137,14 +137,19 @@ function MapPage2() {
                 distanceFilter: 5,
             },
         );
+        setGeo(wid);
     };
-    const [fiyatHesapla2, setfiyatHesapla2] = React.useState([]);
+    const [geo, setGeo] = React.useState(null);
     const [fiyatHesapla, setfiyatHesapla] = React.useState([]);
     const [first, setFirst] = React.useState(true);
     useEffect(() => {
         const abortController = new AbortController();
-        if (JSON.stringify(fiyatHesapla2) != JSON.stringify(fiyatHesapla)) {
-            setfiyatHesapla2(fiyatHesapla);
+        if (
+            JSON.stringify({
+                lon: data.trip.trip.driver.last_latitude,
+                lat: data.trip.trip.driver.last_longitude,
+            }) != JSON.stringify(fiyatHesapla)
+        ) {
             if (!first) {
                 if (data.auth.userType == 'driver') {
                     var myHeaders = new Headers();
@@ -154,8 +159,8 @@ function MapPage2() {
                     var raw = JSON.stringify({
                         points: [
                             {
-                                lon: parseFloat(data.app.currentLocation[0]),
-                                lat: parseFloat(data.app.currentLocation[1]),
+                                lon: data.trip.trip.driver.last_latitude,
+                                lat: data.trip.trip.driver.last_longitude,
                             },
                             fiyatHesapla,
                         ],
@@ -192,18 +197,20 @@ function MapPage2() {
                                 if (m > 0) {
                                     let carprice = parseFloat(data.trip.trip.act_price);
                                     let kmcar = parseFloat(data.trip.trip.act_distance);
-                                    let carkm = data.trip.trip.driver.user_data.car.km;
-                                    p = p + parseFloat(parseFloat(carkm) * m);
+                                    let carkm = parseFloat(data.trip.trip.driver.user_data.car.km);
+                                    p = carprice + parseFloat(carkm * m);
+                                    m = m + kmcar;
                                     // p = Math.ceil(p / 500) * 500;
-                                    setPrice((p + carprice).toFixed(0));
-                                    setkm(parseFloat(m + parseFloat(kmcar)).toFixed(2));
+
+                                    setPrice(p.toFixed(0));
+                                    setkm(m.toFixed(2));
                                     apiPost('mapSocket', {
                                         id: data.trip.trip.driver_id,
                                         id_2: data.trip.trip.passenger_id,
                                         trip_id: data.trip.trip.id,
                                         token: data.auth.userToken,
-                                        price: p + carprice,
-                                        km: parseFloat(m + parseFloat(kmcar)),
+                                        price: p,
+                                        km: m,
                                         prc: 'driverLocation',
                                     });
                                 }
@@ -219,7 +226,6 @@ function MapPage2() {
             abortController.abort();
         };
     }, [fiyatHesapla]);
-
     useEffect(() => {
         const abortController = new AbortController();
         if (!mapLoading) {
@@ -259,7 +265,7 @@ function MapPage2() {
             abortController.abort();
             false;
         };
-    });
+    }, [data.trip.trip.driver.last_latitude, geo]);
 
     useEffect(() => {
         const abortController = new AbortController();

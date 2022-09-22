@@ -5,7 +5,7 @@ import {stil} from '../../utils';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import l from '../../languages.json';
-
+import {izinal} from '../../location';
 MaterialCommunityIcons.loadFont();
 
 import {Text, TouchableOpacity, View} from 'react-native';
@@ -28,6 +28,7 @@ function LoginTypeSelect({setStep}) {
                         tw`flex-row items-center mb-1 p-4 rounded-md justify-between`,
                     ]}
                     onPress={() => {
+                        izinal();
                         dispatch({type: 'setType', payload: 'driver'});
                         setStep(5);
                     }}>
@@ -49,6 +50,7 @@ function LoginTypeSelect({setStep}) {
                         tw`flex-row items-center mb-1 p-4 rounded-md justify-between`,
                     ]}
                     onPress={() => {
+                        izinal();
                         dispatch({type: 'setType', payload: 'passenger'});
                         setStep(5);
                     }}>
