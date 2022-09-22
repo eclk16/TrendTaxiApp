@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Text, View, ActivityIndicator, BackHandler, FlatList} from 'react-native';
+import {BackHandler, Text, View, ActivityIndicator, FlatList} from 'react-native';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,6 +15,18 @@ import {apiPost} from '../../axios';
 function Trips() {
     const navigation = useNavigation();
 
+    handleBackButtonClick = () => {
+        navigation.navigate(data.auth.userType == 'passenger' ? 'Home' : 'HomeDriverPage');
+    };
+    useEffect(() => {
+        const abortController = new AbortController();
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        return () => {
+            abortController.abort();
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        };
+    }, []);
+
     const data = useSelector((state) => state);
 
     const [loading, setLoading] = React.useState(true);
@@ -24,6 +36,7 @@ function Trips() {
         return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
     };
     useEffect(() => {
+        const abortController = new AbortController();
         apiPost('getTrips', {
             user_id: data.auth.userId,
             user_type: data.auth.userType,
@@ -35,6 +48,10 @@ function Trips() {
             .catch((error) => {
                 setLoading(false);
             });
+        return () => {
+            abortController.abort();
+            false;
+        };
     }, []);
     const [trips, setTrips] = React.useState([]);
     const months = [

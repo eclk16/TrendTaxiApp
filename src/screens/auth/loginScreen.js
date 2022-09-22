@@ -5,8 +5,8 @@ import {stil} from '../../utils';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import l from '../../languages.json';
-import BottomSheet, {BottomSheetTextInput} from '@gorhom/bottom-sheet';
-import {getUniqueId, getManufacturer} from 'react-native-device-info';
+import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
+import {getUniqueId} from 'react-native-device-info';
 
 MaterialCommunityIcons.loadFont();
 
@@ -44,7 +44,7 @@ function LoginScreen() {
         setLoading(true);
         if (loginUser.smsToken != smsOnayText) {
             setLoading(false);
-            alert('!');
+            alert(l[data.app.lang].hatakod);
             return;
         }
         apiPost('updateUser', {
@@ -54,7 +54,6 @@ function LoginScreen() {
             token: loginUser.token,
         })
             .then((response) => {
-                console.log(response.data);
                 loginFunction();
             })
             .catch((error) => {
@@ -66,7 +65,17 @@ function LoginScreen() {
     const loginFunction = () => {
         setLoading(true);
         apiPost('auth/login', {
-            user_phone: userPhone.replaceAll(' ', '').replace('+', ''),
+            user_phone: userPhone
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace(' ', '')
+                .replace('+', ''),
             user_device: getUniqueId(),
             user_taxi_park: 'trendtaxi',
             user_type: data.auth.userType,
@@ -87,6 +96,12 @@ function LoginScreen() {
                     dispatch({type: 'setId', payload: response.data.response.id});
                     dispatch({type: 'setToken', payload: response.data.token});
                     dispatch({type: 'setType', payload: response.data.response.user_type});
+                    if (response.data.response.trip) {
+                        dispatch({type: 'setTrip', payload: response.data.response.trip});
+                    }
+                    if (response.data.response.user_type == 'passenger') {
+                        dispatch({type: 'ia', payload: true});
+                    }
                     dispatch({type: 'setUser', payload: response.data.response});
                     dispatch({type: 'isAuth', payload: true});
                 }

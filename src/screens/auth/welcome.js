@@ -35,22 +35,28 @@ export default function Welcome() {
             return true;
         }
     };
-
     useEffect(() => {
-        // if (data.app.lang) {
-        //     setStep(2);
-        // }
-        // if (data.app.theme) {
-        //     setStep(4);
-        // }
-    }, []);
-
-    useEffect(() => {
+        const abortController = new AbortController();
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
         return () => {
+            abortController.abort();
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         };
     }, [step]);
+
+    useEffect(() => {
+        const abortController = new AbortController();
+        if (data.app.lang) {
+            setStep(2);
+        }
+        if (data.app.theme) {
+            setStep(4);
+        }
+        return () => {
+            abortController.abort();
+            false;
+        };
+    }, []);
 
     const LANGS = [
         {

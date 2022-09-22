@@ -5,10 +5,10 @@ import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import l from '../../languages.json';
 
+import {izinal} from '../../location';
 MaterialCommunityIcons.loadFont();
 
 import {Text, TouchableOpacity, View, Alert} from 'react-native';
-import {myCurrentLocation} from '../../location';
 
 function PermissionSelect() {
     const data = useSelector((state) => state);
@@ -42,7 +42,8 @@ function PermissionSelect() {
                                 {
                                     text: l[data.app.lang].next,
                                     onPress: () => {
-                                        SetMyLocation(myCurrentLocation());
+                                        izinal();
+                                        SetMyLocation(1);
                                     },
                                 },
                             ],

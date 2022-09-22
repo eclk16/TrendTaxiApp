@@ -1,18 +1,30 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
-import {View, Text, ScrollView, Image} from 'react-native';
+import {BackHandler, View, Text, ScrollView, Image} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import tw from 'twrnc';
 import {stil} from '../../utils';
 import l from '../../languages.json';
 import {getUniqueId, getManufacturer} from 'react-native-device-info';
-
+import {useNavigation} from '@react-navigation/native';
 MaterialCommunityIcons.loadFont();
 
 import StatusBarComponent from '../../components/global/status';
 import config from '../../app.json';
 
 export default function Profile() {
+    const navigation = useNavigation();
+    handleBackButtonClick = () => {
+        navigation.navigate(data.auth.userType == 'passenger' ? 'Home' : 'HomeDriverPage');
+    };
+    useEffect(() => {
+        const abortController = new AbortController();
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        return () => {
+            abortController.abort();
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        };
+    }, []);
     const data = useSelector((state) => state);
     const setFormat = (number) => {
         let newText = '';

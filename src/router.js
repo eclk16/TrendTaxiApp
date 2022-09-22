@@ -24,7 +24,6 @@ import Faq from './screens/other/faq';
 import Reports from './screens/other/reports';
 import StatusBarComponent from './components/global/status';
 import ProfileEdit from './screens/other/profileEdit';
-import axios from 'axios';
 import config from './app.json';
 
 MaterialCommunityIcons.loadFont();
@@ -50,7 +49,6 @@ const Router = () => {
         //     })
         //     .catch((error) => {});
     };
-
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
 
@@ -65,11 +63,11 @@ const Router = () => {
             text: l[data.app.lang].profile,
             navigate: 'Profile',
         },
-        {
-            icon: 'google-analytics',
-            text: l[data.app.lang].reports,
-            navigate: 'Reports',
-        },
+        // {
+        //     icon: 'google-analytics',
+        //     text: l[data.app.lang].reports,
+        //     navigate: 'Reports',
+        // },
         {
             icon: 'cog',
             text: l[data.app.lang].settings,
@@ -117,6 +115,7 @@ const Router = () => {
                                     onPress: () => {
                                         dispatch({type: 'authRemove'});
                                         dispatch({type: 'isAuth', payload: false});
+                                        dispatch({type: 'setTrip', payload: null});
                                         removeValue('TrendTaxiUser');
                                     },
                                 },
@@ -257,7 +256,7 @@ const Router = () => {
                 {data.auth.userType == 'passenger' ? (
                     <Drawer.Screen
                         name="Home"
-                        component={data.trip.isTrip ? Harita : Passenger}
+                        component={data.trip.trip !== null ? Harita : Passenger}
                         options={{
                             drawerItemStyle: {
                                 display: 'none',
@@ -289,7 +288,7 @@ const Router = () => {
                 ) : (
                     <Drawer.Screen
                         name="HomeDriverPage"
-                        component={data.trip.isTrip ? Harita : Driver}
+                        component={data.trip.trip !== null ? Harita : Driver}
                         options={{
                             drawerItemStyle: {
                                 display: 'none',

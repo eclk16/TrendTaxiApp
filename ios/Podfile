@@ -20,10 +20,13 @@ target 'TrendTaxi' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
-
-  pod 'pusher-websocket-react-native', :path => '../node_modules/@pusher/pusher-websocket-react-native'
-
   
+  pod 'react-native-restart', :path => '../node_modules/react-native-restart'
+
+  pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'
+
+  pod 'RNSound', :path => '../node_modules/react-native-sound'
+
   target 'TrendTaxiTests' do
     inherit! :complete
     # Pods for testing

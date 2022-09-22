@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
+    BackHandler,
     TouchableOpacity,
     View,
     Text,
@@ -25,6 +26,17 @@ import {getUniqueId} from 'react-native-device-info';
 
 export default function ProfileEdit() {
     const navigation = useNavigation();
+    handleBackButtonClick = () => {
+        navigation.navigate('Profile');
+    };
+    useEffect(() => {
+        const abortController = new AbortController();
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        return () => {
+            abortController.abort();
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        };
+    }, []);
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     const [userName, setUserName] = React.useState(null);
@@ -33,10 +45,15 @@ export default function ProfileEdit() {
     const [userImage, setUserImage] = React.useState(null);
 
     useEffect(() => {
+        const abortController = new AbortController();
         setUserName(data.auth.user.user_name);
         setUserPhone(data.auth.user.user_phone);
         if (data.auth.user.user_data.user_image)
             setUserImage({uri: config.imageBaseUrl + data.auth.user.user_data.user_image});
+        return () => {
+            abortController.abort();
+            false;
+        };
     }, []);
 
     const getPhotoWithPhone = () => {

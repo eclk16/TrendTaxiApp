@@ -1,20 +1,38 @@
 import React, {useEffect} from 'react';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
-import {TouchableOpacity, View, Text, ScrollView} from 'react-native';
+import {BackHandler, TouchableOpacity, View, Text, ScrollView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import tw from 'twrnc';
 import {stil} from '../../utils';
 import StatusBarComponent from '../../components/global/status';
 import {apiGet} from '../../axios';
+import {useNavigation} from '@react-navigation/native';
 MaterialCommunityIcons.loadFont();
 
 function Faq() {
+    const navigation = useNavigation();
+    handleBackButtonClick = () => {
+        navigation.navigate(data.auth.userType == 'passenger' ? 'Home' : 'HomeDriverPage');
+    };
+    useEffect(() => {
+        const abortController = new AbortController();
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        return () => {
+            abortController.abort();
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        };
+    }, []);
     const [acik, setAcik] = React.useState(false);
     const data = useSelector((state) => state);
 
     useEffect(() => {
+        const abortController = new AbortController();
         getSss();
+        return () => {
+            abortController.abort();
+            false;
+        };
     }, [data.app.lang]);
     const [sss, setSss] = React.useState([]);
     const getSss = () => {

@@ -139,8 +139,8 @@ android {
         applicationId "com.trendtaxiuz"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "8"
+        versionCode 10
+        versionName "10"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -279,6 +279,8 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation project(path: ':@pusher_pusher-websocket-react-native')
+    implementation project(path: ':@react-native-community_geolocation')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -300,6 +302,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+
 }
 
 if (isNewArchitectureEnabled()) {

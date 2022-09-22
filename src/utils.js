@@ -17,7 +17,7 @@ export const useTheme = StyleSheet.create({
     },
     light: {
         bg: {
-            backgroundColor: 'rgba(235,235,235,.9)',
+            backgroundColor: 'rgba(235,235,235,1)',
         },
         bg2: {
             backgroundColor: 'rgba(255,255,255,.7)',

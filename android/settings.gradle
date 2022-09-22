@@ -1,10 +1,12 @@
 rootProject.name = 'TrendTaxi'
-include ':@pusher_pusher-websocket-react-native'
-project(':@pusher_pusher-websocket-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/@pusher/pusher-websocket-react-native/android')
-include ':@pusher_pusher-websocket-react-native'
-project(':@pusher_pusher-websocket-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/@pusher/pusher-websocket-react-native/android')
+include ':react-native-sound'
+project(':react-native-sound').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-sound/android')
 include ':@react-native-community_geolocation'
 project(':@react-native-community_geolocation').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/geolocation/android')
+include ':react-native-keep-awake'
+project(':react-native-keep-awake').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-keep-awake/android')
+include ':react-native-restart'
+project(':react-native-restart').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-restart/android')
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
 includeBuild('../node_modules/react-native-gradle-plugin')

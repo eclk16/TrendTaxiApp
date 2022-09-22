@@ -243,7 +243,7 @@
         "gender":"Sex",
         "plaka" : "Plate",
         "konummesaj": "We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.",
-        "cuciu" : "Car Use Certificate Image",
+        "cuciu" : "Car Use Certificate Image (optional)",
         "dciu" : "Driver Car Image Upload",
         "driu" : "Driver Car Lisance Image",
         "dliu" : "Driver License Image",
@@ -275,7 +275,20 @@
         "Wednesday":"Wednesday", 
         "Thursday":"Thursday", 
         "Friday":"Friday", 
-        "Saturday":"Saturday"
+        "Saturday":"Saturday",
+
+        "upload":"Upload",
+        "carType":"Car Type",
+        "carBrand":"Car Brand (optional)",
+        "carModel":"Car Model (optional)",
+        "carPlate":"Car Plate",
+        "notnull":" field cannot be blank.",
+        "alreadyHesap":"Your application has been received. A notification message will be sent to you after your application is reviewed.",
+        "carnotfound":"We couldn't find the right vehicle for you, please try again later.",
+        "areyousure":"Are you sure ?",
+        "hatakod":"Wrong verification code"
+
+
     },
     "ru":{
         "bekle":"Благодарим за терпение.",
@@ -345,7 +358,7 @@
         "uaa":"Ищем подходящие автомобили для маршрута!",
         "save":"Сохранять",
         "driver":"Водитель",
-        "passenger":"Путешественница",
+        "passenger":"пассажир",
         "status":"Статус",
         "active":"Активный",
         "inactive":"Пассивный",
@@ -437,7 +450,18 @@
         "Wednesday":"Среда", 
         "Thursday":"Четверг", 
         "Friday":"Пятница", 
-        "Saturday":"Суббота"
+        "Saturday":"Суббота",
+        "upload":"Загрузить",
+
+        "carType":"Тип автомобиля",
+        "carBrand":"Марка автомобиля (необязательно)",
+        "carModel":"Модель автомобиля (необязательно)",
+        "carPlate":"Автомобильный номер",
+         "notnull":" поле не может быть пустым.",
+         "alreadyHesap":"Ваша заявка получена. После рассмотрения заявки вам будет отправлено уведомление.",
+         "carnotfound":"Мы не смогли найти для вас подходящее транспортное средство, повторите попытку позже.",
+         "areyousure": "Вы уверены?",
+         "hatakod":"неверный код подтверждения"
     },
     "uz":{
         "driverLogin": "Haydovchi Kirish",
@@ -599,6 +623,16 @@
         "Wednesday":"Chorshanba", 
         "Thursday":"Payshanba", 
         "Friday":"Juma", 
-        "Saturday":"Shanba"
+        "Saturday":"Shanba",
+        "upload":"Yuklash",
+         "carType":"Avtomobil turi",
+         "carBrand":"Avtomobil markasi (ixtiyoriy)",
+         "carModel":"Avtomobil modeli (ixtiyoriy)",
+         "carPlate":"Avtomobil plitasi",
+         "notnull":" maydoni bo'sh bo'lishi mumkin emas.",
+         "alreadyHesap":"Sizning arizangiz qabul qilindi. Arizangiz ko'rib chiqilgandan so'ng sizga xabarnoma yuboriladi.",
+         "carnotfound":"Sizga mos transport vositasini topa olmadik, keyinroq qayta urinib ko'ring.",
+         "areyousure":"Ishonchingiz komilmi?",
+         "hatakod":"Noto'g'ri tasdiqlash kodi"
     }
 }

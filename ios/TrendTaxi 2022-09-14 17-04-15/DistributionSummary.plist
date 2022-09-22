@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>TrendTaxi.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>buildNumber</key>
+			<string>28</string>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>DE862710DC14FA86744D3BC7999F94F34761C9A1</string>
+				<key>dateExpires</key>
+				<string>9.04.2023</string>
+				<key>type</key>
+				<string>Apple Development</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>59RU5858GL.org.reactjs.native.example.TrendTaxiApp</string>
+				<key>com.apple.developer.team-identifier</key>
+				<string>59RU5858GL</string>
+				<key>get-task-allow</key>
+				<true/>
+			</dict>
+			<key>name</key>
+			<string>TrendTaxi.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>eca29fb8-bb5b-401a-b486-63e4955d45d9</string>
+				<key>dateExpires</key>
+				<string>24.06.2023</string>
+				<key>name</key>
+				<string>iOS Team Provisioning Profile: *</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>59RU5858GL</string>
+				<key>name</key>
+				<string>volkan bagcali</string>
+			</dict>
+			<key>versionNumber</key>
+			<string>1.3.9</string>
+		</dict>
+	</array>
+</dict>
+</plist>

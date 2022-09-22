@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Text, Image, View, FlatList, ScrollView} from 'react-native';
+import {Text, Image, View, BackHandler, ScrollView} from 'react-native';
 import tw from 'twrnc';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 Ionicons.loadFont();
@@ -17,6 +17,17 @@ import config from '../../app.json';
 
 function TripDetail() {
     const navigation = useNavigation();
+    handleBackButtonClick = () => {
+        navigation.navigate('Trips');
+    };
+    useEffect(() => {
+        const abortController = new AbortController();
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        return () => {
+            abortController.abort();
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        };
+    }, []);
 
     const route = useRoute();
 
@@ -27,6 +38,7 @@ function TripDetail() {
     const {trip_id} = route.params;
 
     useEffect(() => {
+        const abortController = new AbortController();
         apiPost('getTrip', {
             id: trip_id,
         })
@@ -35,6 +47,10 @@ function TripDetail() {
                 setLocations(response.data.response.locations);
             })
             .catch((error) => {});
+        return () => {
+            abortController.abort();
+            false;
+        };
     }, [trip_id]);
 
     const months = [

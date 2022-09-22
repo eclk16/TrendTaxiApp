@@ -1,6 +1,6 @@
 import React from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {TouchableOpacity, View, Text, ScrollView, Image} from 'react-native';
+import {BackHandler, TouchableOpacity, View, Text, ScrollView, Image} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import tw from 'twrnc';
 import {stil} from '../../utils';
@@ -8,11 +8,25 @@ import l from '../../languages.json';
 import {setValue} from '../../async';
 import StatusBarComponent from '../../components/global/status';
 import {getUniqueId, getManufacturer} from 'react-native-device-info';
+import {useNavigation, useRoute} from '@react-navigation/native';
 MaterialCommunityIcons.loadFont();
 
 export default function Settings() {
+    const navigation = useNavigation();
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
+
+    handleBackButtonClick = () => {
+        navigation.navigate(data.auth.userType == 'passenger' ? 'Home' : 'HomeDriverPage');
+    };
+    useEffect(() => {
+        const abortController = new AbortController();
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+        return () => {
+            abortController.abort();
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        };
+    }, []);
 
     const LANGS = [
         {

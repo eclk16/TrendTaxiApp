@@ -41,6 +41,9 @@
 		98F467B0DC9A44349ABA9257 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 942B2FB97A17408D9460DCA9 /* Roboto-Regular.ttf */; };
 		992E4DAC28C5E37F009C06E1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 992E4DAB28C5E37F009C06E1 /* GoogleService-Info.plist */; };
 		992E4DAD28C5E37F009C06E1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 992E4DAB28C5E37F009C06E1 /* GoogleService-Info.plist */; };
+		993A218428DB99DD00347F72 /* ses-14.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 993A218328DB99DD00347F72 /* ses-14.mp3 */; };
+		9949E7A728DB4E990022967F /* not.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9949E7A628DB4E990022967F /* not.mp3 */; };
+		9949E7A928DB68410022967F /* not2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9949E7A828DB68400022967F /* not2.mp3 */; };
 		9969E5FF286495D500AF23D5 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9969E5FE286495D500AF23D5 /* Poppins-Black.ttf */; };
 		99FD953528C5E69D008E7215 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 99FD953428C5E69D008E7215 /* FirebaseAnalytics */; };
 		99FD953728C5E69D008E7215 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 99FD953628C5E69D008E7215 /* FirebaseMessaging */; };
@@ -117,6 +120,9 @@
 		8AFFD04D250F44D3A05EA6A3 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = ../src/assets/fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
 		942B2FB97A17408D9460DCA9 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../src/assets/fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		992E4DAB28C5E37F009C06E1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		993A218328DB99DD00347F72 /* ses-14.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ses-14.mp3"; sourceTree = "<group>"; };
+		9949E7A628DB4E990022967F /* not.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = not.mp3; path = ../android/app/src/main/res/raw/not.mp3; sourceTree = "<group>"; };
+		9949E7A828DB68400022967F /* not2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = not2.mp3; sourceTree = "<group>"; };
 		9969E5FB2864956900AF23D5 /* Poppins-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Poppins-Black.ttf"; path = "../src/assets/fonts/Poppins-Black.ttf"; sourceTree = "<group>"; };
 		9969E5FE286495D500AF23D5 /* Poppins-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Black.ttf"; sourceTree = "<group>"; };
 		9CBD4A51703F47568A66D405 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = ../src/assets/fonts/Ionicons.ttf; sourceTree = "<group>"; };
@@ -271,6 +277,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				993A218328DB99DD00347F72 /* ses-14.mp3 */,
+				9949E7A828DB68400022967F /* not2.mp3 */,
+				9949E7A628DB4E990022967F /* not.mp3 */,
 				13B07FAE1A68108700A75B9A /* TrendTaxi */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* TrendTaxiTests */,
@@ -425,6 +434,7 @@
 				F8BABB3C1D1543139E48729A /* MaterialIcons.ttf in Resources */,
 				BD9B0E2FB6AF40A1AE516859 /* Octicons.ttf in Resources */,
 				AEF46F4FD14140AFBBF042A2 /* Poppins-BlackItalic.ttf in Resources */,
+				9949E7A728DB4E990022967F /* not.mp3 in Resources */,
 				037CDB657EE946ADAB0938FF /* Poppins-Bold.ttf in Resources */,
 				2572CC3CF206400FA3DC1AE5 /* Poppins-BoldItalic.ttf in Resources */,
 				DFF0B74867D6448FBDAB1A59 /* Poppins-ExtraBold.ttf in Resources */,
@@ -435,6 +445,7 @@
 				2B4C69F136484849BA035034 /* Poppins-Light.ttf in Resources */,
 				442ADF45C2C24E98A16A51C8 /* Poppins-LightItalic.ttf in Resources */,
 				FFFE7ED4BABF46A6B1122CE2 /* Poppins-Medium.ttf in Resources */,
+				9949E7A928DB68410022967F /* not2.mp3 in Resources */,
 				60F5F4074D4A4897BFCB35D6 /* Poppins-MediumItalic.ttf in Resources */,
 				5D1659516E11454F96DAAC83 /* Poppins-Regular.ttf in Resources */,
 				A9B361437AB04098925E3789 /* Poppins-SemiBold.ttf in Resources */,
@@ -446,6 +457,7 @@
 				44EC76CED9374757AF5D3304 /* Roboto-Bold.ttf in Resources */,
 				90F2B3AC623C4F4DB2882D60 /* Roboto-BoldItalic.ttf in Resources */,
 				95ACA58A57604F89A7CFBB55 /* Roboto-Italic.ttf in Resources */,
+				993A218428DB99DD00347F72 /* ses-14.mp3 in Resources */,
 				49AA6D7F8DB647559D80E23D /* Roboto-Light.ttf in Resources */,
 				4114E768DCCA49DB828A93FE /* Roboto-LightItalic.ttf in Resources */,
 				40B80A7520DB4F62ACC2202A /* Roboto-Medium.ttf in Resources */,
@@ -479,7 +491,7 @@
 		};
 		0859A2EE0700BAE29A5B1C1E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -489,7 +501,7 @@
 			outputFileListPaths = (
 				"",
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TrendTaxi/Pods-TrendTaxi-resources.sh\"\n";
 			showEnvVarsInLog = 0;
@@ -703,15 +715,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 59RU5858GL;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TrendTaxi/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.6.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -732,14 +745,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 59RU5858GL;
 				INFOPLIST_FILE = TrendTaxi/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.6.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

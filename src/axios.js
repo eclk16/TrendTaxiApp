@@ -1,5 +1,4 @@
 import axios from 'axios';
-import React, {useEffect} from 'react';
 import config from './app.json';
 
 export const apiGet = async (url, params) => {
@@ -8,6 +7,7 @@ export const apiGet = async (url, params) => {
     const result = await axios.get(
         config.apiBaseUrl + url + '?' + new URLSearchParams(params).toString(),
     );
+
     return result;
 };
 export const apiPost = async (url, params) => {
