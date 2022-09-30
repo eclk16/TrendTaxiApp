@@ -104,6 +104,7 @@ function LoginScreen() {
                     }
                     dispatch({type: 'setUser', payload: response.data.response});
                     dispatch({type: 'isAuth', payload: true});
+                    setLoading(false);
                 }
                 setLoading(false);
             })

@@ -3,5 +3,6 @@
   "displayName": "Trend Taxi",
   "imageBaseUrl": "https://application.trendtaxi.uz/",
   "mapBaseUrl": "https://map.trendtaxi.uz/index.html?v=1.1.0.1",
-  "navigationBaseUrl": "https://navigation.trendtaxi.uz/navigation.html?v=1.1.0.1"
+  "navigationBaseUrl": "https://navigation.trendtaxi.uz/navigation.html?v=1.1.0.1",
+  "mapApi":"AIzaSyBaM2HW9VKkfv0e07d_ohP2egUnya0uyJI"
 }

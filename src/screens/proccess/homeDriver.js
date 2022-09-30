@@ -31,60 +31,10 @@ function Driver() {
         soundFile = 'ses14.mp3';
     }
 
-    const [mapUrl, setMapUrl] = React.useState(config.mapBaseUrl);
-
     const [soundLoaded, setSoundLoaded] = React.useState(false);
 
     const {animatedHandleHeight, animatedSnapPoints, animatedContentHeight, handleContentLayout} =
         useBottomSheetDynamicSnapPoints(initialSnapPoints);
-
-    const sendJS = (js) => {
-        try {
-            webViewRef.current?.injectJavaScript(`try {` + js + `true;} catch (error) {}`);
-        } catch (error) {}
-    };
-
-    const scripts = `
-        const consoleLog = (type, log) => window.ReactNativeWebView.postMessage(JSON.stringify({'type': 'Console', 'data': {'type': type, 'log': log}}));
-        console = {
-            log: (log) => consoleLog('log', log),
-            debug: (log) => consoleLog('debug', log),
-            info: (log) => consoleLog('info', log),
-            warn: (log) => consoleLog('warn', log),
-            error: (log) => consoleLog('error', log),
-        };
-    `;
-
-    const onMessage = (payload) => {
-        try {
-            let datas = JSON.parse(JSON.parse(payload.nativeEvent.data).data.log);
-        } catch (e) {}
-    };
-
-    useEffect(() => {
-        const abortController = new AbortController();
-        if (!mapLoading) {
-            dispatch({
-                type: 'loc',
-                payload: [data.app.currentLocation[0], data.app.currentLocation[1]],
-            });
-            sendJS(
-                `markers[0].setIcon({icon:'nullCar.svg'});markerMove=false;markers[0].setCoordinates([` +
-                    data.app.currentLocation[0] +
-                    `,` +
-                    data.app.currentLocation[1] +
-                    `]);map.setCenter([` +
-                    data.app.currentLocation[0] +
-                    `,` +
-                    data.app.currentLocation[1] +
-                    `]);`,
-            );
-        }
-        return () => {
-            abortController.abort();
-            false;
-        };
-    }, [mapLoading, data.trip.trip]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -120,7 +70,6 @@ function Driver() {
             if (kalan < 0) {
                 dispatch({type: 'setRequest', payload: null});
                 dispatch({type: 'ia', payload: true});
-                setloc([]);
             }
             setTimeoutSn(kalan);
         }, 1000);
@@ -128,7 +77,6 @@ function Driver() {
             dispatch({type: 'ia', payload: true});
             setTimeoutSn(10);
             clearInterval(interr);
-            setloc([]);
         } else {
             let sound = new Sound(soundFile, Sound.MAIN_BUNDLE, () => {
                 sound.play(() => {
@@ -140,96 +88,12 @@ function Driver() {
 
         return () => {
             abortController.abort();
-            setloc([]);
             dispatch({type: 'ia', payload: true});
             clearInterval(interr);
         };
     }, [data.trip.tripRequest, soundLoaded]);
 
-    const setloc = (loc) => {
-        if (loc.length > 0) {
-            let json = JSON.stringify({
-                type: 'mapCreate',
-                id: data.auth.userId,
-                locations: loc,
-            });
-            sendJS(
-                `markerMove=false;setMarker(` +
-                    json +
-                    `);map.fitBounds(
-                    {
-                        northEast: [` +
-                    loc[0].lat +
-                    `,` +
-                    loc[0].lon +
-                    `],
-                        southWest: [` +
-                    loc[loc.length - 1].lat +
-                    `,` +
-                    loc[loc.length - 1].lon +
-                    `],    
-                    },
-                    {
-                        padding: { top: 150, left: 150, bottom: 450, right: 150 },
-                        considerRotation: true,
-                    },
-                );`,
-            );
-        } else {
-            let json = JSON.stringify({
-                type: 'mapCreate',
-                id: data.auth.userId,
-                locations: [
-                    {
-                        lat: data.app.currentLocation[0],
-                        lon: data.app.currentLocation[1],
-                        title: '',
-                        description: '',
-                        icon: 1,
-                    },
-                ],
-            });
-            if (!mapLoading) {
-                dispatch({type: 'ia', payload: true});
-                sendJS(`setMarker(` + json + `);markerMove=false;`);
-                // sendJS(
-                //     `markers[0].setIcon({icon:'nullCar.svg'});markers[0].setLabel({});markers[0].setCoordinates([` +
-                //         data.app.currentLocation[0] +
-                //         `,` +
-                //         data.app.currentLocation[1] +
-                //         `]);`,
-                // );
-                mapLoad(data.app.currentLocation);
-            }
-        }
-        return () => {
-            abortController.abort();
-            false;
-        };
-    };
-
-    const wP = () => {
-        const wid = Geolocation.watchPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.longitude, position.coords.latitude],
-                });
-                sendJS(
-                    `markers[0].setIcon({icon:'nullCar.svg'});markers[0].setCoordinates([` +
-                        position.coords.longitude +
-                        `,` +
-                        position.coords.latitude +
-                        `]);`,
-                );
-            },
-            (error) => Alert.alert('WatchPosition Error', JSON.stringify(error)),
-            {
-                enableHighAccuracy: true,
-                distanceFilter: 5,
-            },
-        );
-    };
+    const [geo, setGeo] = React.useState(null);
 
     const onaylaFunction = () => {
         apiPost('updateActiveTrip', {
@@ -243,27 +107,6 @@ function Driver() {
         });
     };
     const [first, setFirst] = React.useState(true);
-    useEffect(() => {
-        const abortController = new AbortController();
-        if (first) {
-            if (data.app.currentLocation[0] > 0) {
-                mapLoad(data.app.currentLocation);
-                setFirst(false);
-            }
-        }
-        return () => {
-            abortController.abort();
-            false;
-        };
-    }, [mapLoading, data.app.currentLocation]);
-
-    const mapLoad = (d) => {
-        if (!mapLoading) {
-            sendJS(`markerMove=false;map.setCenter([` + d[0] + `,` + d[1] + `]);`);
-
-            apiActive('active');
-        }
-    };
 
     return (
         <>
@@ -272,49 +115,7 @@ function Driver() {
             ) : (
                 <>
                     <View style={{flex: 1}}>
-                        <View style={[{height: '100%'}]}>
-                            <WebView
-                                ref={webViewRef}
-                                source={{uri: mapUrl}}
-                                javaScriptEnabled={true}
-                                javaScriptEnabledAndroid={true}
-                                injectedJavaScript={scripts}
-                                onMessage={onMessage}
-                                onLoad={() => {
-                                    wP();
-                                    setMapLoading(false);
-                                    if (data.app.mapTheme == 'dark') {
-                                        sendJS(
-                                            `map.setStyle('e01600ee-57a3-42e1-ae5c-6a51aaf8c657');`,
-                                        );
-                                    }
-                                    if (data.app.mapTheme == 'light') {
-                                        sendJS(
-                                            `map.setStyle('32b1600d-4b8b-4832-871a-e33d8e4bb57f');`,
-                                        );
-                                    }
-                                }}
-                            />
-                            {mapLoading ? (
-                                <View
-                                    style={[
-                                        tw`
-                                    flex h-full w-full items-center justify-center`,
-                                        stil('bg2', data.app.theme),
-                                        {
-                                            bottom: 0,
-                                            position: 'absolute',
-                                            zIndex: 99999999999999,
-                                        },
-                                    ]}>
-                                    <ActivityIndicator
-                                        size="large"
-                                        style={[{zIndex: 99999999999999}]}
-                                        color={stil('text', data.app.theme).color}
-                                    />
-                                </View>
-                            ) : null}
-                        </View>
+                        {/* <View style={[{height: '100%'}]}>//HARİTA</View> */}
                         <BottomSheet
                             ref={bottomSheetRef}
                             snapPoints={animatedSnapPoints}

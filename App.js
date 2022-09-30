@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {LogBox} from 'react-native';
+
 import {Provider, useDispatch, useSelector} from 'react-redux';
 import logger from 'redux-logger';
 import {createStore, applyMiddleware} from 'redux';
@@ -13,7 +13,9 @@ import Pusher from 'pusher-js/react-native';
 import l from './src/languages.json';
 import KeepAwake from 'react-native-keep-awake';
 import notifee from '@notifee/react-native';
+import Geolocation from '@react-native-community/geolocation';
 
+import {Alert, LogBox} from 'react-native';
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 LogBox.ignoreAllLogs();
 
@@ -117,7 +119,6 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        notifee.cancelAllNotifications();
         const abortController = new AbortController();
         if (data.app.isActive || data.trip.trip != null) {
             KeepAwake.activate();
@@ -132,10 +133,12 @@ const App = () => {
             var channel = pusher.subscribe('tripevent-' + data.auth.userId);
             channel.bind('trip', function (socket) {
                 if (socket.message.prc == 'bildirim') {
+                    notifee.cancelAllNotifications();
                     onDisplayNotification(socket.message.title, socket.message.body);
                 }
                 if (socket.message.prc == 'driver_request') {
                     if (data.app.isActive) {
+                        notifee.cancelAllNotifications();
                         onDisplayNotification(
                             l[data.app.lang].yenitripTitle,
                             socket.message.trip.passenger.user_name,
@@ -150,7 +153,18 @@ const App = () => {
                     dispatch({type: 'setRequest', payload: null});
                     dispatch({type: 'setTrip', payload: null});
                     dispatch({type: 'setTripFind', payload: false});
-                    alert(l[data.app.lang].carnotfound);
+                    Alert.alert(
+                        '',
+                        l[data.app.lang].carnotfound,
+                        [
+                            {
+                                text: l[data.app.lang].check,
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                        ],
+                        {cancelable: false},
+                    );
                 }
 
                 if (socket.message.prc == 'trip_check') {
@@ -165,28 +179,17 @@ const App = () => {
                     dispatch({type: 'isLoading', payload: false});
                 }
                 if (socket.message.prc == 'driverLocation') {
-                    if (socket.message.price) {
-                        dispatch({
-                            type: 'setTrip',
-                            payload: {
-                                ...data.trip.trip,
-                                act_price: socket.message.price,
-                                act_distance: socket.message.km,
+                    dispatch({
+                        type: 'setTrip',
+                        payload: {
+                            ...data.trip.trip,
+                            driver: {
+                                ...data.trip.trip.driver,
+                                last_latitude: socket.message.locations[0],
+                                last_longitude: socket.message.locations[1],
                             },
-                        });
-                    } else {
-                        dispatch({
-                            type: 'setTrip',
-                            payload: {
-                                ...data.trip.trip,
-                                driver: {
-                                    ...data.trip.trip.driver,
-                                    last_latitude: socket.message.locations[0],
-                                    last_longitude: socket.message.locations[1],
-                                },
-                            },
-                        });
-                    }
+                        },
+                    });
                 }
             });
         } else {
@@ -198,6 +201,36 @@ const App = () => {
             pusher?.disconnect();
         };
     }, [data.app.isActive, data.auth.userId, data.trip.trip]);
+
+    const watchPosition = () => {
+        try {
+            const watchID = Geolocation.watchPosition(
+                (position) => {
+                    dispatch({
+                        type: 'loc',
+                        payload: [position.coords.latitude, position.coords.longitude],
+                    });
+                },
+                (error) => Alert.alert('WatchPosition Error', JSON.stringify(error)),
+            );
+            setSubscriptionId(watchID);
+        } catch (error) {
+            Alert.alert('WatchPosition Error', JSON.stringify(error));
+        }
+    };
+
+    const clearWatch = () => {
+        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
+        setSubscriptionId(null);
+    };
+
+    const [subscriptionId, setSubscriptionId] = React.useState(null);
+    useEffect(() => {
+        watchPosition();
+        return () => {
+            clearWatch();
+        };
+    }, []);
 
     return (
         <>{data.app.isLoading ? <Loading /> : <>{data.auth.isAuth ? <Router /> : <Welcome />}</>}</>

@@ -13,30 +13,15 @@ const hasPermissionIOS = async () => {
         return true;
     }
 
-    if (status === 'denied') {
-        Alert.alert('Location permission denied');
-    }
-
-    if (status === 'disabled') {
-        Alert.alert(
-            `Turn on Location Services to allow "${appConfig.displayName}" to determine your location.`,
-            '',
-            [
-                {text: 'Go to Settings', onPress: openSetting},
-                {text: "Don't Use Location", onPress: () => {}},
-            ],
-        );
-    }
+    Alert.alert(`Turn on Location Services to allow "Trend Taxi" to determine your location.`, '', [
+        {text: 'Go to Settings', onPress: openSetting},
+        {text: "Don't Use Location", onPress: () => {}},
+    ]);
 
     return false;
 };
 
 const hasLocationPermission = async () => {
-    if (Platform.OS === 'ios') {
-        const hasPermission = await hasPermissionIOS();
-        return hasPermission;
-    }
-
     if (Platform.OS === 'android' && Platform.Version < 23) {
         return true;
     }
@@ -58,8 +43,35 @@ const hasLocationPermission = async () => {
     }
 
     if (status === PermissionsAndroid.RESULTS.DENIED) {
+        Alert.alert(
+            `Turn on Location Services to allow "Trend Taxi" to determine your location.`,
+            '',
+            [
+                {
+                    text: 'Go to Settings',
+                    onPress: () => {
+                        Linking.openSettings();
+                    },
+                },
+                {text: "Don't Use Location", onPress: () => {}},
+            ],
+        );
+
         ToastAndroid.show('Location permission denied by user.', ToastAndroid.LONG);
     } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+        Alert.alert(
+            `Turn on Location Services to allow "Trend Taxi" to determine your location.`,
+            '',
+            [
+                {
+                    text: 'Go to Settings',
+                    onPress: () => {
+                        Linking.openSettings();
+                    },
+                },
+                {text: "Don't Use Location", onPress: () => {}},
+            ],
+        );
         ToastAndroid.show('Location permission revoked by user.', ToastAndroid.LONG);
     }
 
@@ -67,6 +79,13 @@ const hasLocationPermission = async () => {
 };
 
 export const izinal = async () => {
-    const hasPermission = await hasLocationPermission();
-    return hasPermission;
+    if (Platform.OS === 'android') {
+        const hasPermission = await hasLocationPermission();
+        console.log(hasPermission);
+        return hasPermission;
+    } else {
+        const hasPermission = await hasPermissionIOS();
+        console.log(hasPermission);
+        return hasPermission;
+    }
 };

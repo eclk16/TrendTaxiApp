@@ -13,11 +13,9 @@ function LoginTypeSelect({setStep}) {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
 
-    function setTheme(theme) {
-        setValue('TrendTaxiTheme', theme);
-        dispatch({type: 'theme', payload: theme});
-    }
-
+    const setle = () => {
+        setStep(5);
+    };
     return (
         <>
             <View style={[tw`mx-6`]}>
@@ -30,7 +28,7 @@ function LoginTypeSelect({setStep}) {
                     onPress={() => {
                         izinal();
                         dispatch({type: 'setType', payload: 'driver'});
-                        setStep(5);
+                        setle();
                     }}>
                     <View style={[tw`flex-row items-center justify-between `]}>
                         <MaterialCommunityIcons
@@ -52,7 +50,7 @@ function LoginTypeSelect({setStep}) {
                     onPress={() => {
                         izinal();
                         dispatch({type: 'setType', payload: 'passenger'});
-                        setStep(5);
+                        setle();
                     }}>
                     <View style={[tw`flex-row items-center justify-between `]}>
                         <MaterialCommunityIcons

@@ -288,7 +288,7 @@
         "areyousure":"Are you sure ?",
         "hatakod":"Wrong verification code",
         "yenitripTitle":"New Trip Request",
-
+        "selectCarType":"Please select the type of vehicle you want to travel."
 
     },
     "ru":{
@@ -463,7 +463,8 @@
          "carnotfound":"Мы не смогли найти для вас подходящее транспортное средство, повторите попытку позже.",
          "areyousure": "Вы уверены?",
          "hatakod":"неверный код подтверждения",
-         "yenitripTitle":"новый запрос на поездку"
+         "yenitripTitle":"новый запрос на поездку",
+         "selectCarType":"Пожалуйста, выберите тип транспортного средства, на котором вы хотите путешествовать."
     },
     "uz":{
         "driverLogin": "Haydovchi Kirish",
@@ -636,6 +637,7 @@
          "carnotfound":"Sizga mos transport vositasini topa olmadik, keyinroq qayta urinib ko'ring.",
          "areyousure":"Ishonchingiz komilmi?",
          "hatakod":"Noto'g'ri tasdiqlash kodi",
-         "yenitripTitle":"Yangi Sayohat So'rovi"
+         "yenitripTitle":"Yangi Sayohat So'rovi",
+         "selectCarType":"Iltimos, sayohat qilmoqchi bo'lgan avtomobil turini tanlang."
     }
 }

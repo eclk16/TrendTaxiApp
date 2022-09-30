@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {
     createDrawerNavigator,
@@ -13,8 +13,6 @@ import l from './languages.json';
 import {stil} from './utils';
 import {useDispatch, useSelector} from 'react-redux';
 import {removeValue} from './async';
-import Passenger from './screens/proccess/homePassenger';
-import Driver from './screens/proccess/homeDriver';
 import Harita from './screens/proccess/map';
 import Trips from './screens/other/trips';
 import Settings from './screens/other/settings';
@@ -25,6 +23,9 @@ import Reports from './screens/other/reports';
 import StatusBarComponent from './components/global/status';
 import ProfileEdit from './screens/other/profileEdit';
 import config from './app.json';
+import MapPage from './screens/proccess/map';
+import MapPage2 from './screens/proccess/map2';
+import Home from './screens/proccess';
 
 MaterialCommunityIcons.loadFont();
 const Drawer = createDrawerNavigator();
@@ -53,6 +54,11 @@ const Router = () => {
     const data = useSelector((state) => state);
 
     const list = [
+        {
+            icon: 'home',
+            text: l[data.app.lang].home,
+            navigate: 'Home',
+        },
         {
             icon: 'map-marker-distance',
             text: l[data.app.lang].trips,
@@ -88,11 +94,11 @@ const Router = () => {
         },
     ];
 
-    list.unshift(
-        data.auth.userType == 'passenger'
-            ? {icon: 'arch', text: l[data.app.lang].start, navigate: 'Home'}
-            : {icon: 'arch', text: l[data.app.lang].start, navigate: 'HomeDriverPage'},
-    );
+    // list.unshift(
+    //     data.auth.userType == 'passenger'
+    //         ? {icon: 'arch', text: l[data.app.lang].start, navigate: 'Home'}
+    //         : {icon: 'arch', text: l[data.app.lang].start, navigate: 'HomeDriverPage'},
+    // );
 
     const menuButton = ({icon, text, navigate, index, props}) => {
         return (
@@ -154,7 +160,7 @@ const Router = () => {
         <NavigationContainer>
             <StatusBarComponent />
             <Drawer.Navigator
-                initialRouteName={data.auth.userType == 'driver' ? 'HomeDriverPage' : 'Home'}
+                initialRouteName={'Home'}
                 screenOptions={{
                     drawerStyle: {
                         backgroundColor: stil('bg', data.app.theme).backgroundColor,
@@ -253,71 +259,38 @@ const Router = () => {
                         </DrawerContentScrollView>
                     );
                 }}>
-                {data.auth.userType == 'passenger' ? (
-                    <Drawer.Screen
-                        name="Home"
-                        component={data.trip.trip !== null ? Harita : Passenger}
-                        options={{
-                            drawerItemStyle: {
-                                display: 'none',
+                <Drawer.Screen
+                    name="Home"
+                    component={Home}
+                    options={{
+                        drawerItemStyle: {
+                            display: 'none',
+                        },
+                        headerTitleStyle: {
+                            color: 'transparent',
+                        },
+                        headerTransparent: true,
+                        headerTintColor: stil('text', data.app.theme).color,
+                        headerLeftContainerStyle: {
+                            backgroundColor:
+                                data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
+                            borderTopRightRadius: 10,
+                            borderBottomRightRadius: 10,
+                            marginRight: '50%',
+                            height: 50,
+                            shadowColor:
+                                data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
+                            shadowOffset: {
+                                width: 1,
+                                height: 1,
                             },
-                            headerTitleStyle: {
-                                color: 'transparent',
-                            },
-                            headerTransparent: true,
-                            headerTintColor: stil('text', data.app.theme).color,
-                            headerLeftContainerStyle: {
-                                backgroundColor:
-                                    data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
-                                borderTopRightRadius: 10,
-                                borderBottomRightRadius: 10,
-                                marginRight: '50%',
-                                height: 50,
-                                shadowColor:
-                                    data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
-                                shadowOffset: {
-                                    width: 1,
-                                    height: 1,
-                                },
-                                shadowOpacity: 0.7,
-                                shadowRadius: 1,
-                                elevation: 5,
-                            },
-                        }}
-                    />
-                ) : (
-                    <Drawer.Screen
-                        name="HomeDriverPage"
-                        component={data.trip.trip !== null ? Harita : Driver}
-                        options={{
-                            drawerItemStyle: {
-                                display: 'none',
-                            },
-                            headerTitleStyle: {
-                                color: 'transparent',
-                            },
-                            headerTransparent: true,
-                            headerTintColor: stil('text', data.app.theme).color,
-                            headerLeftContainerStyle: {
-                                backgroundColor:
-                                    data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
-                                borderTopRightRadius: 10,
-                                borderBottomRightRadius: 10,
-                                marginRight: '30%',
-                                height: 50,
-                                shadowColor:
-                                    data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
-                                shadowOffset: {
-                                    width: 1,
-                                    height: 1,
-                                },
-                                shadowOpacity: 0.7,
-                                shadowRadius: 1,
-                                elevation: 5,
-                            },
-                        }}
-                    />
-                )}
+                            shadowOpacity: 0.7,
+                            shadowRadius: 1,
+                            elevation: 5,
+                        },
+                    }}
+                />
+
                 <Drawer.Screen
                     name="Trips"
                     component={Trips}
@@ -433,37 +406,6 @@ const Router = () => {
                         },
                         title: l[data.app.lang].faq,
                     })}
-                />
-                <Drawer.Screen
-                    name="Harita"
-                    component={Harita}
-                    options={{
-                        drawerItemStyle: {
-                            display: 'none',
-                        },
-                        headerTitleStyle: {
-                            color: 'transparent',
-                        },
-                        headerTransparent: true,
-                        headerTintColor: stil('text', data.app.theme).color,
-                        headerLeftContainerStyle: {
-                            backgroundColor:
-                                data.app.theme == 'dark' ? 'rgba(15, 54, 94,1)' : '#f1f1f1',
-                            borderTopRightRadius: 10,
-                            borderBottomRightRadius: 10,
-                            marginRight: '50%',
-                            height: 50,
-                            shadowColor:
-                                data.app.theme == 'dark' ? '#f1f1f1' : 'rgba(15, 54, 94,1)',
-                            shadowOffset: {
-                                width: 1,
-                                height: 1,
-                            },
-                            shadowOpacity: 0.7,
-                            shadowRadius: 1,
-                            elevation: 5,
-                        },
-                    }}
                 />
             </Drawer.Navigator>
         </NavigationContainer>

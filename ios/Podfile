@@ -21,9 +21,12 @@ target 'TrendTaxi' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
- 
+  rn_maps_path = '../node_modules/react-native-maps'
+  pod 'react-native-google-maps', :path => rn_maps_path
+  pod 'react-native-maps', path: rn_maps_path
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
-  
+  pod 'GoogleMaps'
+pod 'Google-Maps-iOS-Utils'
 
 
   pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'

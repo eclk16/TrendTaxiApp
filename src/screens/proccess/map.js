@@ -21,7 +21,7 @@ import MapPage2 from './map2';
 import {Linking} from 'react-native';
 
 function MapPage() {
-    let webViewRef = React.useRef();
+    let webViewRef2 = React.useRef();
     const bottomSheetRef = React.useRef(null);
     const source = config.navigationBaseUrl;
     const data = useSelector((state) => state);
@@ -34,214 +34,7 @@ function MapPage() {
     const {animatedHandleHeight, animatedSnapPoints, animatedContentHeight, handleContentLayout} =
         useBottomSheetDynamicSnapPoints(initialSnapPoints);
 
-    const sendJS = (js) => {
-        try {
-            webViewRef.current?.injectJavaScript(js + `true;`);
-        } catch (error) {}
-    };
-
-    const yonIcon = (iconu) => {
-        switch (iconu) {
-            case 'start':
-                return setIcon('ray-start-arrow');
-            case 'finish':
-                return setIcon('ray-start-end');
-            case 'crossroad_straight':
-                return setIcon('arrow-up-bold');
-            case 'crossroad_slightly_left':
-                return setIcon('arrow-left-top-bold');
-            case 'crossroad_left':
-                return setIcon('arrow-left-top-bold');
-            case 'crossroad_sharply_left':
-                return setIcon('arrow-left-top-bold');
-            case 'crossroad_sharply_right':
-                return setIcon('arrow-right-top-bold');
-            case 'crossroad_right':
-                return setIcon('arrow-right-top-bold');
-            case 'crossroad_slightly_right':
-                return setIcon('arrow-right-top-bold');
-            case 'ringroad_forward':
-                return setIcon('arrow-up-bold');
-            case 'ringroad_left_45':
-                return setIcon('arrow-left-top-bold');
-            case 'ringroad_left_90':
-                return setIcon('arrow-left-top-bold');
-            case 'ringroad_left_135':
-                return setIcon('arrow-left-top-bold');
-            case 'ringroad_left_180':
-                return setIcon('arrow-u-down-left-bold');
-            case 'ringroad_right_45':
-                return setIcon('arrow-right-top-bold');
-            case 'ringroad_right_90':
-                return setIcon('arrow-right-top-bold');
-            case 'ringroad_right_135':
-                return setIcon('arrow-right-top-bold');
-            case 'ringroad_right_180':
-                return setIcon('arrow-u-down-right-bold');
-            case 'turn_over_right_hand':
-                return setIcon('arrow-u-down-right-bold');
-            case 'turn_over_left_hand':
-                return setIcon('arrow-u-down-right-bold');
-            default:
-                return setIcon('ray-start-arrow');
-        }
-    };
     const [geo, setGeo] = React.useState(null);
-    const wP = () => {
-        const wid = Geolocation.watchPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.longitude, position.coords.latitude],
-                });
-                if (data.auth.userType == 'driver') {
-                    apiPost('mapSocket', {
-                        id: data.trip.trip.driver_id,
-                        id_2: data.trip.trip.passenger_id,
-                        token: data.auth.userToken,
-                        locations: [position.coords.longitude, position.coords.latitude],
-                        prc: 'driverLocation',
-                    });
-                }
-            },
-            (error) => Alert.alert('WatchPosition Error', JSON.stringify(error)),
-            {
-                enableHighAccuracy: true,
-                distanceFilter: 5,
-            },
-        );
-        setGeo(wid);
-    };
-    useEffect(() => {
-        const abortController = new AbortController();
-        if (!mapLoading) {
-            sendJS(
-                `
-            directions.clear();
-            directions.carRoute({
-                points: [    
-                    [` +
-                    data.trip.trip.driver.last_latitude +
-                    `,` +
-                    data.trip.trip.driver.last_longitude +
-                    `],[` +
-                    data.trip.trip.locations[0].lat +
-                    `,` +
-                    data.trip.trip.locations[0].lon +
-                    `]
-                                   
-                ]
-            });driver.setCoordinates([` +
-                    data.trip.trip.driver.last_latitude +
-                    `,` +
-                    data.trip.trip.driver.last_longitude +
-                    `]);
-            `,
-            );
-            getNavigation(
-                data.trip.trip.driver.last_latitude,
-                data.trip.trip.driver.last_longitude,
-            );
-        }
-        return () => {
-            abortController.abort();
-        };
-    }, [data.trip.trip.driver.last_latitude, geo]);
-
-    useEffect(() => {
-        const abortController = new AbortController();
-        if (ortala) {
-            if (!mapLoading) {
-                sendJS(
-                    `map.setCenter([` +
-                        data.trip.trip.driver.last_latitude +
-                        `,` +
-                        data.trip.trip.driver.last_longitude +
-                        `]);map.setZoom(18);`,
-                );
-            }
-        }
-
-        return () => {
-            abortController.abort();
-            false;
-        };
-    }, [mapLoading, ortala, data.trip.trip.driver.last_latitude]);
-
-    const getNavigation = (xx, yy) => {
-        var myHeaders = new Headers();
-        myHeaders.append('Content-Type', 'application/json');
-        myHeaders.append('Accept', 'application/json');
-
-        var raw = JSON.stringify({
-            alternative: 0,
-            locale: data.app.lang,
-            point_a_name: 'Source',
-            point_b_name: 'Target',
-            type: 'jam',
-            points: [
-                {
-                    start: true,
-                    type: 'walking',
-                    x: xx,
-                    y: yy,
-                },
-                {
-                    start: false,
-                    type: 'walking',
-                    x: data.trip.trip.locations[0].lat,
-                    y: data.trip.trip.locations[0].lon,
-                },
-            ],
-            need_altitudes: true,
-        });
-
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow',
-        };
-
-        fetch(
-            'https://catalog.api.2gis.com/carrouting/6.0.0/global?key=cd5e111e-b442-4ef4-aee5-6711f03326a3',
-            requestOptions,
-        )
-            .then((response) => response.json())
-            .then((result) => {
-                hareket(result.result[0].maneuvers);
-            })
-            .catch((error) => console.log('error', error));
-    };
-
-    const fitBound = () => {
-        sendJS(
-            `map.fitBounds(
-                        {
-                            northEast: [` +
-                data.trip.trip.driver.last_latitude +
-                `,` +
-                data.trip.trip.driver.last_longitude +
-                `],
-                            southWest: [` +
-                data.trip.trip.locations[data.trip.trip.locations.length - 1].lat +
-                `,` +
-                data.trip.trip.locations[data.trip.trip.locations.length - 1].lon +
-                `],    
-                        },
-                        {
-                            padding: { top: 150, left: 150, bottom: 150, right: 150 },
-                            considerRotation: true,
-                        },
-                    );`,
-        );
-    };
-
-    const hareket = (dpp) => {
-        yonIcon(dpp[1].icon ? dpp[1].icon : 'ray-start-arrow');
-        setYonText(dpp[0].turn_direction ? dpp[0].turn_direction : '');
-        setYonMesafe(dpp[0].outcoming_path_comment ? dpp[0].outcoming_path_comment : '');
-    };
 
     const [icon, setIcon] = React.useState('arrow-up-bold');
     const [mapLoading, setMapLoading] = React.useState(true);
@@ -252,51 +45,7 @@ function MapPage() {
                 <MapPage2 />
             ) : (
                 <View style={{flex: 1}}>
-                    <View style={[{height: '100%'}]}>
-                        <WebView
-                            ref={webViewRef}
-                            source={{uri: source}}
-                            javaScriptEnabled={true}
-                            javaScriptEnabledAndroid={true}
-                            onTouchMove={() => {
-                                setOrtala(false);
-                            }}
-                            onLoad={() => {
-                                if (data.app.mapTheme == 'dark') {
-                                    sendJS(`map.setStyle('e01600ee-57a3-42e1-ae5c-6a51aaf8c657');`);
-                                }
-                                if (data.app.mapTheme == 'light') {
-                                    sendJS(`map.setStyle('32b1600d-4b8b-4832-871a-e33d8e4bb57f');`);
-                                }
-                                wP();
-                                setMapLoading(false);
-                                getNavigation(
-                                    data.trip.trip.driver.last_latitude,
-                                    data.trip.trip.driver.last_longitude,
-                                );
-                                fitBound();
-                            }}
-                        />
-                        {mapLoading ? (
-                            <View
-                                style={[
-                                    tw`
-                                    flex h-full w-full items-center justify-center`,
-                                    stil('bg2', data.app.theme),
-                                    {
-                                        bottom: 0,
-                                        position: 'absolute',
-                                        zIndex: 99999999999999,
-                                    },
-                                ]}>
-                                <ActivityIndicator
-                                    size="large"
-                                    style={[{zIndex: 99999999999999}]}
-                                    color={stil('text', data.app.theme).color}
-                                />
-                            </View>
-                        ) : null}
-                    </View>
+                    {/* <View style={[{height: '100%'}]}>//HARİTA</View> */}
 
                     {data.auth.userType == 'driver' ? (
                         <View
@@ -569,6 +318,7 @@ function MapPage() {
                                     <TouchableOpacity
                                         onPress={() => {
                                             dispatch({type: 'isLoading', payload: true});
+                                            Geolocation.clearWatch(geo);
                                             apiPost('updateActiveTrip', {
                                                 prc: 'tripChange',
                                                 lang: data.app.lang,
