@@ -13,7 +13,7 @@ import config from '../../../app.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 MaterialCommunityIcons.loadFont();
 
-export default function DriverGoPassenger({navigation}) {
+export default function DriverGoPassenger() {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     const harita = React.useRef(null);
@@ -359,7 +359,6 @@ export default function DriverGoPassenger({navigation}) {
                                                     id: data.trip.trip.passenger_id,
                                                     user_type: data.auth.userType,
                                                 });
-                                                navigation.navigate('Wait');
                                             },
                                         },
                                     ],
@@ -379,7 +378,6 @@ export default function DriverGoPassenger({navigation}) {
                                     trip_id: data.trip.trip.id,
                                     status: 3,
                                 });
-                                navigation.navigate('Trip');
                             }}
                             style={[tw`px-4 w-3/5 py-3 rounded-md bg-[#00A300]`]}>
                             <Text style={[tw`text-white text-center font-semibold`]}>

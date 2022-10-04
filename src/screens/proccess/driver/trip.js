@@ -309,7 +309,6 @@ export default function DriverTrip({navigation}) {
                                     end_time: new Date().getTime() / 1000,
                                     status: 4,
                                 });
-                                navigation.navigate('Wait');
                             }}
                             style={[tw`px-4 w-4/5 py-3 rounded-md bg-[#00A300]`]}>
                             <Text style={[tw`text-white text-center font-semibold`]}>

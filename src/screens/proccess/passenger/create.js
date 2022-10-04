@@ -728,7 +728,8 @@ export default function PassengerCreate() {
                             <Text style={[stil('text', data.app.theme), tw`text-xs`]}>
                                 {(distance / 1000).toFixed(2)} km
                             </Text>
-                            <Text style={[tw`text-center text-white font-medium`]}>
+                            <Text
+                                style={[tw`text-center font-medium`, stil('text', data.app.theme)]}>
                                 {l[data.app.lang].start}
                             </Text>
                         </TouchableOpacity>

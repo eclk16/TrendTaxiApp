@@ -1,83 +1,109 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useSelector} from 'react-redux';
+import ModalMenu from '../../components/global/menu';
+import StatusBarComponent from '../../components/global/status';
 
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-const Stack = createNativeStackNavigator();
+import Register from './driver/register';
+import DriverWait from './driver/wait';
+import DriverGoPassenger from './driver/goPassenger';
+import DriverTrip from './driver/trip';
 
 import PassengerCreate from './passenger/create';
 import PassengerWait from './passenger/wait';
 import PassengerTrip from './passenger/trip';
 
-import DriverRegister from './driver/register';
-import DriverWait from './driver/wait';
-import DriverGoPassenger from './driver/goPassenger';
-import DriverTrip from './driver/trip';
-
-import StatusBarComponent from '../../components/global/status';
-
-import {useNavigation} from '@react-navigation/native';
-
-function Kontrol() {
-    const navigation = useNavigation();
-
-    const data = useSelector((state) => state);
-    const [initRout, setInitRoute] = React.useState('Control');
-
-    useEffect(() => {
-        if (data.auth.user.user_status == 0) {
-            navigation.navigate('Register');
-        } else if (data.trip.trip != null) {
-            if (data.trip.trip.status == 2) {
-                navigation.navigate('Wait');
-            } else if (data.trip.trip.status == 3) {
-                navigation.navigate('Trip');
-            }
-        } else {
-            navigation.navigate('Create');
-        }
-    });
-    return <></>;
-}
-
 export default function Home() {
     const data = useSelector((state) => state);
-    const [initRout, setInitRoute] = React.useState('Control');
+    const GetContent = () => {
+        const data = useSelector((state) => state);
+        switch (data.auth.user.user_status) {
+            case 0:
+                return <Register />;
+                break;
+            default:
+                return TypeSelect;
+                break;
+        }
+    };
+    const TypeSelect = () => {
+        const data = useSelector((state) => state);
+        switch (data.auth.userType) {
+            case 'passenger':
+                return TypePassenger;
+                break;
+            case 'driver':
+                return TypeDriver;
+                break;
+            default:
+                return TypePassenger;
+                break;
+        }
+    };
+    const TypePassenger = () => {
+        const data = useSelector((state) => state);
+        switch (data.trip.trip.status) {
+            case 2:
+                return <PassengerWait />;
+                break;
+            case 'driver':
+                return <PassengerTrip />;
+                break;
+            default:
+                return <PassengerCreate />;
+                break;
+        }
+    };
+    const TypeDriver = () => {
+        const data = useSelector((state) => state);
+        switch (data.trip.trip.status) {
+            case 2:
+                return <DriverGoPassenger />;
+                break;
+            case 'driver':
+                return <DriverTrip />;
+                break;
+            default:
+                return <DriverWait />;
+                break;
+        }
+    };
 
     return (
         <>
+            <ModalMenu />
             <StatusBarComponent />
-            <NavigationContainer independent={true} initialRouteName={initRout}>
-                <Stack.Navigator>
-                    <Stack.Screen
-                        name="Control"
-                        component={Kontrol}
-                        options={{headerShown: false}}
-                    />
-                    <Stack.Screen
-                        name="Create"
-                        component={data.auth.userType == 'passenger' ? PassengerCreate : DriverWait}
-                        options={{headerShown: false}}
-                    />
-                    <Stack.Screen
-                        name="Wait"
-                        component={
-                            data.auth.userType == 'passenger' ? PassengerWait : DriverGoPassenger
-                        }
-                        options={{headerShown: false}}
-                    />
-                    <Stack.Screen
-                        name="Trip"
-                        component={data.auth.userType == 'passenger' ? PassengerTrip : DriverTrip}
-                        options={{headerShown: false}}
-                    />
-                    <Stack.Screen
-                        name="Register"
-                        component={DriverRegister}
-                        options={{headerShown: false}}
-                    />
-                </Stack.Navigator>
-            </NavigationContainer>
+            {data.auth.user.user_status == 0 ? (
+                <Register />
+            ) : (
+                <>
+                    {data.auth.userType == 'passenger' ? (
+                        <>
+                            {data.trip.trip === null ? (
+                                <PassengerCreate />
+                            ) : (
+                                <>
+                                    {data.trip.trip.status == 2 ? <PassengerWait /> : null}
+                                    {data.trip.trip.status == 3 ? <PassengerTrip /> : null}
+                                </>
+                            )}
+                        </>
+                    ) : null}
+                    {data.auth.userType == 'driver' ? (
+                        <>
+                            {data.trip.trip === null ? (
+                                <DriverWait />
+                            ) : (
+                                <>
+                                    {data.trip.trip.status == 2 ? <DriverGoPassenger /> : null}
+                                    {data.trip.trip.status == 3 ? <DriverTrip /> : null}
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                </>
+            )}
         </>
     );
 }

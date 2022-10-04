@@ -1,19 +1,16 @@
 import React, {useEffect} from 'react';
 
 import {Provider, useDispatch, useSelector} from 'react-redux';
-import logger from 'redux-logger';
-import {createStore, applyMiddleware} from 'redux';
+import {createStore} from 'redux';
 import rootReducer from './src/reducers/index';
 import Loading from './src/components/global/loading';
 import {getValue, removeValue} from './src/async';
 import {apiPost} from './src/axios';
 import Router from './src/router';
-import Welcome from './src/screens/auth/welcome';
 import Pusher from 'pusher-js/react-native';
 import l from './src/languages.json';
 import KeepAwake from 'react-native-keep-awake';
 import notifee from '@notifee/react-native';
-import Geolocation from '@react-native-community/geolocation';
 
 import {Alert, LogBox} from 'react-native';
 LogBox.ignoreLogs(['new NativeEventEmitter']);
@@ -32,7 +29,7 @@ const AppWrapper = () => {
 const App = () => {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
-    const [loading, setLoading] = React.useState(true);
+    const [p, setP] = React.useState(null);
 
     async function onDisplayNotification(title, body) {
         // Request permissions (required for iOS)
@@ -64,9 +61,6 @@ const App = () => {
         });
         getValue('TrendTaxiTheme').then((theme) => {
             if (theme) dispatch({type: 'theme', payload: theme});
-        });
-        getValue('TrendTaxiMapTheme').then((theme) => {
-            if (theme) dispatch({type: 'mapTheme', payload: theme});
         });
         getValue('TrendTaxiUser').then((user) => {
             if (user) {
@@ -119,12 +113,74 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        const abortController = new AbortController();
-        if (data.app.isActive || data.trip.trip != null) {
-            KeepAwake.activate();
-        } else {
-            KeepAwake.deactivate();
+        if (p != null) {
+            if (p.message.prc == 'bildirim') {
+                notifee.cancelAllNotifications();
+                onDisplayNotification(p.message.title, p.message.body);
+            }
+            if (p.message.prc == 'driver_request') {
+                if (data.app.isActive) {
+                    notifee.cancelAllNotifications();
+                    onDisplayNotification(
+                        l[data.app.lang].yenitripTitle,
+                        p.message.trip.passenger.user_name,
+                    );
+
+                    dispatch({type: 'ia', payload: false});
+                    dispatch({type: 'setRequest', payload: p.message.trip});
+                }
+            }
+            if (p.message.prc == 'driver_not_found') {
+                dispatch({type: 'ia', payload: true});
+                dispatch({type: 'setRequest', payload: null});
+                dispatch({type: 'setTrip', payload: null});
+                dispatch({type: 'setTripFind', payload: false});
+                Alert.alert(
+                    '',
+                    l[data.app.lang].carnotfound,
+                    [
+                        {
+                            text: l[data.app.lang].check,
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                    ],
+                    {cancelable: false},
+                );
+            }
+
+            if (p.message.prc == 'trip_check') {
+                dispatch({type: 'setRequest', payload: null});
+                dispatch({type: 'setTrip', payload: p.message.trip});
+                if (p.message.trip == null) {
+                    dispatch({type: 'ia', payload: true});
+                } else {
+                    dispatch({type: 'ia', payload: false});
+                }
+                dispatch({type: 'setTripFind', payload: false});
+                dispatch({type: 'isLoading', payload: false});
+            }
+            if (p.message.prc == 'driverLocation') {
+                dispatch({
+                    type: 'setTrip',
+                    payload: {
+                        ...data.trip.trip,
+                        driver: {
+                            ...data.trip.trip.driver,
+                            last_latitude: p.message.locations[0],
+                            last_longitude: p.message.locations[1],
+                        },
+                    },
+                });
+            }
         }
+        return () => {
+            setP(null);
+        };
+    }, [p]);
+
+    useEffect(() => {
+        KeepAwake.activate();
         if (data.auth.userId > 0) {
             Pusher.logToConsole = false;
             var pusher = new Pusher('56fc65fe2a3519f82046', {
@@ -132,109 +188,18 @@ const App = () => {
             });
             var channel = pusher.subscribe('tripevent-' + data.auth.userId);
             channel.bind('trip', function (socket) {
-                if (socket.message.prc == 'bildirim') {
-                    notifee.cancelAllNotifications();
-                    onDisplayNotification(socket.message.title, socket.message.body);
-                }
-                if (socket.message.prc == 'driver_request') {
-                    if (data.app.isActive) {
-                        notifee.cancelAllNotifications();
-                        onDisplayNotification(
-                            l[data.app.lang].yenitripTitle,
-                            socket.message.trip.passenger.user_name,
-                        );
-
-                        dispatch({type: 'ia', payload: false});
-                        dispatch({type: 'setRequest', payload: socket.message.trip});
-                    }
-                }
-                if (socket.message.prc == 'driver_not_found') {
-                    dispatch({type: 'ia', payload: true});
-                    dispatch({type: 'setRequest', payload: null});
-                    dispatch({type: 'setTrip', payload: null});
-                    dispatch({type: 'setTripFind', payload: false});
-                    Alert.alert(
-                        '',
-                        l[data.app.lang].carnotfound,
-                        [
-                            {
-                                text: l[data.app.lang].check,
-                                onPress: () => console.log('Cancel Pressed'),
-                                style: 'cancel',
-                            },
-                        ],
-                        {cancelable: false},
-                    );
-                }
-
-                if (socket.message.prc == 'trip_check') {
-                    dispatch({type: 'setRequest', payload: null});
-                    dispatch({type: 'setTrip', payload: socket.message.trip});
-                    if (socket.message.trip == null) {
-                        dispatch({type: 'ia', payload: true});
-                    } else {
-                        dispatch({type: 'ia', payload: false});
-                    }
-                    dispatch({type: 'setTripFind', payload: false});
-                    dispatch({type: 'isLoading', payload: false});
-                }
-                if (socket.message.prc == 'driverLocation') {
-                    dispatch({
-                        type: 'setTrip',
-                        payload: {
-                            ...data.trip.trip,
-                            driver: {
-                                ...data.trip.trip.driver,
-                                last_latitude: socket.message.locations[0],
-                                last_longitude: socket.message.locations[1],
-                            },
-                        },
-                    });
-                }
+                setP(socket);
             });
         } else {
             pusher?.disconnect();
         }
-
         return () => {
-            abortController.abort();
+            KeepAwake.deactivate();
             pusher?.disconnect();
         };
-    }, [data.app.isActive, data.auth.userId, data.trip.trip]);
+    }, [data.auth.userId]);
 
-    const watchPosition = () => {
-        try {
-            const watchID = Geolocation.watchPosition(
-                (position) => {
-                    dispatch({
-                        type: 'loc',
-                        payload: [position.coords.latitude, position.coords.longitude],
-                    });
-                },
-                (error) => Alert.alert('WatchPosition Error', JSON.stringify(error)),
-            );
-            setSubscriptionId(watchID);
-        } catch (error) {
-            Alert.alert('WatchPosition Error', JSON.stringify(error));
-        }
-    };
-
-    const clearWatch = () => {
-        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
-        setSubscriptionId(null);
-    };
-
-    const [subscriptionId, setSubscriptionId] = React.useState(null);
-    useEffect(() => {
-        watchPosition();
-        return () => {
-            clearWatch();
-        };
-    }, []);
-
-    return (
-        <>{data.app.isLoading ? <Loading /> : <>{data.auth.isAuth ? <Router /> : <Welcome />}</>}</>
-    );
+    return <>{data.app.isLoading ? <Loading /> : <Router />}</>;
 };
 
 export default AppWrapper;

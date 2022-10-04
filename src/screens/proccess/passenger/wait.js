@@ -13,7 +13,7 @@ import config from '../../../app.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 MaterialCommunityIcons.loadFont();
 
-export default function PassengerWait({navigation}) {
+export default function PassengerWait() {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     const harita = React.useRef(null);

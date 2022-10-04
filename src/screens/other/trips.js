@@ -15,18 +15,6 @@ import {apiPost} from '../../axios';
 function Trips() {
     const navigation = useNavigation();
 
-    handleBackButtonClick = () => {
-        navigation.navigate(data.auth.userType == 'passenger' ? 'Home' : 'HomeDriverPage');
-    };
-    useEffect(() => {
-        const abortController = new AbortController();
-        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
-        return () => {
-            abortController.abort();
-            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-        };
-    }, []);
-
     const data = useSelector((state) => state);
 
     const [loading, setLoading] = React.useState(true);
@@ -83,7 +71,7 @@ function Trips() {
                             <TouchableOpacity
                                 key={index}
                                 onPress={() => {
-                                    navigation.navigate('TripDetail', {trip_id: item.id});
+                                    navigation.navigate('TripDetails', {trip_id: item.id});
                                 }}>
                                 <View
                                     style={[
