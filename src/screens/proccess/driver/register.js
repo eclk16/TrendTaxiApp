@@ -14,7 +14,7 @@ import BottomSheet, {
     BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
 import {apiPost} from '../../../axios';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 import {
     BackHandler,
@@ -69,9 +69,13 @@ export default function DriverRegister() {
         apiPost('getPrices', {
             lang: data.app.lang,
             token: data.app.userToken,
-        }).then((response) => {
-            setDATA(response.data.response);
-        });
+        })
+            .then((response) => {
+                setDATA(response.data.response);
+            })
+            .catch((error) => {
+                console.log('REGİTSTER.JS ERROR (GETPRİCES)', error);
+            });
         return () => {
             abortController.abort();
             false;
@@ -196,12 +200,16 @@ export default function DriverRegister() {
             car_usage_license_image: images.car_usage_license_image_upload,
             user_status: 1,
             user_balance: 100000,
-        }).then((response) => {
-            dispatch({type: 'setUser', payload: response.data.response});
-            setKayitModal(true);
-            setStep(0);
-            setLoading(false);
-        });
+        })
+            .then((response) => {
+                dispatch({type: 'setUser', payload: response.data.response});
+                setKayitModal(true);
+                setStep(0);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.log('REGİSTER.JS ERROR (UPDATEUSER)', error);
+            });
     };
 
     return (

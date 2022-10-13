@@ -9,7 +9,7 @@ import BottomSheet, {useBottomSheetDynamicSnapPoints, BottomSheetView} from '@go
 import LanguageSelect from './languageSelect';
 import ThemeSelect from './themeSelect';
 
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 import {BackHandler, SafeAreaView, Text, View, Image, TouchableOpacity} from 'react-native';
 import StatusBarComponent from '../../components/global/status';

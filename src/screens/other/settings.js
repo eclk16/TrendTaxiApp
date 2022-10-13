@@ -9,7 +9,7 @@ import {setValue} from '../../async';
 import StatusBarComponent from '../../components/global/status';
 import {getUniqueId, getManufacturer} from 'react-native-device-info';
 import {useNavigation, useRoute} from '@react-navigation/native';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 export default function Settings() {
     const navigation = useNavigation();

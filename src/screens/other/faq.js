@@ -8,7 +8,7 @@ import {stil} from '../../utils';
 import StatusBarComponent from '../../components/global/status';
 import {apiGet} from '../../axios';
 import {useNavigation} from '@react-navigation/native';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 function Faq() {
     const navigation = useNavigation();

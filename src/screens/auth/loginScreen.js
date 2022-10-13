@@ -8,7 +8,7 @@ import l from '../../languages.json';
 import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
 import {getUniqueId} from 'react-native-device-info';
 
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 import {Text, TouchableOpacity, View, ActivityIndicator} from 'react-native';
 import {apiPost} from '../../axios';
@@ -57,7 +57,7 @@ function LoginScreen() {
                 loginFunction();
             })
             .catch((error) => {
-                console.log(error);
+                console.log('LOGİNSCREEN.JS ERROR (UPDATE USER)', error);
                 setLoading(false);
             });
     };
@@ -109,6 +109,7 @@ function LoginScreen() {
                 setLoading(false);
             })
             .catch((error) => {
+                console.log('LOGİNSCREEN.JS ERROR (LOGİN USER)', error);
                 setLoading(false);
             });
     };

@@ -4,7 +4,7 @@ import tw from 'twrnc';
 import l from '../../languages.json';
 import {stil} from '../../utils';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 import {useDispatch, useSelector} from 'react-redux';
 import {setValue} from '../../async';
 
@@ -33,7 +33,6 @@ function LanguageSelect() {
         setValue('TrendTaxiLang', code);
         dispatch({type: 'lang', payload: code});
     }
-    const [sheetHeight, SetSheetHeight] = React.useState(500);
     return (
         <View>
             <Text style={[tw`mb-6 text-center font-medium`, stil('text', data.app.theme)]}>

@@ -81,11 +81,9 @@ const hasLocationPermission = async () => {
 export const izinal = async () => {
     if (Platform.OS === 'android') {
         const hasPermission = await hasLocationPermission();
-        console.log(hasPermission);
         return hasPermission;
     } else {
         const hasPermission = await hasPermissionIOS();
-        console.log(hasPermission);
         return hasPermission;
     }
 };

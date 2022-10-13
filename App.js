@@ -10,14 +10,78 @@ import Router from './src/router';
 import Pusher from 'pusher-js/react-native';
 import l from './src/languages.json';
 import KeepAwake from 'react-native-keep-awake';
-import notifee from '@notifee/react-native';
-
+import messaging from '@react-native-firebase/messaging';
 import {Alert, LogBox} from 'react-native';
+import notifee from '@notifee/react-native';
+import {useNetInfo} from '@react-native-community/netinfo';
+
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 LogBox.ignoreAllLogs();
 
 const AppWrapper = () => {
     const store = createStore(rootReducer);
+
+    async function requestUserPermission() {
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (enabled) {
+            // console.log('Authorization status:', enabled);
+        }
+    }
+
+    async function messagingListener() {
+        messaging().onNotificationOpenedApp((remoteMessage) => {
+            console.log(
+                'Notification caused app to open from background state:',
+                remoteMessage.notification,
+            );
+        });
+
+        // Check whether an initial notification is available
+        messaging()
+            .getInitialNotification()
+            .then((remoteMessage) => {
+                if (remoteMessage) {
+                    console.log(
+                        'Notification caused app to open from quit state:',
+                        remoteMessage.notification,
+                    );
+                }
+            });
+
+        messaging().onMessage(async (remoteMessage) => {
+            await notifee.requestPermission();
+
+            // Create a channel (required for Android)
+            const channelId = await notifee.createChannel({
+                id: 'default',
+                name: 'Default Channel',
+            });
+
+            // Display a notification
+            await notifee.displayNotification({
+                title: remoteMessage.notification.title,
+                body: remoteMessage.notification.body,
+                android: {
+                    channelId,
+                    // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
+                    // pressAction is needed if you want the notification to open the app when pressed
+                    pressAction: {
+                        id: 'default',
+                    },
+                },
+            });
+        });
+    }
+
+    useEffect(() => {
+        requestUserPermission();
+
+        messagingListener();
+    }, []);
 
     return (
         <Provider store={store}>
@@ -29,29 +93,52 @@ const AppWrapper = () => {
 const App = () => {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
+    const netInfo = useNetInfo();
+
     const [p, setP] = React.useState(null);
 
-    async function onDisplayNotification(title, body) {
-        // Request permissions (required for iOS)
-        await notifee.requestPermission();
+    async function getNToken(arr) {
+        // await messaging().registerDeviceForRemoteMessages();
+        const token = await messaging().getToken();
 
-        // Create a channel (required for Android)
-        const channelId = await notifee.createChannel({
-            id: 'default',
-            name: 'Default Channel',
-        });
+        apiPost('updateUser', {...arr, remember_token: token})
+            .then((res) => {})
+            .catch((err) => {
+                console.log({...arr, remember_token: token});
+                console.log('APP.JS token', err);
+            });
+        return token;
+    }
 
-        // Display a notification
-        await notifee.displayNotification({
-            title: title,
-            body: body,
-            android: {
-                channelId,
-                pressAction: {
-                    id: 'default',
-                },
+    function sendNotification(to, body, title, subtitle) {
+        var myHeaders = new Headers();
+        myHeaders.append(
+            'Authorization',
+            'key=AAAAfZtd-kk:APA91bEkNRkI3IZYdHyu9cjRBsXZlpYupj4u-HboijWEb754fHhGs9hFrYvISxmKHLNQFkU4ChNNsKhOSvVI3bymJ1DjpFHrk5klX29BAtXoL8ISakbD_cEGSkLTkHnSUezBt6U3IJ-a',
+        );
+        myHeaders.append('Content-Type', 'application/json');
+
+        var raw = JSON.stringify({
+            to: to,
+            notification: {
+                title: title,
+                body: body,
+                subtitle: subtitle,
             },
         });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow',
+        };
+
+        fetch('https://fcm.googleapis.com/fcm/send', requestOptions)
+            .then((response) => response.text())
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     useEffect(() => {
@@ -75,11 +162,11 @@ const App = () => {
                             dispatch({type: 'setToken', payload: user.token});
                             dispatch({type: 'setType', payload: response.data.response.user_type});
                             dispatch({type: 'setUser', payload: response.data.response});
-                            dispatch({type: 'isAuth', payload: true});
                             if (response.data.response.trip) {
                                 dispatch({type: 'setTrip', payload: response.data.response.trip});
                             }
                             dispatch({type: 'isLoading', payload: false});
+                            dispatch({type: 'isAuth', payload: true});
                         } else {
                             dispatch({type: 'authRemove'});
                             dispatch({type: 'isAuth', payload: false});
@@ -89,11 +176,7 @@ const App = () => {
                         }
                     })
                     .catch((error) => {
-                        dispatch({type: 'authRemove'});
-                        dispatch({type: 'isAuth', payload: false});
-                        dispatch({type: 'setTrip', payload: null});
-                        removeValue('TrendTaxiUser');
-                        dispatch({type: 'isLoading', payload: false});
+                        console.log('APP.JS ERROR (GET USER)', error);
                     });
             } else {
                 dispatch({type: 'authRemove'});
@@ -104,34 +187,86 @@ const App = () => {
         });
         return () => {
             abortController.abort();
-            dispatch({type: 'authRemove'});
-            dispatch({type: 'isAuth', payload: false});
-            dispatch({type: 'setTrip', payload: null});
-
-            dispatch({type: 'isLoading', payload: false});
         };
     }, []);
 
     useEffect(() => {
+        if (data.auth.isAuth == true) {
+            apiPost('getUser', {
+                token: data.auth.userToken,
+                id: data.auth.userId,
+            })
+                .then((response) => {
+                    if (response != false) {
+                        dispatch({type: 'setId', payload: data.auth.userId});
+                        dispatch({type: 'setToken', payload: data.auth.userToken});
+                        dispatch({type: 'setType', payload: response.data.response.user_type});
+                        dispatch({type: 'setUser', payload: response.data.response});
+
+                        if (response.data.response.trip) {
+                            if (data.trip.trip == null) {
+                                dispatch({type: 'setTrip', payload: response.data.response.trip});
+                            }
+                        }
+                        dispatch({type: 'isLoading', payload: false});
+                        dispatch({type: 'isAuth', payload: true});
+                    }
+                })
+                .catch((error) => {
+                    console.log('APP.JS ERROR (GET USER2)', error);
+                });
+        }
+        return () => {
+            false;
+        };
+    }, [data.auth.isAuth]);
+
+    useEffect(() => {
+        if (data.auth.isAuth == true) {
+            apiPost('getUser', {
+                token: data.auth.userToken,
+                id: data.auth.userId,
+            })
+                .then((response) => {
+                    if (response != false) {
+                        dispatch({type: 'setUser', payload: response.data.response});
+                    }
+                })
+                .catch((error) => {
+                    console.log('APP.JS ERROR (GET USER2)', error);
+                });
+        }
+        return () => {
+            false;
+        };
+    }, [data.auth.isAuth]);
+
+    const [refreshToken, setRefreshToken] = React.useState(Math.random());
+
+    useEffect(() => {
         if (p != null) {
             if (p.message.prc == 'bildirim') {
-                notifee.cancelAllNotifications();
-                onDisplayNotification(p.message.title, p.message.body);
+                sendNotification(
+                    data.auth.user.remember_token,
+                    p.message.body,
+                    p.message.title,
+                    '',
+                );
             }
+
             if (p.message.prc == 'driver_request') {
                 if (data.app.isActive) {
-                    notifee.cancelAllNotifications();
-                    onDisplayNotification(
-                        l[data.app.lang].yenitripTitle,
+                    sendNotification(
+                        data.auth.user.remember_token,
                         p.message.trip.passenger.user_name,
+                        l[data.app.lang].yenitripTitle,
+                        '',
                     );
 
-                    dispatch({type: 'ia', payload: false});
                     dispatch({type: 'setRequest', payload: p.message.trip});
                 }
             }
             if (p.message.prc == 'driver_not_found') {
-                dispatch({type: 'ia', payload: true});
                 dispatch({type: 'setRequest', payload: null});
                 dispatch({type: 'setTrip', payload: null});
                 dispatch({type: 'setTripFind', payload: false});
@@ -150,34 +285,59 @@ const App = () => {
             }
 
             if (p.message.prc == 'trip_check') {
+                dispatch({type: 'isLoading', payload: true});
                 dispatch({type: 'setRequest', payload: null});
+
                 dispatch({type: 'setTrip', payload: p.message.trip});
-                if (p.message.trip == null) {
-                    dispatch({type: 'ia', payload: true});
-                } else {
-                    dispatch({type: 'ia', payload: false});
-                }
+
                 dispatch({type: 'setTripFind', payload: false});
+
                 dispatch({type: 'isLoading', payload: false});
+                apiPost('getUser', {
+                    token: data.auth.userToken,
+                    id: data.auth.userId,
+                })
+                    .then((response) => {
+                        if (response != false) {
+                            dispatch({type: 'setUser', payload: response.data.response});
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('APP.JS ERROR (GET USER2)', error);
+                    });
             }
             if (p.message.prc == 'driverLocation') {
-                dispatch({
-                    type: 'setTrip',
-                    payload: {
-                        ...data.trip.trip,
-                        driver: {
-                            ...data.trip.trip.driver,
-                            last_latitude: p.message.locations[0],
-                            last_longitude: p.message.locations[1],
+                if (data.trip.trip !== null) {
+                    dispatch({
+                        type: 'setTrip',
+                        payload: {
+                            ...data.trip.trip,
+                            driver: {
+                                ...data.trip.trip.driver,
+                                last_latitude: p.message.locations[0],
+                                last_longitude: p.message.locations[1],
+                            },
                         },
-                    },
-                });
+                    });
+                }
             }
         }
         return () => {
             setP(null);
         };
     }, [p]);
+
+    useEffect(() => {
+        if (data.auth.userId > 0 && data.auth.userToken != null) {
+            getNToken({
+                id: data.auth.userId,
+                token: data.auth.userToken,
+            });
+        }
+        return () => {
+            false;
+        };
+    }, [data.auth.userId, data.auth.userToken]);
 
     useEffect(() => {
         KeepAwake.activate();
@@ -199,7 +359,7 @@ const App = () => {
         };
     }, [data.auth.userId]);
 
-    return <>{data.app.isLoading ? <Loading /> : <Router />}</>;
+    return <>{data.app.isLoading || !netInfo.isConnected.toString() ? <Loading /> : <Router />}</>;
 };
 
 export default AppWrapper;

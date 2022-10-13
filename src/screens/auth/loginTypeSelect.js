@@ -6,7 +6,7 @@ import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import l from '../../languages.json';
 import {izinal} from '../../location';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 import {Text, TouchableOpacity, View} from 'react-native';
 function LoginTypeSelect({setStep}) {

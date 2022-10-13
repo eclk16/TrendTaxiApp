@@ -14,11 +14,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import tw from 'twrnc';
 import {stil} from '../../utils';
 import l from '../../languages.json';
-import {setValue} from '../../async';
+
 import {useNavigation} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
-MaterialCommunityIcons.loadFont();
-import axios from 'axios';
+//burayafont yükle gelecek
+
 import StatusBarComponent from '../../components/global/status';
 import config from '../../app.json';
 import {apiPost} from '../../axios';
@@ -40,14 +40,18 @@ export default function ProfileEdit() {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     const [userName, setUserName] = React.useState(null);
-    const [userPhone, setUserPhone] = React.useState(null);
+    const [carNumber, setCarNumber] = React.useState(null);
     const [uploadedImage, setUploadedImage] = React.useState(null);
     const [userImage, setUserImage] = React.useState(null);
+    const [gender, setGender] = React.useState(null);
+    const [dateofbirth, setDateOfBirth] = React.useState(null);
 
     useEffect(() => {
         const abortController = new AbortController();
+        setDateOfBirth(data.auth.user.user_data.dateofbirth);
+        setGender(data.auth.user.user_data.gender);
         setUserName(data.auth.user.user_name);
-        setUserPhone(data.auth.user.user_phone);
+        setCarNumber(data.auth.user.user_data.car_number);
         if (data.auth.user.user_data.user_image)
             setUserImage({uri: config.imageBaseUrl + data.auth.user.user_data.user_image});
         return () => {
@@ -83,27 +87,76 @@ export default function ProfileEdit() {
     };
 
     const saveUserInfo = () => {
-        apiPost('updateUser', {
-            id: data.auth.userId,
-            user_name: userName,
-            user_device: getUniqueId(),
-            user_image: uploadedImage,
-            token: data.auth.userToken,
-        })
+        let arr;
+        if (uploadedImage != null) {
+            arr = {
+                id: data.auth.userId,
+                user_name: userName,
+                user_device: getUniqueId(),
+                user_image: uploadedImage,
+                car_number: carNumber,
+                token: data.auth.userToken,
+                dateofbirth: dateofbirth,
+                gender: gender,
+            };
+        } else {
+            arr = {
+                id: data.auth.userId,
+                user_name: userName,
+                user_device: getUniqueId(),
+                car_number: carNumber,
+                token: data.auth.userToken,
+                dateofbirth: dateofbirth,
+                gender: gender,
+            };
+        }
+
+        apiPost('updateUser', arr)
             .then((response) => {
                 dispatch({type: 'setUser', payload: response.data.response});
                 setUserName(response.data.response.user_name);
-                setUserPhone(response.data.response.user_phone);
                 if (data.auth.user.user_data.user_image)
                     setUserImage({
                         uri: config.imageBaseUrl + response.data.response.user_data.user_image,
                     });
+                alert(l[data.app.lang].profileEdit);
             })
             .catch((error) => {
-                console.log(error);
+                console.log('PROFİLEEDT.JS ERROR (UPDATE USER)', error);
             });
     };
+    const [open, setOpen] = React.useState(false);
 
+    const setTarihFormat = (number) => {
+        let newText = '';
+        let numbers = '0123456789';
+        let adet = 0;
+        for (var i = 0; i < number.length; i++) {
+            if (numbers.indexOf(number[i]) > -1) {
+                newText = newText + number[i];
+                if (adet == 1) newText = newText + '/';
+                if (adet == 3) newText = newText + '/';
+                adet = adet + 1;
+            }
+        }
+        setDateOfBirth(newText.trimEnd(' '));
+    };
+
+    const setCardFormat = (number) => {
+        let newText = '';
+        let numbers = '0123456789';
+        let adet = 0;
+        for (var i = 0; i < number.length; i++) {
+            if (numbers.indexOf(number[i]) > -1) {
+                newText = newText + number[i];
+                if (adet == 3) newText = newText + ' ';
+                if (adet == 7) newText = newText + ' ';
+                if (adet == 11) newText = newText + ' ';
+                adet = adet + 1;
+            }
+        }
+        setCarNumber(newText.trimEnd(' '));
+    };
     return (
         <KeyboardAvoidingView
             style={tw`flex-1`}
@@ -157,14 +210,40 @@ export default function ProfileEdit() {
                         </View>
                     </View>
                 </View>
-
+                {data.auth.userType == 'driver' ? (
+                    <View
+                        style={[
+                            tw` rounded-md p-2 mt-4 flex  justify-between`,
+                            stil('bg2', data.app.theme),
+                        ]}>
+                        <Text
+                            style={[tw` font-medium`, {color: stil('text', data.app.theme).color}]}>
+                            {l[data.app.lang].cardNumber} :{' '}
+                        </Text>
+                        <View style={tw`flex flex-row justify-end`}>
+                            <View
+                                style={[
+                                    tw`w-full rounded-md  mt-2   border `,
+                                    {borderColor: stil('bg', data.app.theme).backgroundColor},
+                                ]}>
+                                <TextInput
+                                    maxLength={19}
+                                    style={[stil('text', data.app.theme), tw`p-2`]}
+                                    placeholderTextColor={stil('text', data.app.theme).color}
+                                    value={carNumber}
+                                    onChangeText={(text) => setCardFormat(text)}
+                                />
+                            </View>
+                        </View>
+                    </View>
+                ) : null}
                 <View
                     style={[
                         tw` rounded-md p-2 mt-4 flex  justify-between`,
                         stil('bg2', data.app.theme),
                     ]}>
                     <Text style={[tw` font-medium`, {color: stil('text', data.app.theme).color}]}>
-                        {l[data.app.lang].phone} :{' '}
+                        {l[data.app.lang].dateofbirth} :{' '}
                     </Text>
                     <View style={tw`flex flex-row justify-end`}>
                         <View
@@ -173,12 +252,69 @@ export default function ProfileEdit() {
                                 {borderColor: stil('bg', data.app.theme).backgroundColor},
                             ]}>
                             <TextInput
+                                maxLength={10}
                                 style={[stil('text', data.app.theme), tw`p-2`]}
+                                placeholder="00/00/0000"
                                 placeholderTextColor={stil('text', data.app.theme).color}
-                                value={userPhone}
-                                placeholder={l[data.app.lang].phone}
-                                onChangeText={(text) => setUserPhone(text)}
+                                value={dateofbirth}
+                                onChangeText={(text) => setTarihFormat(text)}
                             />
+                        </View>
+                    </View>
+                </View>
+
+                <View
+                    style={[
+                        tw` rounded-md p-2 mt-4 flex  justify-between`,
+                        stil('bg2', data.app.theme),
+                    ]}>
+                    <Text style={[tw` font-medium`, {color: stil('text', data.app.theme).color}]}>
+                        {l[data.app.lang].gender} :{' '}
+                    </Text>
+                    <View style={tw`flex flex-row justify-end`}>
+                        <View
+                            style={[
+                                tw`w-full rounded-md  mt-2    flex-row justify-between items-center`,
+                                {borderColor: stil('bg', data.app.theme).backgroundColor},
+                            ]}>
+                            <TouchableOpacity
+                                style={[
+                                    tw`w-1/3 rounded-md flex-row items-center justify-between px-2`,
+                                    stil('bg', data.app.theme),
+                                ]}
+                                onPress={() => {
+                                    setGender('male');
+                                }}>
+                                <Text style={[stil('text', data.app.theme), tw`p-2`]}>
+                                    {l[data.app.lang].male}
+                                </Text>
+                                {gender == 'male' ? (
+                                    <MaterialCommunityIcons
+                                        name="check-circle"
+                                        size={24}
+                                        color="green"
+                                    />
+                                ) : null}
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                    tw`w-1/3 rounded-md  flex-row items-center justify-between px-2`,
+                                    stil('bg', data.app.theme),
+                                ]}
+                                onPress={() => {
+                                    setGender('female');
+                                }}>
+                                <Text style={[stil('text', data.app.theme), tw`p-2`]}>
+                                    {l[data.app.lang].female}
+                                </Text>
+                                {gender == 'female' ? (
+                                    <MaterialCommunityIcons
+                                        name="check-circle"
+                                        size={24}
+                                        color="green"
+                                    />
+                                ) : null}
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>

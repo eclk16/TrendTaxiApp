@@ -1,16 +1,22 @@
+
+# Override Firebase SDK Version
+$RNFirebaseAsStaticFramework = true
+# $FirebaseSDKVersion = '15.7.0'
+
+platform :ios, '14'
+
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-$RNFirebaseAsStaticFramework = true
 
-platform :ios, '14.0'
+# source cocoapods
 install! 'cocoapods', :deterministic_uuids => false
 
-target 'TrendTaxi' do
-  # use_frameworks!
-  
-  config = use_native_modules!
 
-  # Flags change depending on the env values.
+target 'TrendTaxi' do
+  $static_framework = []
+  rn_maps_path = '../node_modules/react-native-maps'
+
+  config = use_native_modules!
   flags = get_default_flags()
 
   use_react_native!(
@@ -19,33 +25,55 @@ target 'TrendTaxi' do
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    # :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-  rn_maps_path = '../node_modules/react-native-maps'
+
+  $static_framework += [
+    'react-native-maps',
+    'react-native-google-maps',
+    # 'Google-Maps-iOS-Utils',
+    'GoogleMaps',
+  ]
+
   pod 'react-native-google-maps', :path => rn_maps_path
-  pod 'react-native-maps', path: rn_maps_path
-  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
   pod 'GoogleMaps'
-pod 'Google-Maps-iOS-Utils'
-
-
+  # pod 'Google-Maps-iOS-Utils'
   pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'
-
+  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
   pod 'RNSound', :path => '../node_modules/react-native-sound'
+
+  use_frameworks! :linkage => :static
 
   target 'TrendTaxiTests' do
     inherit! :complete
     # Pods for testing
   end
-
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable the next line.
-  use_flipper!()
-
-  post_install do |installer|
-    react_native_post_install(installer)
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  end
+  
+  
+  
+   post_install do |installer|
+      
+      installer.pods_project.targets.each do |target|
+        if target.name == 'RCT-Folly'
+            target.build_configurations.each do |config|
+                config.build_settings['HEADER_SEARCH_PATHS'] = "$(inherited) ${PODS_ROOT}/fmt/include"
+            end
+        end
+  
+        if target.name == 'react-native-google-maps'
+          target.build_configurations.each do |config|
+            config.build_settings['CLANG_ENABLE_MODULES'] = 'No'
+          end
+        end
+      end
+      react_native_post_install(installer)
+      __apply_Xcode_12_5_M1_post_install_workaround(installer)
+      installer.pods_project.build_configurations.each do |config|
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+      end
+    end
+  
+  
 end
+
+  

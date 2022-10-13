@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import MapView, {PROVIDER_GOOGLE, Marker, Polygon} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import {TouchableOpacity, Text, View, Modal} from 'react-native';
+import {TouchableOpacity, Text, View, Modal, Image} from 'react-native';
 import {stil} from '../../../utils';
 import tw from 'twrnc';
 import l from '../../../languages.json';
@@ -12,7 +12,8 @@ import Sound from 'react-native-sound';
 import {apiPost} from '../../../axios';
 import config from '../../../app.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-MaterialCommunityIcons.loadFont();
+import Geolocation from '@react-native-community/geolocation';
+//burayafont yükle gelecek
 
 export default function DriverWait() {
     const dispatch = useDispatch();
@@ -20,20 +21,18 @@ export default function DriverWait() {
     Sound.setCategory('Playback');
     const harita = React.useRef(null);
     const [timeoutSn, setTimeoutSn] = React.useState(10);
-    const [distance, setDistance] = React.useState(0);
-    const [duration, setDuration] = React.useState(0);
     let soundFile = 'ses14.mp3';
     if (Platform.OS === 'ios') {
         soundFile = 'ses-14.mp3';
     } else {
         soundFile = 'ses14.mp3';
     }
-    const [soundLoaded, setSoundLoaded] = React.useState(false);
     const [locations, setLocations] = React.useState([]);
     const [h, setH] = React.useState({
-        ust: 4,
+        ust: 5,
         alt: 1,
     });
+    const [bakiyeModal, setBakiyeModal] = React.useState(false);
 
     const onaylaFunction = () => {
         apiPost('updateActiveTrip', {
@@ -43,35 +42,73 @@ export default function DriverWait() {
             id: data.auth.userId,
             trip_id: data.trip.tripRequest.id,
         }).catch((error) => {
-            console.log('YOLCULUK KABUL ETME HATASI = ', error);
+            console.log('DRİVERWAİT.JS ERROR (ONAYLA)', error);
         });
     };
 
     useEffect(() => {
-        const abortController = new AbortController();
-        apiActive(data.app.isActive ? 'active' : 'inactive');
-        let int = setInterval(() => {
-            apiActive(data.app.isActive ? 'active' : 'inactive');
-        }, 10000);
+        var activeInt = setInterval(() => {
+            if (data.app.isActive) {
+                if (data.trip.trip === null && data.trip.tripRequest === null) {
+                    apiPost('updateUser', {
+                        id: data.auth.userId,
+                        is_active: 'active',
+                        token: data.auth.userToken,
+                        last_latitude: data.app.currentLocation[0],
+                        last_longitude: data.app.currentLocation[1],
+                    })
+                        .then(() => {})
+                        .catch((error) => {
+                            console.log('DRİVERWAİT.JS ERROR (UPDATE USER 1)', error);
+                        });
+                } else {
+                    clearInterval(activeInt);
+                    apiPost('updateUser', {
+                        id: data.auth.userId,
+                        is_active: 'inactive',
+                        token: data.auth.userToken,
+                        last_latitude: data.app.currentLocation[0],
+                        last_longitude: data.app.currentLocation[1],
+                    })
+                        .then(() => {})
+                        .catch((error) => {
+                            console.log('DRİVERWAİT.JS ERROR (UPDATE USER 2)', error);
+                        });
+                }
+            } else {
+                clearInterval(activeInt);
+                apiPost('updateUser', {
+                    id: data.auth.userId,
+                    is_active: 'inactive',
+                    token: data.auth.userToken,
+                    last_latitude: data.app.currentLocation[0],
+                    last_longitude: data.app.currentLocation[1],
+                })
+                    .then(() => {})
+                    .catch((error) => {
+                        console.log('DRİVERWAİT.JS ERROR (UPDATE USER 3)', error);
+                    });
+            }
+        }, 15000);
+
         return () => {
-            abortController.abort();
-            clearInterval(int);
+            clearInterval(activeInt);
         };
     }, [data.app.isActive]);
 
-    const apiActive = (activ = null) => {
-        if (data.trip.trip === null && data.trip.tripRequest === null) {
-            apiPost('updateUser', {
-                id: data.auth.userId,
-                is_active: activ == null ? data.app.isActive : activ,
-                token: data.auth.userToken,
-                last_latitude: data.app.currentLocation[0],
-                last_longitude: data.app.currentLocation[1],
-            }).catch((error) => {
-                console.log('YOLCULUK KABUL ETME HATASI = ', error);
-            });
-        }
-    };
+    useEffect(() => {
+        let pint = setInterval(() => {
+            if (data.app.peoples.length > 0) {
+                let p = data.app.peoples;
+                p.shift();
+                dispatch({type: 'setPeoples', payload: p});
+            }
+        }, 15000);
+
+        return () => {
+            clearInterval(pint);
+        };
+    }, [data.app.peoples]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -79,11 +116,11 @@ export default function DriverWait() {
         let interr = setInterval(() => {
             kalan = kalan - 1;
             if (kalan < 0) {
-                dispatch({type: 'ia', payload: true});
                 dispatch({type: 'setRequest', payload: null});
+                dispatch({type: 'ia', payload: true});
                 setLocations([]);
                 setH({
-                    ust: 4,
+                    ust: 5,
                     alt: 1,
                 });
                 fitContent();
@@ -93,7 +130,7 @@ export default function DriverWait() {
         if (!data.trip.tripRequest) {
             dispatch({type: 'ia', payload: true});
             setH({
-                ust: 4,
+                ust: 5,
                 alt: 1,
             });
             setTimeoutSn(10);
@@ -101,20 +138,26 @@ export default function DriverWait() {
             fitContent();
             clearInterval(interr);
         } else {
+            dispatch({type: 'ia', payload: false});
             let sound = new Sound(soundFile, Sound.MAIN_BUNDLE, () => {
                 sound.play(() => {
                     sound.play();
                 });
             });
             setH({
-                ust: 3,
+                ust: 4,
                 alt: 1,
             });
-            setLocations(data.trip.tripRequest.locations);
+            setLocations([data.trip.tripRequest.locations[0]]);
             harita.current.fitToCoordinates(
                 [
-                    {latitude: data.app.currentLocation[0], longitude: data.app.currentLocation[1]},
-                    ...data.trip.tripRequest.locations,
+                    data.trip.tripRequest.locations[0],
+                    {
+                        latitude: data.app.currentLocation[0],
+                        longitude: data.app.currentLocation[1],
+                        latitudeDelta: 0.015,
+                        longitudeDelta: 0.015,
+                    },
                 ],
                 {
                     edgePadding: {
@@ -130,15 +173,16 @@ export default function DriverWait() {
 
         return () => {
             abortController.abort();
-            dispatch({type: 'ia', payload: true});
             clearInterval(interr);
         };
-    }, [data.trip.tripRequest, soundLoaded]);
+    }, [data.trip.tripRequest]);
+
     const [region, setRegion] = React.useState({
         latitude: data.app.currentLocation[0],
         longitude: data.app.currentLocation[1],
         latitudeDelta: 0.005,
         longitudeDelta: 0.005,
+        first: false,
     });
 
     const fitContent = () => {
@@ -176,140 +220,176 @@ export default function DriverWait() {
             );
         }
     };
+
+    useEffect(() => {
+        var x = setInterval(function () {
+            var tarih = data.auth.user.active_time;
+            var now = new Date().getTime();
+            tarih = tarih * 1000;
+            var distance = tarih - now;
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            distance = parseInt(distance);
+            if (distance < 1) {
+                clearInterval(x);
+                setHours(0);
+                setMinute(0);
+                dispatch({type: 'ia', payload: false});
+                // alert('bakiyeniz bitmiştir');
+                setBakiyeModal(true);
+            } else {
+                setHours(hours);
+                setMinute(minutes);
+            }
+        }, 1000);
+        return () => {
+            clearInterval(x);
+        };
+    }, [data.app.isActive]);
+
+    const [hours, setHours] = React.useState([]);
+    const [minute, setMinute] = React.useState([]);
+
+    useEffect(() => {
+        if (!region.first) {
+            if (data.app.currentLocation.length > 0) {
+                setRegion({
+                    latitude: data.app.currentLocation[0],
+                    longitude: data.app.currentLocation[1],
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005,
+                    first: true,
+                });
+            }
+        }
+
+        return () => {
+            false;
+        };
+    }, [data.app.currentLocation]);
+
+    const watchPosition = () => {
+        const DriverWaitWP = Geolocation.watchPosition(
+            (position) => {
+                dispatch({
+                    type: 'loc',
+                    payload: [position.coords.latitude, position.coords.longitude],
+                });
+            },
+            (error) => {
+                // Alert.alert('WatchPosition Error', JSON.stringify(error))
+            },
+            {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 2},
+        );
+        setSubscriptionId(DriverWaitWP);
+    };
+
+    const clearWatch = () => {
+        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
+        setSubscriptionId(null);
+    };
+
+    const [subscriptionId, setSubscriptionId] = React.useState(null);
+    useEffect(() => {
+        watchPosition();
+        return () => {
+            clearWatch();
+        };
+    }, []);
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
-                <View style={[tw`h-${h.ust}/5`]}>
-                    <MapView
-                        ref={harita}
-                        provider={PROVIDER_GOOGLE}
-                        style={{flex: 1}}
-                        region={region}
-                        initialRegion={region}
-                        showsUserLocation
-                        zoomEnabled={true}
-                        enableZoomControl={true}
-                        // showsMyLocationButton
-                        showsTraffic
-                        onUserLocationChange={(ret) => {
-                            dispatch({
-                                type: 'loc',
-                                payload: [
-                                    ret.nativeEvent.coordinate.latitude,
-                                    ret.nativeEvent.coordinate.longitude,
-                                ],
-                            });
-                            setRegion({
-                                latitude: ret.nativeEvent.coordinate.latitude,
-                                longitude: ret.nativeEvent.coordinate.longitude,
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            });
-                        }}
-                        loadingEnabled>
-                        {locations.map((item, index) => {
-                            return (
-                                <Marker
-                                    identifier={'Marker_' + index}
-                                    key={index}
-                                    coordinate={item}
-                                    title={item.title}
-                                    description={item.description}
+                <View style={[tw`h-${h.ust}/6`]}>
+                    {data.app.currentLocation[0] ? (
+                        <MapView
+                            ref={harita}
+                            provider={PROVIDER_GOOGLE}
+                            style={{flex: 1}}
+                            region={region}
+                            initialRegion={region}
+                            showsUserLocation
+                            zoomEnabled={true}
+                            enableZoomControl={true}
+                            showsMyLocationButton={false}
+                            showsTraffic>
+                            {locations.map((item, index) => {
+                                return (
+                                    <Marker
+                                        identifier={'Marker_' + index}
+                                        key={index}
+                                        coordinate={item}
+                                        title={item.title}
+                                        description={item.description}>
+                                        <Image
+                                            source={require('../../../assets/img/people.png')}
+                                            style={[tw`h-14 w-7`]}
+                                        />
+                                    </Marker>
+                                );
+                            })}
+                            {data.app.peoples.map((item, index) => {
+                                return (
+                                    <Marker
+                                        identifier={'People_' + index}
+                                        key={index}
+                                        coordinate={item}>
+                                        <Image
+                                            source={require('../../../assets/img/people.png')}
+                                            style={[tw`h-6 w-3`]}
+                                        />
+                                    </Marker>
+                                );
+                            })}
+                            {locations.length >= 1 ? (
+                                <MapViewDirections
+                                    origin={{
+                                        latitude: data.app.currentLocation[0],
+                                        longitude: data.app.currentLocation[1],
+                                    }}
+                                    destination={locations[0]}
+                                    apikey={config.mapApi}
+                                    strokeWidth={5}
+                                    strokeColor="#0f365e"
+                                    optimizeWaypoints={true}
                                 />
-                            );
-                        })}
-                        {locations.length >= 2 ? (
-                            <MapViewDirections
-                                origin={locations[0]}
-                                waypoints={
-                                    locations.length > 2 ? locations.slice(1, -1) : undefined
-                                }
-                                destination={locations[locations.length - 1]}
-                                apikey={config.mapApi}
-                                strokeWidth={5}
-                                strokeColor="#0f365e"
-                                optimizeWaypoints={true}
-                                onReady={(result) => {
-                                    // console.log('steps = ', result.legs[0].steps);
-                                    // console.log(
-                                    //     'traffic_speed_entry = ',
-                                    //     result.legs[0].traffic_speed_entry,
-                                    // );
-                                    // console.log('via_waypoint = ', result.legs[0].via_waypoint);
-                                    setDuration(result.legs[0].duration.value);
-                                    setDistance(result.legs[0].distance.value);
-                                }}
-                                onError={(errorMessage) => {
-                                    // console.log('GOT AN ERROR');
-                                }}
+                            ) : null}
+                        </MapView>
+                    ) : null}
+                    <View style={[tw`flex-row justify-end items-center absolute right-4 bottom-4`]}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                fitContent();
+                            }}
+                            style={[tw`rounded-md p-2`, stil('bg', data.app.theme)]}>
+                            <MaterialCommunityIcons
+                                name="map-marker-radius"
+                                size={28}
+                                color={stil('text', data.app.theme).color}
                             />
-                        ) : null}
-                    </MapView>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={[tw`h-${h.alt}/5 pb-4 px-4 pt-2`]}>
-                    <View style={[tw`flex-row items-center justify-between`]}>
-                        <Text
-                            style={[
-                                stil('text', data.app.theme),
-                                tw`font-semibold text-base mb-1`,
-                            ]}>
-                            {l[data.app.lang].daily}
+                <View style={[tw`h-${h.alt}/6 pb-4 px-4 pt-2 flex justify-center`]}>
+                    <View style={[tw`flex-row items-center justify-between  mb-4`]}>
+                        <Text style={[stil('text', data.app.theme), tw`text-base`]}>
+                            {l[data.app.lang].kalansure} :
                         </Text>
-                        <View style={[tw`flex-row`]}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    harita.current.getCamera().then((c) => {
-                                        harita.current.setCamera({
-                                            zoom: c.zoom - 1,
-                                        });
-                                    });
-                                }}
-                                style={[tw`rounded-md p-2 mr-2`, stil('bg', data.app.theme)]}>
-                                <MaterialCommunityIcons
-                                    name="minus"
-                                    size={28}
-                                    color={stil('text', data.app.theme).color}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    harita.current.getCamera().then((c) => {
-                                        harita.current.setCamera({
-                                            zoom: c.zoom + 1,
-                                        });
-                                    });
-                                }}
-                                style={[tw`rounded-md p-2 mr-2`, stil('bg', data.app.theme)]}>
-                                <MaterialCommunityIcons
-                                    name="plus"
-                                    size={28}
-                                    color={stil('text', data.app.theme).color}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    fitContent();
-                                }}
-                                style={[tw`rounded-md p-2`, stil('bg', data.app.theme)]}>
-                                <MaterialCommunityIcons
-                                    name="map-marker-radius"
-                                    size={28}
-                                    color={stil('text', data.app.theme).color}
-                                />
-                            </TouchableOpacity>
+                        <View style={[tw`flex-row items-center justify-center `]}>
+                            <Text style={[tw`mx-1  text-base`, stil('text', data.app.theme)]}>
+                                {hours}
+                            </Text>
+                            <Text style={[tw`  text-base`, stil('text', data.app.theme)]}>
+                                {l[data.app.lang].hour}
+                            </Text>
+                            <Text style={[tw`mx-1 text-base`, stil('text', data.app.theme)]}>
+                                {minute}
+                            </Text>
+                            <Text style={[tw` text-base`, stil('text', data.app.theme)]}>
+                                {l[data.app.lang].minute}
+                            </Text>
                         </View>
                     </View>
-                    <View style={[tw`flex-row items-center justify-between mb-2`]}>
-                        <View style={[tw`flex-row items-center justify-between rounded-md `]}>
-                            <Text style={[stil('text', data.app.theme), tw``]}>1231 km</Text>
-                        </View>
-                        <View style={[tw`flex-row items-center justify-between rounded-md `]}>
-                            <Text style={[stil('text', data.app.theme), tw``]}>234 min</Text>
-                        </View>
-                        <View style={[tw`flex-row items-center justify-between rounded-md `]}>
-                            <Text style={[stil('text', data.app.theme), tw``]}>123123 sum</Text>
-                        </View>
-                    </View>
+
                     <TouchableOpacity
                         disabled={data.trip.tripRequest === null ? false : true}
                         onPress={() => {
@@ -363,107 +443,149 @@ export default function DriverWait() {
                                                     </Text>
                                                 </View>
                                                 <View style={[tw`flex`]}>
-                                                    <View
-                                                        style={[
-                                                            stil('bg2', data.app.theme),
-                                                            tw`flex-row justify-between items-center my-2 p-2 rounded-md`,
-                                                        ]}>
+                                                    {data.trip.tripRequest.Gosterzaman ||
+                                                    data.trip.tripRequest.Gosterkm ||
+                                                    data.trip.tripRequest.Gostertutar ? (
                                                         <View
                                                             style={[
-                                                                tw`   mb-1 items-center flex-row`,
-
-                                                                stil('text', data.app.theme),
+                                                                stil('bg2', data.app.theme),
+                                                                tw`flex-row justify-between items-center my-2 p-2 rounded-md`,
                                                             ]}>
-                                                            <Text
+                                                            <View
                                                                 style={[
-                                                                    stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
-                                                                ]}>
-                                                                {data.trip.tripRequest.est_duration}{' '}
-                                                                min
-                                                            </Text>
-                                                        </View>
-                                                        <View
-                                                            style={[
-                                                                tw`  mb-1  items-center flex-row`,
+                                                                    tw`   mb-1 items-center flex-row`,
 
-                                                                stil('text', data.app.theme),
-                                                            ]}>
-                                                            <Text
-                                                                style={[
                                                                     stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
                                                                 ]}>
-                                                                {data.trip.tripRequest.est_distance}{' '}
-                                                                km
-                                                            </Text>
-                                                        </View>
-                                                        <View
-                                                            style={[
-                                                                tw`  mb-1 items-center flex-row`,
+                                                                {data.trip.tripRequest
+                                                                    .Gosterzaman ? (
+                                                                    <Text
+                                                                        style={[
+                                                                            stil(
+                                                                                'text',
+                                                                                data.app.theme,
+                                                                            ),
+                                                                            tw`font-bold text-center `,
+                                                                        ]}>
+                                                                        {
+                                                                            data.trip.tripRequest
+                                                                                .est_duration
+                                                                        }{' '}
+                                                                        min
+                                                                    </Text>
+                                                                ) : null}
+                                                            </View>
+                                                            <View
+                                                                style={[
+                                                                    tw`  mb-1  items-center flex-row`,
 
-                                                                stil('text', data.app.theme),
-                                                            ]}>
-                                                            <Text
-                                                                style={[
                                                                     stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
                                                                 ]}>
-                                                                {data.trip.tripRequest.est_price}{' '}
-                                                                sum
-                                                            </Text>
+                                                                {data.trip.tripRequest.Gosterkm ? (
+                                                                    <Text
+                                                                        style={[
+                                                                            stil(
+                                                                                'text',
+                                                                                data.app.theme,
+                                                                            ),
+                                                                            tw`font-bold text-center `,
+                                                                        ]}>
+                                                                        {
+                                                                            data.trip.tripRequest
+                                                                                .est_distance
+                                                                        }{' '}
+                                                                        km
+                                                                    </Text>
+                                                                ) : null}
+                                                            </View>
+                                                            <View
+                                                                style={[
+                                                                    tw`  mb-1 items-center flex-row`,
+
+                                                                    stil('text', data.app.theme),
+                                                                ]}>
+                                                                {data.trip.tripRequest
+                                                                    .Gostertutar ? (
+                                                                    <Text
+                                                                        style={[
+                                                                            stil(
+                                                                                'text',
+                                                                                data.app.theme,
+                                                                            ),
+                                                                            tw`font-bold text-center `,
+                                                                        ]}>
+                                                                        {
+                                                                            data.trip.tripRequest
+                                                                                .est_price
+                                                                        }{' '}
+                                                                        sum
+                                                                    </Text>
+                                                                ) : null}
+                                                            </View>
                                                         </View>
-                                                    </View>
-                                                    {data.trip.tripRequest.locations.map(
-                                                        (item, index) => {
-                                                            return (
-                                                                <View
-                                                                    key={index}
-                                                                    style={[
-                                                                        tw`flex-row items-center mb-2 rounded-md px-2 py-1`,
-                                                                        stil('bg2', data.app.theme),
-                                                                    ]}>
-                                                                    <View>
-                                                                        <MaterialCommunityIcons
+                                                    ) : null}
+                                                    {data.trip.tripRequest.Gosterlokasyonlar ? (
+                                                        <>
+                                                            {data.trip.tripRequest.locations.map(
+                                                                (item, index) => {
+                                                                    return (
+                                                                        <View
+                                                                            key={index}
                                                                             style={[
-                                                                                tw`text-center mr-2`,
-                                                                            ]}
-                                                                            name="adjust"
-                                                                            size={16}
-                                                                            color={
+                                                                                tw`flex-row items-center mb-2 rounded-md px-2 py-1`,
                                                                                 stil(
-                                                                                    'text',
-                                                                                    data.app.theme,
-                                                                                ).color
-                                                                            }
-                                                                        />
-                                                                    </View>
-                                                                    <View>
-                                                                        <Text
-                                                                            style={[
-                                                                                tw`text-xs font-semibold`,
-                                                                                stil(
-                                                                                    'text',
+                                                                                    'bg2',
                                                                                     data.app.theme,
                                                                                 ),
                                                                             ]}>
-                                                                            {item.title}
-                                                                        </Text>
-                                                                        <Text
-                                                                            style={[
-                                                                                tw`text-xs`,
-                                                                                stil(
-                                                                                    'text',
-                                                                                    data.app.theme,
-                                                                                ),
-                                                                            ]}>
-                                                                            {item.description}
-                                                                        </Text>
-                                                                    </View>
-                                                                </View>
-                                                            );
-                                                        },
-                                                    )}
+                                                                            <View>
+                                                                                <MaterialCommunityIcons
+                                                                                    style={[
+                                                                                        tw`text-center mr-2`,
+                                                                                    ]}
+                                                                                    name="adjust"
+                                                                                    size={16}
+                                                                                    color={
+                                                                                        stil(
+                                                                                            'text',
+                                                                                            data.app
+                                                                                                .theme,
+                                                                                        ).color
+                                                                                    }
+                                                                                />
+                                                                            </View>
+                                                                            <View>
+                                                                                <Text
+                                                                                    style={[
+                                                                                        tw`text-xs font-semibold`,
+                                                                                        stil(
+                                                                                            'text',
+                                                                                            data.app
+                                                                                                .theme,
+                                                                                        ),
+                                                                                    ]}>
+                                                                                    {item.title}
+                                                                                </Text>
+                                                                                <Text
+                                                                                    style={[
+                                                                                        tw`text-xs`,
+                                                                                        stil(
+                                                                                            'text',
+                                                                                            data.app
+                                                                                                .theme,
+                                                                                        ),
+                                                                                    ]}>
+                                                                                    {
+                                                                                        item.description
+                                                                                    }
+                                                                                </Text>
+                                                                            </View>
+                                                                        </View>
+                                                                    );
+                                                                },
+                                                            )}
+                                                        </>
+                                                    ) : null}
                                                 </View>
                                             </View>
                                             <View style={[tw`flex items-center justify-center`]}>
@@ -504,6 +626,159 @@ export default function DriverWait() {
                                             </View>
                                         </View>
                                     ) : null}
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={bakiyeModal}
+                onRequestClose={() => {
+                    setBakiyeModal(false);
+                }}>
+                <View style={[tw`h-1/1 flex justify-end`, {backgroundColor: 'rgba(0,0,0,0.25)'}]}>
+                    <View style={[tw`flex pb-6 pt-2 justify-end px-4`, stil('bg', data.app.theme)]}>
+                        <View style={[tw`  items-center justify-center`, ,]}>
+                            <View
+                                style={[
+                                    tw`w-full flex items-center justify-end  p-2`,
+                                    stil('bg', data.app.theme),
+                                ]}>
+                                <View style={[tw`  w-full`]}>
+                                    <View style={[tw`flex-row items-center justify-between`]}>
+                                        <View>
+                                            <Text
+                                                style={[
+                                                    tw`font-bold text-lg`,
+                                                    stil('text', data.app.theme),
+                                                ]}>
+                                                {l[data.app.lang].balance} :{' '}
+                                                {data.auth.user.user_balance} sum
+                                            </Text>
+                                            <View
+                                                style={[
+                                                    tw`flex-row items-center justify-between  mb-1`,
+                                                ]}>
+                                                <Text
+                                                    style={[
+                                                        stil('text', data.app.theme),
+                                                        tw`text-base`,
+                                                    ]}>
+                                                    {l[data.app.lang].kalansure} :
+                                                </Text>
+                                                <View
+                                                    style={[
+                                                        tw`flex-row items-center justify-center `,
+                                                    ]}>
+                                                    <Text
+                                                        style={[
+                                                            tw`mx-1  text-base`,
+                                                            stil('text', data.app.theme),
+                                                        ]}>
+                                                        {hours}
+                                                    </Text>
+                                                    <Text
+                                                        style={[
+                                                            tw`  text-base`,
+                                                            stil('text', data.app.theme),
+                                                        ]}>
+                                                        {l[data.app.lang].hour}
+                                                    </Text>
+                                                    <Text
+                                                        style={[
+                                                            tw`mx-1 text-base`,
+                                                            stil('text', data.app.theme),
+                                                        ]}>
+                                                        {minute}
+                                                    </Text>
+                                                    <Text
+                                                        style={[
+                                                            tw` text-base`,
+                                                            stil('text', data.app.theme),
+                                                        ]}>
+                                                        {l[data.app.lang].minute}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={[tw`flex-row items-center justify-between mt-4`]}>
+                                        <TouchableOpacity
+                                            style={[
+                                                tw`flex-row items-center justify-center rounded-md p-4 px-4 bg-red-700`,
+                                            ]}
+                                            onPress={() => {
+                                                setBakiyeModal(false);
+                                            }}>
+                                            <Text style={[tw`font-semibold text-white`]}>
+                                                {l[data.app.lang].cancel}
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            disabled={
+                                                data.auth.user.user_balance <
+                                                data.auth.user.user_data.car.fee
+                                                    ? true
+                                                    : false
+                                            }
+                                            style={[
+                                                tw`flex-row items-center justify-center rounded-md p-4 px-4 bg-green-700`,
+                                            ]}
+                                            onPress={() => {
+                                                let time = new Date().getTime() / 1000;
+                                                time = time + 86400;
+                                                console.log({
+                                                    id: data.auth.userId,
+                                                    active_time: parseInt(time),
+                                                    driver_active: 'active',
+                                                    dusBalance: data.auth.user.user_data.car.fee,
+                                                    token: data.auth.userToken,
+                                                });
+                                                apiPost('updateUser', {
+                                                    id: data.auth.userId,
+                                                    active_time: parseInt(time),
+                                                    driver_active: 'active',
+                                                    dusBalance: data.auth.user.user_data.car.fee,
+                                                    token: data.auth.userToken,
+                                                })
+                                                    .then((r) => {
+                                                        apiPost('getUser', {
+                                                            token: data.auth.userToken,
+                                                            id: data.auth.userId,
+                                                        })
+                                                            .then((response) => {
+                                                                if (response != false) {
+                                                                    dispatch({
+                                                                        type: 'setUser',
+                                                                        payload:
+                                                                            response.data.response,
+                                                                    });
+                                                                }
+                                                            })
+                                                            .catch((error) => {
+                                                                console.log(
+                                                                    'DRİVERWAİT.JS ERROR (GET USER)',
+                                                                    error,
+                                                                );
+                                                            });
+                                                    })
+                                                    .catch((error) => {
+                                                        console.log(
+                                                            'DRİVERWAİT.JS ERROR (UPDATE USER 4)',
+                                                            error,
+                                                        );
+                                                    });
+                                                setBakiyeModal(false);
+                                            }}>
+                                            <Text style={[tw`font-semibold text-white`]}>
+                                                {data.auth.user.user_data.car.fee} sum{' '}
+                                                {l[data.app.lang].check}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                         </View>

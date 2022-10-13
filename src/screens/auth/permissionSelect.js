@@ -4,15 +4,29 @@ import {stil} from '../../utils';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import l from '../../languages.json';
+import messaging from '@react-native-firebase/messaging';
 
 import {izinal} from '../../location';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 import {Text, TouchableOpacity, View, Alert} from 'react-native';
 
 function PermissionSelect() {
     const data = useSelector((state) => state);
     const [myLocation, SetMyLocation] = React.useState(null);
+    const [bildirim, setBildirim] = React.useState(null);
+
+    async function requestUserPermission() {
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (enabled) {
+            setBildirim(true);
+            console.log('Authorization status:', enabled);
+        }
+    }
 
     return (
         <>
@@ -62,6 +76,35 @@ function PermissionSelect() {
                     </View>
                     <View style={tw`flex-row justify-end items-end`}>
                         {myLocation ? (
+                            <MaterialCommunityIcons
+                                name="check-circle-outline"
+                                size={32}
+                                color={stil('text', data.app.theme).color}
+                            />
+                        ) : null}
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    key={1}
+                    style={[
+                        stil('bg', data.app.theme),
+                        tw`flex-row items-center mx-4 mb-1 p-4 rounded-md justify-between`,
+                    ]}
+                    onPress={() => {
+                        requestUserPermission();
+                    }}>
+                    <View style={[tw`flex-row items-center justify-between `]}>
+                        <MaterialCommunityIcons
+                            name="bell-alert"
+                            size={32}
+                            color={stil('text', data.app.theme).color}
+                        />
+                        <Text style={[tw`  ml-4`, stil('text', data.app.theme)]}>
+                            {l[data.app.lang].devam}
+                        </Text>
+                    </View>
+                    <View style={tw`flex-row justify-end items-end`}>
+                        {bildirim ? (
                             <MaterialCommunityIcons
                                 name="check-circle-outline"
                                 size={32}

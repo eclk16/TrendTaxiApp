@@ -9,7 +9,7 @@ import l from '../../languages.json';
 import {useNavigation, useRoute} from '@react-navigation/native';
 
 import StatusBarComponent from '../../components/global/status';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 function Reports() {
     const navigation = useNavigation();

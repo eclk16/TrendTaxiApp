@@ -1,26 +1,28 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import list from './components/global/menuList';
+import {list} from './components/global/menuList';
 import {useSelector} from 'react-redux';
 import l from './languages.json';
 import Welcome from './screens/auth/welcome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {stil} from './utils';
 import {TouchableOpacity} from 'react-native';
-MaterialCommunityIcons.loadFont();
+
+//burayafont yükle gelecek
 
 const Stack = createStackNavigator();
 
 const Router = () => {
     const data = useSelector((state) => state);
-    const [headerTitleCentered, setHeaderTitleCentered] = React.useState(true);
+    const [initialRoute, setInitialRoute] = React.useState('Home');
+
     return (
         <>
             {!data.auth.isAuth ? (
                 <Welcome />
             ) : (
-                <NavigationContainer initialRouteName="Home">
+                <NavigationContainer initialRouteName={initialRoute}>
                     <Stack.Navigator>
                         {list.map((item, index) => {
                             return (
@@ -38,7 +40,7 @@ const Router = () => {
                                                 .backgroundColor,
                                         },
                                         headerBackTitleVisible: false,
-                                        headerTitleAlign: headerTitleCentered ? 'center' : 'left',
+                                        headerTitleAlign: 'center',
                                         headerRight: ({tintColor}) => (
                                             <>
                                                 {item.navigate == 'Profile' ? (

@@ -3,7 +3,7 @@ import {BackHandler, Text, View, ActivityIndicator, FlatList} from 'react-native
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 import axios from 'axios';
 import {stil} from '../../utils';
 import {useNavigation} from '@react-navigation/native';
@@ -34,6 +34,7 @@ function Trips() {
                 setLoading(false);
             })
             .catch((error) => {
+                console.log('TRİPS.JS ERROR (getTRİPS)', error);
                 setLoading(false);
             });
         return () => {

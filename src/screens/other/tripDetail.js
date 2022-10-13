@@ -2,9 +2,9 @@ import React, {useEffect} from 'react';
 import {Text, Image, View, BackHandler, ScrollView} from 'react-native';
 import tw from 'twrnc';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-Ionicons.loadFont();
+// Ionicons.loadFont();
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 import {getValue} from '../../async';
 import axios from 'axios';
 import {stil} from '../../utils';
@@ -46,7 +46,9 @@ function TripDetail() {
                 setTrip(response.data.response);
                 setLocations(response.data.response.locations);
             })
-            .catch((error) => {});
+            .catch((error) => {
+                console.log('TRİPDETAİL.JS ERROR (GETTRİP)', error);
+            });
         return () => {
             abortController.abort();
             false;

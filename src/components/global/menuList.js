@@ -7,7 +7,7 @@ import Reports from '../../screens/other/reports';
 import ProfileEdit from '../../screens/other/profileEdit';
 import Home from '../../screens/proccess';
 
-const list = [
+export const list = [
     {
         icon: 'home',
         text: 'home',
@@ -53,13 +53,13 @@ const list = [
         header: true,
         hidden: true,
     },
-    {
-        icon: 'google-analytics',
-        text: 'reports',
-        navigate: 'Reports',
-        component: Reports,
-        header: true,
-    },
+    // {
+    //     icon: 'google-analytics',
+    //     text: 'reports',
+    //     navigate: 'Reports',
+    //     component: Reports,
+    //     header: true,
+    // },
     {
         icon: 'cog',
         text: 'settings',
@@ -70,4 +70,57 @@ const list = [
     },
 ];
 
-export default list;
+export const list2 = [
+    {
+        icon: 'home',
+        text: 'home',
+        navigate: 'Home',
+        header: false,
+    },
+    {
+        icon: 'map-marker-distance',
+        text: 'trips',
+        navigate: 'Trips',
+        header: true,
+    },
+    {
+        icon: 'map-marker-distance',
+        text: 'trips',
+        navigate: 'TripDetails',
+        header: true,
+        hidden: true,
+    },
+    {
+        icon: 'account',
+        text: 'profile',
+        navigate: 'Profile',
+        header: true,
+    },
+    {
+        icon: 'account',
+        text: 'profile',
+        navigate: 'ProfileEdit',
+        header: true,
+        hidden: true,
+    },
+    {
+        icon: 'account',
+        text: 'faq',
+        navigate: 'Faq',
+        header: true,
+        hidden: true,
+    },
+    // {
+    //     icon: 'google-analytics',
+    //     text: 'reports',
+    //     navigate: 'Reports',
+    //     header: true,
+    // },
+    {
+        icon: 'cog',
+        text: 'settings',
+        navigate: 'Settings',
+        header: true,
+        hidden: true,
+    },
+];

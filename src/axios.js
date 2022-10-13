@@ -15,6 +15,5 @@ export const apiPost = async (url, params) => {
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     if (params.token) axios.defaults.headers.common['Authorization'] = 'Bearer ' + params.token;
     const result = await axios.post(config.apiBaseUrl + url, params);
-
     return result;
 };

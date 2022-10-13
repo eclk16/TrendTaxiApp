@@ -7,7 +7,7 @@ import {stil} from '../../utils';
 import l from '../../languages.json';
 import {getUniqueId, getManufacturer} from 'react-native-device-info';
 import {useNavigation} from '@react-navigation/native';
-MaterialCommunityIcons.loadFont();
+//burayafont yükle gelecek
 
 import StatusBarComponent from '../../components/global/status';
 import config from '../../app.json';
@@ -49,11 +49,12 @@ export default function Profile() {
             <ScrollView style={[stil('bg', data.app.theme), tw`p-4 flex-1`]}>
                 <View style={[tw`rounded-md p-4 flex items-center justify-center`]}>
                     <View style={[tw`flex items-center justify-center`]}>
-                        {data.auth.user.user_data.user_image ? (
+                        {data.auth.user?.user_data?.user_image ? (
                             <Image
                                 style={[tw`rounded-md`, {height: 150, width: 150}]}
                                 source={{
-                                    uri: config.imageBaseUrl + data.auth.user.user_data.user_image,
+                                    uri:
+                                        config.imageBaseUrl + data.auth.user?.user_data?.user_image,
                                 }}
                             />
                         ) : null}
@@ -114,6 +115,22 @@ export default function Profile() {
                         </Text>
                     </View>
                 </View>
+                {data.auth.userType == 'driver' ? (
+                    <View
+                        style={[
+                            tw`rounded-md px-4 py-2 mt-2 flex items-center justify-start`,
+                            stil('bg2', data.app.theme),
+                        ]}>
+                        <View style={[tw`flex-row justify-between w-full`]}>
+                            <Text style={[stil('text', data.app.theme), tw`font-semibold`]}>
+                                {l[data.app.lang].cardNumber}
+                            </Text>
+                            <Text style={[stil('text', data.app.theme), tw` font-medium`]}>
+                                {data.auth.user.user_data.car_number}
+                            </Text>
+                        </View>
+                    </View>
+                ) : null}
                 <View
                     style={[
                         tw`rounded-md px-4 py-2 mt-2 flex items-center justify-start`,
@@ -128,6 +145,7 @@ export default function Profile() {
                         </Text>
                     </View>
                 </View>
+
                 <View
                     style={[
                         tw`rounded-md px-4 py-2 mt-2 flex items-center justify-start`,
@@ -135,14 +153,10 @@ export default function Profile() {
                     ]}>
                     <View style={[tw`flex-row justify-between w-full`]}>
                         <Text style={[stil('text', data.app.theme), tw`font-semibold`]}>
-                            <MaterialCommunityIcons
-                                name="map-marker-radius"
-                                size={20}
-                                color={stil('text', data.app.theme).color}
-                            />
+                            {l[data.app.lang].dateofbirth}
                         </Text>
                         <Text style={[stil('text', data.app.theme), tw` font-medium`]}>
-                            {data.auth.user.last_latitude},{data.auth.user.last_longitude}
+                            {data.auth.user.user_data.dateofbirth}
                         </Text>
                     </View>
                 </View>
@@ -153,29 +167,34 @@ export default function Profile() {
                     ]}>
                     <View style={[tw`flex-row justify-between w-full`]}>
                         <Text style={[stil('text', data.app.theme), tw`font-semibold`]}>
-                            <MaterialCommunityIcons
-                                name="bus-stop"
-                                size={20}
-                                color={stil('text', data.app.theme).color}
-                            />
+                            {l[data.app.lang].gender}
                         </Text>
                         <Text style={[stil('text', data.app.theme), tw` font-medium`]}>
-                            {data.auth.user.user_taxi_park}
+                            {l[data.app.lang][data.auth.user.user_data.gender]}
                         </Text>
                     </View>
                 </View>
-                <View
-                    style={[
-                        tw`rounded-md px-4 py-2 mt-2 flex items-center justify-start`,
-                        stil('bg2', data.app.theme),
-                    ]}>
-                    <View style={[tw`flex-row justify-between w-full`]}>
-                        <Text style={[stil('text', data.app.theme), tw`font-semibold`]}></Text>
-                        <Text style={[stil('text', data.app.theme), tw` font-medium`]}>
-                            {getUniqueId()}
-                        </Text>
+
+                {data.auth.userType == 'driver' ? (
+                    <View
+                        style={[
+                            tw`rounded-md px-4 py-2 mt-2 flex items-center justify-start`,
+                            stil('bg2', data.app.theme),
+                        ]}>
+                        <View style={[tw`flex-row justify-between w-full`]}>
+                            <Text style={[stil('text', data.app.theme), tw`font-semibold`]}>
+                                <MaterialCommunityIcons
+                                    name="bus-stop"
+                                    size={20}
+                                    color={stil('text', data.app.theme).color}
+                                />
+                            </Text>
+                            <Text style={[stil('text', data.app.theme), tw` font-medium`]}>
+                                {data.auth.user.user_taxi_park}
+                            </Text>
+                        </View>
                     </View>
-                </View>
+                ) : null}
             </ScrollView>
         </>
     );
