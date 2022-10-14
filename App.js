@@ -241,8 +241,6 @@ const App = () => {
         };
     }, [data.auth.isAuth]);
 
-    const [refreshToken, setRefreshToken] = React.useState(Math.random());
-
     useEffect(() => {
         if (p != null) {
             if (p.message.prc == 'bildirim') {

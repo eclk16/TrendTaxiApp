@@ -27,20 +27,9 @@ export default function DriverGoPassenger() {
     const [region, setRegion] = React.useState({
         latitude: 0,
         longitude: 0,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
     });
-    const [locations, setLocations] = React.useState([]);
-
-    function getRotation(prevPos, curPos) {
-        if (!prevPos) {
-            return 0;
-        }
-        const xDiff = curPos.latitude - prevPos.latitude;
-        const yDiff = curPos.longitude - prevPos.longitude;
-        return (Math.atan2(yDiff, xDiff) * 180.0) / Math.PI;
-    }
-
-    const [eski, setEski] = React.useState({});
-    const [heding, setHeding] = React.useState(0);
 
     const [step, setStep] = React.useState(null);
     const [step2, setStep2] = React.useState(null);
@@ -117,7 +106,6 @@ export default function DriverGoPassenger() {
         var radians = (degrees * Math.PI) / 180;
         return radians;
     }
-
     function calcDistance(startingCoords, destinationCoords) {
         let startingLat = degreesToRadians(startingCoords.latitude);
         let startingLong = degreesToRadians(startingCoords.longitude);
@@ -141,156 +129,124 @@ export default function DriverGoPassenger() {
 
     const [heading, setHeading] = React.useState(0);
 
-    useEffect(() => {
-        if (region == null && data.app.currentLocation.length > 0) {
-            setRegion({
-                latitude: data.app.currentLocation[0],
-                longitude: data.app.currentLocation[1],
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
-                first: false,
-            });
-        }
-        try {
-            if (rotate) {
-                harita.current?.animateCamera({
-                    heading: heading,
-                    center: {
-                        latitude: data.app.currentLocation[0],
-                        longitude: data.app.currentLocation[1],
-                    },
-                    pitch: 45,
-                    zoom: 19,
-                });
-            }
-        } catch (error) {}
-        return () => {
-            false;
-        };
-    }, [data.app.currentLocation, heading, rotate]);
-
     const [rotate, setRotate] = React.useState(false);
 
-    const watchPosition = () => {
-        const DriverGoPassengerWP = Geolocation.watchPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-                setHeading(position.coords.heading);
+    const [cl, setCl] = React.useState({
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
 
-                apiPost('mapSocket', {
-                    prc: 'driverLocation',
-                    locations: [position.coords.latitude, position.coords.longitude],
-                    id: data.trip.trip.passenger_id,
-                })
-                    .then(() => {})
-                    .catch((error) => {
-                        console.log('GOPASSENGER.JS ERROR (MAPSOCKET)', error);
-                    });
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 20000,
-                maximumAge: 0,
-                distanceFilter: 1,
-            },
-        );
-        setSubscriptionId(DriverGoPassengerWP);
-    };
-
-    const clearWatch = () => {
-        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
-        setSubscriptionId(null);
-    };
-
-    const [subscriptionId, setSubscriptionId] = React.useState(null);
-    useEffect(() => {
-        watchPosition();
-        return () => {
-            clearWatch();
-        };
-    }, []);
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/5`]}>
-                    {data.app.currentLocation.length > 0 && (
-                        <MapView
-                            ref={harita}
-                            provider={PROVIDER_GOOGLE}
-                            style={{flex: 1}}
-                            region={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            initialRegion={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            showsUserLocation={false}
-                            zoomEnabled={true}
-                            enableZoomControl={true}
-                            showsMyLocationButton={false}
-                            showsTraffic
-                            onRegionChange={(ret, sta) => {
-                                if (sta.isGesture == true) {
-                                    setRotate(false);
-                                }
-                            }}>
-                            <Marker
-                                coordinate={{
-                                    latitude: data.app.currentLocation[0],
-                                    longitude: data.app.currentLocation[1],
-                                }}>
-                                <Image
-                                    source={require('../../../assets/img/compass-ai.png')}
-                                    style={[tw`h-10 w-10`]}
-                                />
-                            </Marker>
+                    <MapView
+                        ref={harita}
+                        provider={PROVIDER_GOOGLE}
+                        style={{flex: 1}}
+                        region={region}
+                        initialRegion={region}
+                        showsUserLocation
+                        zoomEnabled={true}
+                        enableZoomControl={true}
+                        showsMyLocationButton={false}
+                        showsTraffic
+                        onUserLocationChange={(e) => {
+                            if (region.latitude == 0) {
+                                setRegion({
+                                    latitude: e.nativeEvent.coordinate.latitude,
+                                    longitude: e.nativeEvent.coordinate.longitude,
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 0.005,
+                                });
+                            }
+                            setCl({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                            });
 
-                            <Marker coordinate={data.trip.trip.locations[0]}>
-                                <Image
-                                    source={require('../../../assets/img/marker-2.png')}
-                                    style={[tw`w-6 h-12 `]}
-                                />
-                            </Marker>
-
-                            <MapViewDirections
-                                language={data.app.lang == 'gb' ? 'en' : data.app.lang}
-                                optimizeWaypoints={true}
-                                origin={{
-                                    latitude: data.app.currentLocation[0],
-                                    longitude: data.app.currentLocation[1],
-                                }}
-                                destination={data.trip.trip.locations[0]}
-                                apikey={config.mapApi}
-                                strokeWidth={10}
-                                strokeColor="#0f365e"
-                                resetOnChange={false}
-                                onReady={(result) => {
-                                    if (result.legs[0].steps[0]) {
-                                        setStep(result.legs[0].steps[0]);
-                                    } else {
-                                        setStep(null);
-                                    }
-                                    if (result.legs[0].steps[1]) {
-                                        setStep2(result.legs[0].steps[1]);
-                                    } else {
-                                        setStep2(null);
-                                    }
-                                }}
+                            if (rotate) {
+                                harita.current?.animateCamera({
+                                    heading: e.nativeEvent.heading,
+                                    center: {
+                                        latitude: e.nativeEvent.coordinate.latitude,
+                                        longitude: e.nativeEvent.coordinate.longitude,
+                                    },
+                                    pitch: 45,
+                                    zoom: 19,
+                                });
+                            }
+                            let mesafe = calcDistance(
+                                {
+                                    latitude: e.nativeEvent.coordinate.latitude,
+                                    longitude: e.nativeEvent.coordinate.longitude,
+                                },
+                                {
+                                    latitude: data.trip.trip.driver.last_latitude,
+                                    longitude: data.trip.trip.driver.last_longitude,
+                                },
+                            );
+                            if (mesafe > 0.01) {
+                                apiPost('mapSocket', {
+                                    prc: 'driverLocation',
+                                    locations: [
+                                        e.nativeEvent.coordinate.latitude,
+                                        e.nativeEvent.coordinate.longitude,
+                                    ],
+                                    id: data.trip.trip.passenger_id,
+                                    id_2: data.trip.trip.driver_id,
+                                })
+                                    .then(() => {})
+                                    .catch((error) => {
+                                        console.log('GOPASSENGER.JS ERROR (MAPSOCKET)', error);
+                                    });
+                            }
+                        }}
+                        onRegionChange={(ret, sta) => {
+                            if (sta.isGesture == true) {
+                                setRotate(false);
+                            }
+                        }}>
+                        <Marker coordinate={cl}>
+                            <Image
+                                source={require('../../../assets/img/compass-ai.png')}
+                                style={[tw`h-10 w-10`]}
                             />
-                        </MapView>
-                    )}
+                        </Marker>
+
+                        <Marker coordinate={data.trip.trip.locations[0]}>
+                            <Image
+                                source={require('../../../assets/img/marker-2.png')}
+                                style={[tw`w-6 h-12 `]}
+                            />
+                        </Marker>
+
+                        <MapViewDirections
+                            language={data.app.lang == 'gb' ? 'en' : data.app.lang}
+                            optimizeWaypoints={true}
+                            origin={cl}
+                            destination={data.trip.trip.locations[0]}
+                            apikey={config.mapApi}
+                            strokeWidth={12}
+                            strokeColor="#0f365e"
+                            resetOnChange={false}
+                            onReady={(result) => {
+                                if (result.legs[0].steps[0]) {
+                                    setStep(result.legs[0].steps[0]);
+                                } else {
+                                    setStep(null);
+                                }
+                                if (result.legs[0].steps[1]) {
+                                    setStep2(result.legs[0].steps[1]);
+                                } else {
+                                    setStep2(null);
+                                }
+                            }}
+                        />
+                    </MapView>
+
                     <View
                         style={[
                             tw`flex-row items-center justify-between mx-4`,
@@ -368,7 +324,7 @@ export default function DriverGoPassenger() {
                         <View
                             style={[
                                 {position: 'absolute', top: '10%', right: 0},
-                                tw`flex-row items-center rounded-md p-4 mr-4`,
+                                tw`flex-row items-center rounded-md p-2 mr-4`,
                                 stil('bg', data.app.theme),
                             ]}>
                             <MaterialCommunityIcons
@@ -416,15 +372,6 @@ export default function DriverGoPassenger() {
                             <TouchableOpacity
                                 onPress={() => {
                                     setRotate(true);
-                                    harita.current?.animateCamera({
-                                        heading: heading,
-                                        center: {
-                                            latitude: data.app.currentLocation[0],
-                                            longitude: data.app.currentLocation[1],
-                                        },
-                                        pitch: 45,
-                                        zoom: 19,
-                                    });
                                 }}
                                 style={[tw`rounded-md p-2 mr-2`, stil('bg2', data.app.theme)]}>
                                 <MaterialCommunityIcons
@@ -437,13 +384,7 @@ export default function DriverGoPassenger() {
                                 onPress={() => {
                                     setRotate(false);
                                     harita.current.fitToCoordinates(
-                                        [
-                                            {
-                                                latitude: data.app.currentLocation[0],
-                                                longitude: data.app.currentLocation[1],
-                                            },
-                                            data.trip.trip.locations[0],
-                                        ],
+                                        [cl, data.trip.trip.locations[0]],
                                         {
                                             edgePadding: {
                                                 top: 100,

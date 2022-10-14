@@ -30,40 +30,6 @@ export default function PassengerWait() {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     });
-    const [locations, setLocations] = React.useState([]);
-    const fitContent = () => {
-        harita.current.fitToCoordinates(
-            [
-                {
-                    latitude: data.app.currentLocation[0],
-                    longitude: data.app.currentLocation[1],
-                    latitudeDelta: 0.015,
-                    longitudeDelta: 0.015,
-                },
-                {
-                    latitude: parseFloat(data.app.currentLocation[0]) + 0.0005,
-                    longitude: parseFloat(data.app.currentLocation[1]) + 0.0005,
-                    latitudeDelta: 0.015,
-                    longitudeDelta: 0.015,
-                },
-                {
-                    latitude: parseFloat(data.app.currentLocation[0]) - 0.0005,
-                    longitude: parseFloat(data.app.currentLocation[1]) - 0.0005,
-                    latitudeDelta: 0.015,
-                    longitudeDelta: 0.015,
-                },
-            ],
-            {
-                edgePadding: {
-                    top: 100,
-                    right: 100,
-                    bottom: 100,
-                    left: 100,
-                },
-                animated: true,
-            },
-        );
-    };
 
     const [bigImage, setBigImage] = React.useState(false);
 
