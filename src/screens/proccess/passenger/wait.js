@@ -95,32 +95,6 @@ export default function PassengerWait() {
     }, [data.app.currentLocation]);
 
     const watchPosition = () => {
-        Geolocation.getCurrentPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-                setLocations([
-                    {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                    },
-                    {
-                        latitude: parseFloat(data.trip.trip.driver.last_latitude),
-                        longitude: parseFloat(data.trip.trip.driver.last_longitude),
-                    },
-                ]);
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 20000,
-                maximumAge: 0,
-            },
-        );
         const PassengerWaitWP = Geolocation.watchPosition(
             (position) => {
                 dispatch({
@@ -163,13 +137,23 @@ export default function PassengerWait() {
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/5`]}>
-                    {region != null ? (
+                    {data.app.currentLocation.length > 0 ? (
                         <MapView
                             ref={harita}
                             provider={PROVIDER_GOOGLE}
                             style={{flex: 1}}
-                            region={region}
-                            initialRegion={region}
+                            region={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
+                            initialRegion={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
                             showsUserLocation
                             zoomEnabled={true}
                             enableZoomControl={true}

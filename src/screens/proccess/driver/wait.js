@@ -300,13 +300,23 @@ export default function DriverWait() {
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/6`]}>
-                    {data.app.currentLocation[0] ? (
+                    {data.app.currentLocation.length > 0 ? (
                         <MapView
                             ref={harita}
                             provider={PROVIDER_GOOGLE}
                             style={{flex: 1}}
-                            region={region}
-                            initialRegion={region}
+                            region={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
+                            initialRegion={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
                             showsUserLocation
                             zoomEnabled={true}
                             enableZoomControl={true}

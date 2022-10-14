@@ -24,7 +24,10 @@ export default function DriverGoPassenger() {
         alt: 1,
     });
 
-    const [region, setRegion] = React.useState(null);
+    const [region, setRegion] = React.useState({
+        latitude: 0,
+        longitude: 0,
+    });
     const [locations, setLocations] = React.useState([]);
 
     function getRotation(prevPos, curPos) {
@@ -169,22 +172,6 @@ export default function DriverGoPassenger() {
     const [rotate, setRotate] = React.useState(false);
 
     const watchPosition = () => {
-        Geolocation.getCurrentPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 20000,
-                maximumAge: 0,
-            },
-        );
         const DriverGoPassengerWP = Geolocation.watchPosition(
             (position) => {
                 dispatch({
@@ -232,15 +219,23 @@ export default function DriverGoPassenger() {
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/5`]}>
-                    {data.app.currentLocation.length > 0 &&
-                    data.trip.trip.locations.length > 0 &&
-                    region != null ? (
+                    {data.app.currentLocation.length > 0 && (
                         <MapView
                             ref={harita}
                             provider={PROVIDER_GOOGLE}
                             style={{flex: 1}}
-                            region={region}
-                            initialRegion={region}
+                            region={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
+                            initialRegion={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
                             showsUserLocation={false}
                             zoomEnabled={true}
                             enableZoomControl={true}
@@ -295,7 +290,7 @@ export default function DriverGoPassenger() {
                                 }}
                             />
                         </MapView>
-                    ) : null}
+                    )}
                     <View
                         style={[
                             tw`flex-row items-center justify-between mx-4`,

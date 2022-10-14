@@ -184,22 +184,6 @@ export default function PassengerTrip() {
     const [rotate, setRotate] = React.useState(false);
 
     const watchPosition = () => {
-        Geolocation.getCurrentPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 20000,
-                maximumAge: 0,
-            },
-        );
         const PassengerTripWP = Geolocation.watchPosition(
             (position) => {
                 dispatch({
@@ -214,7 +198,7 @@ export default function PassengerTrip() {
             {
                 enableHighAccuracy: true,
                 //accuracy
-                distanceFilter: 0.1,
+                distanceFilter: 1,
                 timeout: 20000,
                 maximumAge: 0,
             },
@@ -243,8 +227,18 @@ export default function PassengerTrip() {
                             ref={harita}
                             provider={PROVIDER_GOOGLE}
                             style={{flex: 1}}
-                            region={region}
-                            initialRegion={region}
+                            region={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
+                            initialRegion={{
+                                latitude: data.app.currentLocation[0],
+                                longitude: data.app.currentLocation[1],
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            }}
                             showsUserLocation={false}
                             zoomEnabled={true}
                             enableZoomControl={true}

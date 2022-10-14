@@ -75,10 +75,6 @@ export default function PassengerCreate() {
             });
     };
 
-    useEffect(() => {
-        console.log(locations.length, locations);
-    }, [locations]);
-
     const getLocationName = (lat, lon, ekle = false, sifirla = false) => {
         axios.defaults.headers.common['Accept'] = 'application/json';
         axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -151,38 +147,6 @@ export default function PassengerCreate() {
             });
     };
 
-    const setCoord = (lat, lon) => {
-        if (locations.length > 0) {
-            let remainingItems = [];
-            locations.map((item, index) => {
-                if (index == locations.length - 1) {
-                    remainingItems.push({
-                        latitude: lat,
-                        longitude: lon,
-                        latitudeDelta: 0.005,
-                        longitudeDelta: 0.005,
-                        title: item.title,
-                        description: item.description,
-                    });
-                } else {
-                    remainingItems.push(item);
-                }
-            });
-            setLocations(remainingItems);
-        } else {
-            setLocations([
-                {
-                    latitude: lat,
-                    longitude: lon,
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                    title: item.title,
-                    description: item.description,
-                },
-            ]);
-        }
-    };
-
     useEffect(() => {
         const abortController = new AbortController();
         const getData = setTimeout(() => {
@@ -221,11 +185,10 @@ export default function PassengerCreate() {
             });
     };
     const [region, setRegion] = React.useState({
-        latitude: data.app.currentLocation[0],
-        longitude: data.app.currentLocation[1],
+        latitude: 0,
+        longitude: 0,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005,
-        first: false,
     });
 
     useEffect(() => {
@@ -269,185 +232,130 @@ export default function PassengerCreate() {
         }
     };
 
-    useEffect(() => {
-        if (!region.first || locations.length == 0) {
-            if (data.app.currentLocation.length > 0) {
-                setRegion({
-                    latitude: data.app.currentLocation[0],
-                    longitude: data.app.currentLocation[1],
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                    first: true,
-                });
-
-                setLocations([
-                    {
-                        latitude: data.app.currentLocation[0],
-                        longitude: data.app.currentLocation[1],
-                        latitudeDelta: 0.005,
-                        longitudeDelta: 0.005,
-                    },
-                ]);
-                getLocationName(data.app.currentLocation[0], data.app.currentLocation[1]);
-            }
-        }
-
-        return () => {
-            false;
-        };
-    }, [data.app.currentLocation]);
-
-    const watchPosition = () => {
-        Geolocation.getCurrentPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 20000,
-                maximumAge: 0,
-            },
-        );
-        const PassengerCreateWP = Geolocation.watchPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 2},
-        );
-        setSubscriptionId(PassengerCreateWP);
-    };
-
-    const clearWatch = () => {
-        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
-        setSubscriptionId(null);
-    };
-
-    const [subscriptionId, setSubscriptionId] = React.useState(null);
-    useEffect(() => {
-        watchPosition();
-        return () => {
-            clearWatch();
-        };
-    }, []);
-
     const [moved, setMoved] = React.useState(false);
     const [isZoom, setIsZoom] = React.useState(0);
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/5`]}>
-                    {data.app.currentLocation.length > 0 ? (
-                        <MapView
-                            ref={harita}
-                            provider={PROVIDER_GOOGLE}
-                            region={region}
-                            initialRegion={region}
-                            showsUserLocation
-                            zoomEnabled={true}
-                            enableZoomControl={true}
-                            showsMyLocationButton={false}
-                            showsTraffic
-                            onMapReady={() => {
-                                apiPost('getPrices', {
-                                    lang: data.app.lang,
-                                    token: data.auth.userToken,
+                    <MapView
+                        ref={harita}
+                        provider={PROVIDER_GOOGLE}
+                        region={region}
+                        initialRegion={region}
+                        showsUserLocation
+                        zoomEnabled={true}
+                        enableZoomControl={true}
+                        showsMyLocationButton={false}
+                        showsTraffic
+                        onUserLocationChange={(e) => {
+                            if (region.latitude == 0) {
+                                setRegion({
+                                    latitude: e.nativeEvent.coordinate.latitude,
+                                    longitude: e.nativeEvent.coordinate.longitude,
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 0.005,
+                                });
+                                getLocationName(
+                                    e.nativeEvent.coordinate.latitude,
+                                    e.nativeEvent.coordinate.longitude,
+                                    false,
+                                    true,
+                                );
+                            }
+                        }}
+                        onMapReady={() => {
+                            apiPost('getPrices', {
+                                lang: data.app.lang,
+                                token: data.auth.userToken,
+                            })
+                                .then((response) => {
+                                    setDATA(response.data.response);
                                 })
-                                    .then((response) => {
-                                        setDATA(response.data.response);
-                                    })
-                                    .catch((error) => {
-                                        console.log('PASSENGERCREATE.JS ERROR (GET PRİCES)', error);
+                                .catch((error) => {
+                                    console.log('PASSENGERCREATE.JS ERROR (GET PRİCES)', error);
+                                });
+                        }}
+                        onRegionChange={(ret, sta) => {
+                            if (markerMove) {
+                                if (sta.isGesture == true) {
+                                    harita.current.getCamera().then((ret2) => {
+                                        if (isZoom == ret2.zoom) {
+                                            setMoved(true);
+                                            setMove(true);
+                                        }
+                                        setIsZoom(ret2.zoom);
                                     });
-                            }}
-                            onRegionChange={(ret, sta) => {
-                                if (markerMove) {
-                                    if (sta.isGesture == true) {
-                                        harita.current.getCamera().then((ret2) => {
-                                            if (isZoom == ret2.zoom) {
-                                                setMoved(true);
-                                                setMove(true);
-                                            }
-                                            setIsZoom(ret2.zoom);
-                                        });
-                                    }
                                 }
-                            }}
-                            onRegionChangeComplete={(ret, sta) => {
-                                if (markerMove) {
-                                    if (sta.isGesture == true) {
-                                        setCoord(ret.latitude, ret.longitude);
-                                        getLocationName(ret.latitude, ret.longitude);
-                                    }
+                            }
+                        }}
+                        onRegionChangeComplete={(ret, sta) => {
+                            if (markerMove) {
+                                if (sta.isGesture == true) {
+                                    getLocationName(ret.latitude, ret.longitude);
                                 }
-                                setMove(false);
-                                setMoved(false);
-                            }}
-                            style={[tw`flex-1 items-center justify-center`]}>
-                            {!moved ? (
-                                <>
-                                    {locations.map((item) => {
-                                        return (
-                                            <Marker
-                                                key={item.latitude}
-                                                coordinate={item}
-                                                title={item.title}
-                                                description={item.description}>
-                                                <Image
-                                                    source={require('../../../assets/img/marker-2.png')}
-                                                    style={[tw`w-6 h-12 `]}
-                                                />
-                                            </Marker>
-                                        );
-                                    })}
+                            }
+                            setMove(false);
+                            setMoved(false);
+                        }}
+                        style={[tw`flex-1 items-center justify-center`]}>
+                        {!moved ? (
+                            <>
+                                {locations.map((item) => {
+                                    return (
+                                        <Marker
+                                            key={item.latitude}
+                                            coordinate={item}
+                                            title={item.title}
+                                            description={item.description}>
+                                            <Image
+                                                source={require('../../../assets/img/marker-2.png')}
+                                                style={[tw`w-6 h-12 `]}
+                                            />
+                                        </Marker>
+                                    );
+                                })}
 
-                                    {!move && locations.length >= 2 ? (
-                                        <MapViewDirections
-                                            language={data.app.lang == 'gb' ? 'en' : data.app.lang}
-                                            optimizeWaypoints={true}
-                                            origin={locations[0]}
-                                            waypoints={
-                                                locations.length > 2
-                                                    ? locations.slice(1, -1)
-                                                    : undefined
-                                            }
-                                            destination={locations[locations.length - 1]}
-                                            apikey={config.mapApi}
-                                            strokeWidth={5}
-                                            strokeColor="#0f365e"
-                                            onReady={(result) => {
-                                                setDuration(result.legs[0].duration.value);
-                                                setDistance(result.legs[0].distance.value);
-                                            }}
-                                        />
-                                    ) : null}
-                                </>
-                            ) : null}
+                                {!move && locations.length >= 2 ? (
+                                    <MapViewDirections
+                                        language={data.app.lang == 'gb' ? 'en' : data.app.lang}
+                                        optimizeWaypoints={true}
+                                        origin={locations[0]}
+                                        waypoints={
+                                            locations.length > 2
+                                                ? locations.slice(1, -1)
+                                                : undefined
+                                        }
+                                        destination={locations[locations.length - 1]}
+                                        apikey={config.mapApi}
+                                        strokeWidth={5}
+                                        strokeColor="#0f365e"
+                                        onReady={(result) => {
+                                            setDuration(result.legs[0].duration.value);
+                                            setDistance(result.legs[0].distance.value);
+                                        }}
+                                    />
+                                ) : null}
+                            </>
+                        ) : null}
+                    </MapView>
 
-                            <Image
-                                source={require('../../../assets/img/marker-full-2.png')}
-                                style={[
-                                    {
-                                        height: moved ? 100 : 0,
-                                        width: moved ? 50 : 0,
-
-                                        opacity: moved ? 100 : 0,
-                                    },
-                                ]}
-                            />
-                        </MapView>
-                    ) : null}
+                    <Image
+                        source={require('../../../assets/img/marker-full-2.png')}
+                        style={[
+                            {
+                                position: 'absolute',
+                                marginTop: -50,
+                                marginLeft: -25,
+                                top: '50%',
+                                left: '50%',
+                                height: moved ? 100 : 0,
+                                width: moved ? 50 : 0,
+                                zIndex: 999,
+                                opacity: moved ? 100 : 0,
+                            },
+                        ]}
+                    />
                 </View>
                 <View style={[tw`h-${h.alt}/5 p-4`]}>
                     <View
@@ -458,51 +366,28 @@ export default function PassengerCreate() {
                         <View style={[tw`flex-row`]}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    getLocationName(
-                                        data.app.currentLocation[0],
-                                        data.app.currentLocation[1],
-                                        false,
-                                        true,
-                                    );
-                                    harita.current.fitToCoordinates(
-                                        [
-                                            {
-                                                latitude: data.app.currentLocation[0],
-                                                longitude: data.app.currentLocation[1],
-                                                latitudeDelta: 0.015,
-                                                longitudeDelta: 0.015,
-                                            },
-                                            {
-                                                latitude:
-                                                    parseFloat(data.app.currentLocation[0]) +
-                                                    0.0005,
-                                                longitude:
-                                                    parseFloat(data.app.currentLocation[1]) +
-                                                    0.0005,
-                                                latitudeDelta: 0.015,
-                                                longitudeDelta: 0.015,
-                                            },
-                                            {
-                                                latitude:
-                                                    parseFloat(data.app.currentLocation[0]) -
-                                                    0.0005,
-                                                longitude:
-                                                    parseFloat(data.app.currentLocation[1]) -
-                                                    0.0005,
-                                                latitudeDelta: 0.015,
-                                                longitudeDelta: 0.015,
-                                            },
-                                        ],
+                                    getLocationName(region.latitude, region.longitude, false, true);
+                                    fitCoord([
                                         {
-                                            edgePadding: {
-                                                top: 100,
-                                                right: 100,
-                                                bottom: 100,
-                                                left: 100,
-                                            },
-                                            animated: true,
+                                            latitude: region.latitude,
+                                            longitude: region.longitude,
+                                            latitudeDelta: 0.015,
+                                            longitudeDelta: 0.015,
                                         },
-                                    );
+                                        {
+                                            latitude: parseFloat(region.latitude) + 0.0005,
+                                            longitude: parseFloat(region.longitude) + 0.0005,
+                                            latitudeDelta: 0.015,
+                                            longitudeDelta: 0.015,
+                                        },
+                                        {
+                                            latitude: parseFloat(region.latitude) - 0.0005,
+                                            longitude: parseFloat(region.longitude) - 0.0005,
+                                            latitudeDelta: 0.015,
+                                            longitudeDelta: 0.015,
+                                        },
+                                    ]);
+                                    setMarkerMove(true);
                                 }}
                                 style={[tw`rounded-md p-2`, stil('bg', data.app.theme)]}>
                                 <MaterialCommunityIcons
@@ -528,49 +413,30 @@ export default function PassengerCreate() {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => {
-                                    harita.current.fitToCoordinates(
-                                        [
-                                            {
-                                                latitude: data.app.currentLocation[0],
-                                                longitude: data.app.currentLocation[1],
-                                                latitudeDelta: 0.015,
-                                                longitudeDelta: 0.015,
-                                            },
-                                            {
-                                                latitude:
-                                                    parseFloat(data.app.currentLocation[0]) +
-                                                    0.0005,
-                                                longitude:
-                                                    parseFloat(data.app.currentLocation[1]) +
-                                                    0.0005,
-                                                latitudeDelta: 0.015,
-                                                longitudeDelta: 0.015,
-                                            },
-                                            {
-                                                latitude:
-                                                    parseFloat(data.app.currentLocation[0]) -
-                                                    0.0005,
-                                                longitude:
-                                                    parseFloat(data.app.currentLocation[1]) -
-                                                    0.0005,
-                                                latitudeDelta: 0.015,
-                                                longitudeDelta: 0.015,
-                                            },
-                                        ],
+                                    fitCoord([
                                         {
-                                            edgePadding: {
-                                                top: 100,
-                                                right: 100,
-                                                bottom: 100,
-                                                left: 100,
-                                            },
-                                            animated: true,
+                                            latitude: region.latitude,
+                                            longitude: region.longitude,
+                                            latitudeDelta: 0.015,
+                                            longitudeDelta: 0.015,
                                         },
-                                    );
+                                        {
+                                            latitude: parseFloat(region.latitude) + 0.0005,
+                                            longitude: parseFloat(region.longitude) + 0.0005,
+                                            latitudeDelta: 0.015,
+                                            longitudeDelta: 0.015,
+                                        },
+                                        {
+                                            latitude: parseFloat(region.latitude) - 0.0005,
+                                            longitude: parseFloat(region.longitude) - 0.0005,
+                                            latitudeDelta: 0.015,
+                                            longitudeDelta: 0.015,
+                                        },
+                                    ]);
                                     if (locations.length < 2) {
                                         getLocationName(
-                                            data.app.currentLocation[0],
-                                            data.app.currentLocation[1],
+                                            region.latitude,
+                                            region.longitude,
                                             false,
                                             true,
                                         );
@@ -630,8 +496,8 @@ export default function PassengerCreate() {
                                 } else {
                                     setLocations([
                                         {
-                                            latitude: data.app.currentLocation[0],
-                                            longitude: data.app.currentLocation[1],
+                                            latitude: region.latitude,
+                                            longitude: region.longitude,
                                             latitudeDelta: 0.005,
                                             longitudeDelta: 0.005,
                                             title: '',
@@ -640,8 +506,8 @@ export default function PassengerCreate() {
                                     ]);
                                     fitCoord([
                                         {
-                                            latitude: data.app.currentLocation[0],
-                                            longitude: data.app.currentLocation[1],
+                                            latitude: region.latitude,
+                                            longitude: region.longitude,
                                             latitudeDelta: 0.005,
                                             longitudeDelta: 0.005,
                                             title: '',
@@ -1089,8 +955,8 @@ export default function PassengerCreate() {
                                 } else {
                                     setLocations([
                                         {
-                                            latitude: data.app.currentLocation[0],
-                                            longitude: data.app.currentLocation[1],
+                                            latitude: region.latitude,
+                                            longitude: region.longitude,
                                             latitudeDelta: 0.005,
                                             longitudeDelta: 0.005,
                                             title: '',
@@ -1099,8 +965,8 @@ export default function PassengerCreate() {
                                     ]);
                                     fitCoord([
                                         {
-                                            latitude: data.app.currentLocation[0],
-                                            longitude: data.app.currentLocation[1],
+                                            latitude: region.latitude,
+                                            longitude: region.longitude,
                                             latitudeDelta: 0.005,
                                             longitudeDelta: 0.005,
                                             title: '',
@@ -1134,6 +1000,17 @@ export default function PassengerCreate() {
                                             <View style={[tw`flex-row  items-start ml-2 py-1`]}>
                                                 <TouchableOpacity
                                                     onPress={() => {
+                                                        fitCoord([
+                                                            ...locations,
+                                                            {
+                                                                title: item.display_name.split(
+                                                                    ',',
+                                                                )[0],
+                                                                description: item.display_name,
+                                                                latitude: parseFloat(item.lat),
+                                                                longitude: parseFloat(item.lon),
+                                                            },
+                                                        ]);
                                                         setLocations([
                                                             ...locations,
                                                             {
