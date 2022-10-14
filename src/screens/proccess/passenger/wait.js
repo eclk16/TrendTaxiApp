@@ -24,7 +24,12 @@ export default function PassengerWait() {
         alt: 1,
     });
 
-    const [region, setRegion] = React.useState(null);
+    const [region, setRegion] = React.useState({
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
     const [locations, setLocations] = React.useState([]);
     const fitContent = () => {
         harita.current.fitToCoordinates(
@@ -62,166 +67,65 @@ export default function PassengerWait() {
 
     const [bigImage, setBigImage] = React.useState(false);
 
-    useEffect(() => {
-        setLocations([
-            {
-                latitude: data.app.currentLocation[0],
-                longitude: data.app.currentLocation[1],
-            },
-            {
-                latitude: parseFloat(data.trip.trip.driver.last_latitude),
-                longitude: parseFloat(data.trip.trip.driver.last_longitude),
-            },
-        ]);
-        console.log(locations, region, data.app.currentLocation);
-    }, [data.trip.trip.driver.last_latitude]);
-
-    useEffect(() => {
-        if (region == null) {
-            if (data.app.currentLocation.length > 0) {
-                setRegion({
-                    latitude: parseFloat(data.app.currentLocation[0]),
-                    longitude: parseFloat(data.app.currentLocation[1]),
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                    first: true,
-                });
-            }
-        }
-
-        return () => {
-            false;
-        };
-    }, [data.app.currentLocation]);
-
-    const watchPosition = () => {
-        const PassengerWaitWP = Geolocation.watchPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-                setLocations([
-                    {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                    },
-                    {
-                        latitude: parseFloat(data.trip.trip.driver.last_latitude),
-                        longitude: parseFloat(data.trip.trip.driver.last_longitude),
-                    },
-                ]);
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {enableHighAccuracy: true, timeout: 20000, maximumAge: 0, distanceFilter: 2},
-        );
-        setSubscriptionId(PassengerWaitWP);
-    };
-
-    const clearWatch = () => {
-        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
-        setSubscriptionId(null);
-    };
-
-    const [subscriptionId, setSubscriptionId] = React.useState(null);
-    useEffect(() => {
-        watchPosition();
-        return () => {
-            clearWatch();
-        };
-    }, []);
-
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/5`]}>
-                    {data.app.currentLocation.length > 0 ? (
-                        <MapView
-                            ref={harita}
-                            provider={PROVIDER_GOOGLE}
-                            style={{flex: 1}}
-                            region={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            initialRegion={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            showsUserLocation
-                            zoomEnabled={true}
-                            enableZoomControl={true}
-                            showsMyLocationButton={false}
-                            rotateEnabled={true}
-                            showsTraffic
-                            onMapReady={() => {
-                                harita.current.fitToCoordinates(
-                                    [
-                                        {
-                                            latitude: data.app.currentLocation[0]
-                                                ? data.app.currentLocation[0]
-                                                : data.trip.trip.locations[0].latitude,
-                                            longitude: data.app.currentLocation[1]
-                                                ? data.app.currentLocation[1]
-                                                : data.trip.trip.locations[0].longitude,
-                                        },
-                                        ...data.trip.trip.locations,
-                                    ],
-                                    {
-                                        edgePadding: {
-                                            top: 100,
-                                            right: 100,
-                                            bottom: 100,
-                                            left: 100,
-                                        },
-                                        animated: true,
-                                    },
-                                );
+                    <MapView
+                        ref={harita}
+                        provider={PROVIDER_GOOGLE}
+                        style={{flex: 1}}
+                        region={region}
+                        initialRegion={region}
+                        showsUserLocation
+                        zoomEnabled={true}
+                        enableZoomControl={true}
+                        showsMyLocationButton={false}
+                        //user location change
+                        onUserLocationChange={(e) => {
+                            if (region.latitude == 0) {
+                                setRegion({
+                                    latitude: e.nativeEvent.coordinate.latitude,
+                                    longitude: e.nativeEvent.coordinate.longitude,
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 0.005,
+                                });
+                            }
+                        }}
+                        rotateEnabled={true}
+                        showsTraffic>
+                        <Marker
+                            coordinate={{
+                                latitude: parseFloat(data.trip.trip.driver.last_latitude),
+                                longitude: parseFloat(data.trip.trip.driver.last_longitude),
                             }}>
-                            {locations.map((item, index) => {
-                                if (index == 1) {
-                                    return (
-                                        <Marker key={index} coordinate={item}>
-                                            <Image
-                                                source={{
-                                                    uri:
-                                                        config.imageBaseUrl +
-                                                        data.trip.trip.driver.user_data.car.image.replace(
-                                                            '2.png',
-                                                            '.png',
-                                                        ),
-                                                }}
-                                                style={[tw`h-8 w-16`]}
-                                            />
-                                        </Marker>
-                                    );
-                                }
-                            })}
-                            {data.app.currentLocation.length > 0 ? (
-                                <MapViewDirections
-                                    language={data.app.lang == 'gb' ? 'en' : data.app.lang}
-                                    optimizeWaypoints={true}
-                                    origin={{
-                                        latitude: data.app.currentLocation[0],
-                                        longitude: data.app.currentLocation[1],
-                                    }}
-                                    destination={data.trip.trip.locations[0]}
-                                    apikey={config.mapApi}
-                                    // mode walk
-                                    mode="WALKING"
-                                    strokeWidth={10}
-                                    strokeColor="#0f365e"
-                                    resetOnChange={false}
-                                />
-                            ) : null}
-                        </MapView>
-                    ) : null}
+                            <Image
+                                source={{
+                                    uri:
+                                        config.imageBaseUrl +
+                                        data.trip.trip.driver.user_data.car.image.replace(
+                                            '2.png',
+                                            '.png',
+                                        ),
+                                }}
+                                style={[tw`h-8 w-16`]}
+                            />
+                        </Marker>
+                        {region.last_latitude != 0 && (
+                            <MapViewDirections
+                                optimizeWaypoints={true}
+                                origin={region}
+                                destination={data.trip.trip.locations[0]}
+                                apikey={config.mapApi}
+                                // mode walk
+                                mode="WALKING"
+                                strokeWidth={10}
+                                strokeColor="#0f365e"
+                                resetOnChange={false}
+                            />
+                        )}
+                    </MapView>
+
                     <View
                         style={[
                             tw`flex-row items-center justify-between mx-4`,
@@ -333,8 +237,9 @@ export default function PassengerWait() {
                         <View style={[tw`flex-row`]}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    if (locations.length > 0) {
-                                        harita.current.fitToCoordinates(locations, {
+                                    harita.current.fitToCoordinates(
+                                        [region, data.trip.trip.locations[0]],
+                                        {
                                             edgePadding: {
                                                 top: 100,
                                                 right: 100,
@@ -342,8 +247,8 @@ export default function PassengerWait() {
                                                 left: 100,
                                             },
                                             animated: true,
-                                        });
-                                    }
+                                        },
+                                    );
                                 }}
                                 style={[tw`rounded-md p-2 mr-2`, stil('bg2', data.app.theme)]}>
                                 <MaterialCommunityIcons
@@ -354,7 +259,15 @@ export default function PassengerWait() {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => {
-                                    fitContent();
+                                    harita.current.fitToCoordinates([region], {
+                                        edgePadding: {
+                                            top: 100,
+                                            right: 100,
+                                            bottom: 100,
+                                            left: 100,
+                                        },
+                                        animated: true,
+                                    });
                                 }}
                                 style={[tw`rounded-md p-2`, stil('bg2', data.app.theme)]}>
                                 <MaterialCommunityIcons
@@ -376,7 +289,7 @@ export default function PassengerWait() {
                                         config.imageBaseUrl +
                                         data.trip.trip.driver.user_data.car_image_1,
                                 }}
-                                style={[tw`w-24 h-24 rounded-md`]}
+                                style={[tw`w-25 h-16 rounded-md`]}
                             />
                         </TouchableOpacity>
                         <View style={[tw`flex items-start ml-4`]}>
@@ -436,7 +349,7 @@ export default function PassengerWait() {
                 }}>
                 <View style={[tw`h-1/1 flex justify-end`]}>
                     <View style={[tw`flex justify-end`]}>
-                        <View style={[tw`  items-center justify-center`, ,]}>
+                        <View style={[tw`  items-center justify-end`, ,]}>
                             <View
                                 style={[
                                     tw`w-full flex items-center justify-center  p-2`,
