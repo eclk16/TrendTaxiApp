@@ -30,7 +30,12 @@ export default function DriverTrip() {
         alt: 1,
     });
 
-    const [region, setRegion] = React.useState(null);
+    const [region, setRegion] = React.useState({
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
     const [locations, setLocations] = React.useState([]);
 
     const [eski, setEski] = React.useState(null);
@@ -132,237 +137,188 @@ export default function DriverTrip() {
 
         return distanceInKilometers;
     }
-    const [price, setPrice] = React.useState(0);
+    const [price, setPrice] = React.useState(data.trip.trip.driver.user_data.car.start);
+    useEffect(() => {
+        getValue('TTDistance').then((tt) => {
+            if (tt) {
+                let p = 0;
+                p =
+                    parseFloat(data.trip.trip.driver.user_data.car.start) -
+                    parseFloat(data.trip.trip.driver.user_data.car.km);
+                p = p + parseFloat(tt) * parseFloat(data.trip.trip.driver.user_data.car.km);
+                p = Math.ceil(p / 500) * 500;
+                if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
+                    p = parseFloat(data.trip.trip.driver.user_data.car.start);
+                }
+                if (parseFloat(tt) > 0) {
+                    if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
+                        p = parseFloat(data.trip.trip.driver.user_data.car.start);
+                    }
+                    setPrice(p.toFixed(2));
+
+                    setACTDistance(parseFloat(tt).toFixed(2));
+                }
+            }
+        });
+    }, []);
 
     function hesapla(l) {
         getValue('TTLocation').then((ttl) => {
             if (ttl) {
                 let d = calcDistance(JSON.parse(ttl), l);
                 if (d !== undefined) {
-                    let p = 0;
-                    getValue('TTDistance').then((tt) => {
-                        if (tt) {
-                            p =
-                                parseFloat(data.trip.trip.driver.user_data.car.start) -
-                                parseFloat(data.trip.trip.driver.user_data.car.km);
-                            p =
-                                p +
-                                (d + parseFloat(tt)) *
+                    if (d > 0.005) {
+                        let p = 0;
+                        getValue('TTDistance').then((tt) => {
+                            if (tt) {
+                                p =
+                                    parseFloat(data.trip.trip.driver.user_data.car.start) -
                                     parseFloat(data.trip.trip.driver.user_data.car.km);
-                            p = Math.ceil(p / 500) * 500;
-                            if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
-                                p = parseFloat(data.trip.trip.driver.user_data.car.start);
-                            }
-                            if (parseFloat(d) > 0) {
+                                p =
+                                    p +
+                                    (d + parseFloat(tt)) *
+                                        parseFloat(data.trip.trip.driver.user_data.car.km);
+                                p = Math.ceil(p / 500) * 500;
                                 if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
                                     p = parseFloat(data.trip.trip.driver.user_data.car.start);
                                 }
-                                setPrice(p.toFixed(2));
-                                setValue('TTDistance', (parseFloat(d) + parseFloat(tt)).toString());
-                                setACTDistance((parseFloat(d) + parseFloat(tt)).toFixed(2));
+                                if (parseFloat(d) > 0) {
+                                    if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
+                                        p = parseFloat(data.trip.trip.driver.user_data.car.start);
+                                    }
+                                    setPrice(p.toFixed(2));
+                                    setValue(
+                                        'TTDistance',
+                                        (parseFloat(d) + parseFloat(tt)).toString(),
+                                    );
+                                    setACTDistance((parseFloat(d) + parseFloat(tt)).toFixed(2));
+                                }
+                            } else {
+                                if (parseFloat(d) > 0) {
+                                    setValue('TTDistance', d.toString());
+                                    setACTDistance(d.toFixed(2));
+                                }
                             }
-                        } else {
-                            if (parseFloat(d) > 0) {
-                                setValue('TTDistance', d.toString());
-                                setACTDistance(d.toFixed(2));
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
             }
             setValue('TTLocation', JSON.stringify(l));
-            let t = parseInt(data.trip.trip.start_time) * 1000;
-            t = new Date().getTime() - t;
-            t = t / 1000 / 60;
-
-            setACTDuration(t.toFixed(2));
         });
     }
     const [modalVisible, setModalVisible] = React.useState(false);
 
     const [heading, setHeading] = React.useState(0);
-    useEffect(() => {
-        if (region == null && data.app.currentLocation.length > 0) {
-            setRegion({
-                latitude: data.app.currentLocation[0],
-                longitude: data.app.currentLocation[1],
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
-                first: false,
-            });
-        }
-
-        let remainingItems = [];
-        let gecilen = 0;
-        data.trip.trip.locations.map((item, index) => {
-            if (item.check) {
-                gecilen = gecilen + 1;
-                console.log('arttı');
-                remainingItems.push(item);
-            } else {
-                let mesafe = calcDistance(item, {
-                    latitude: data.app.currentLocation[0],
-                    longitude: data.app.currentLocation[1],
-                });
-                if (mesafe < 0.04) {
-                    gecilen = gecilen + 1;
-                    remainingItems.push({...item, check: 1});
-                } else {
-                    remainingItems.push(item);
-                }
-            }
-        });
-        let re = [];
-        remainingItems.forEach((item, index) => {
-            if (!item.check) {
-                re.push(item);
-            }
-        });
-        setDirections(re);
-        dispatch({
-            type: 'setTrip',
-            payload: {
-                ...data.trip.trip,
-                locations: remainingItems,
-            },
-        });
-        let y = 100 / data.trip.trip.locations.length;
-        let x = y * gecilen;
-        console.log(y, x, gecilen, data.trip.trip.locations);
-        setYuzde(x);
-
-        try {
-            if (rotate) {
-                harita.current?.animateCamera({
-                    heading: heading,
-                    center: {
-                        latitude: data.app.currentLocation[0],
-                        longitude: data.app.currentLocation[1],
-                    },
-                    pitch: 45,
-                    zoom: 19,
-                });
-            }
-        } catch (error) {}
-        return () => {
-            false;
-        };
-    }, [data.app.currentLocation, heading, rotate]);
 
     const [directions, setDirections] = React.useState([]);
 
     const [rotate, setRotate] = React.useState(false);
 
-    const watchPosition = () => {
-        const DriverTripWP = Geolocation.watchPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-
-                setHeading(position.coords.heading);
-
-                hesapla({
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                });
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {
-                enableHighAccuracy: true,
-                //accuracy
-                distanceFilter: 1,
-                timeout: 20000,
-                maximumAge: 0,
-            },
-        );
-        setSubscriptionId(DriverTripWP);
-    };
-
-    const clearWatch = () => {
-        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
-        setSubscriptionId(null);
-    };
-
     const [yuzde, setYuzde] = React.useState(0);
-    useEffect(() => {
-        watchPosition();
-        return () => {
-            clearWatch();
-        };
-    }, []);
 
-    const [subscriptionId, setSubscriptionId] = React.useState(null);
+    const [cl, setCl] = React.useState({
+        latitude: 0,
+        longitude: 0,
+    });
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/5`]}>
-                    {data.app.currentLocation.length > 0 ? (
-                        <MapView
-                            ref={harita}
-                            provider={PROVIDER_GOOGLE}
-                            style={{flex: 1}}
-                            region={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            initialRegion={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            showsUserLocation={false}
-                            zoomEnabled={true}
-                            enableZoomControl={true}
-                            showsMyLocationButton={false}
-                            rotateEnabled={true}
-                            showsTraffic
-                            onRegionChange={(ret, sta) => {
-                                if (sta.isGesture == true) {
-                                    setRotate(false);
+                    <MapView
+                        ref={harita}
+                        provider={PROVIDER_GOOGLE}
+                        style={{flex: 1}}
+                        region={region}
+                        initialRegion={region}
+                        showsUserLocation
+                        zoomEnabled={true}
+                        enableZoomControl={true}
+                        showsMyLocationButton={false}
+                        rotateEnabled={true}
+                        showsTraffic
+                        onRegionChange={(ret, sta) => {
+                            if (sta.isGesture == true) {
+                                setRotate(false);
+                            }
+                        }}
+                        onUserLocationChange={(e) => {
+                            if (region.latitude == 0) {
+                                setRegion({
+                                    latitude: e.nativeEvent.coordinate.latitude,
+                                    longitude: e.nativeEvent.coordinate.longitude,
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 0.005,
+                                });
+                            }
+                            setCl({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                            });
+
+                            if (rotate) {
+                                harita.current?.animateCamera({
+                                    heading: e.nativeEvent.heading,
+                                    center: {
+                                        latitude: e.nativeEvent.coordinate.latitude,
+                                        longitude: e.nativeEvent.coordinate.longitude,
+                                    },
+                                    pitch: 45,
+                                    zoom: 19,
+                                });
+                            }
+
+                            hesapla({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                            });
+
+                            let remainingItems = [];
+                            let gecilen = 0;
+                            data.trip.trip.locations.map((item, index) => {
+                                if (item.check) {
+                                    gecilen = gecilen + 1;
+                                    console.log('arttı');
+                                    remainingItems.push(item);
+                                } else {
+                                    let mesafe = calcDistance(item, {
+                                        latitude: e.nativeEvent.coordinate.latitude,
+                                        longitude: e.nativeEvent.coordinate.longitude,
+                                    });
+                                    if (mesafe < 0.04) {
+                                        gecilen = gecilen + 1;
+                                        remainingItems.push({...item, check: 1});
+                                    } else {
+                                        remainingItems.push(item);
+                                    }
                                 }
-                            }}
-                            onMapReady={() => {
-                                // harita.current.fitToCoordinates(
-                                //     [
-                                //         {
-                                //             latitude: data.app.currentLocation[0]
-                                //                 ? data.app.currentLocation[0]
-                                //                 : data.trip.trip.locations[0].latitude,
-                                //             longitude: data.app.currentLocation[1]
-                                //                 ? data.app.currentLocation[1]
-                                //                 : data.trip.trip.locations[0].longitude,
-                                //         },
-                                //         ...data.trip.trip.locations,
-                                //     ],
-                                //     {
-                                //         edgePadding: {
-                                //             top: 100,
-                                //             right: 100,
-                                //             bottom: 100,
-                                //             left: 100,
-                                //         },
-                                //         animated: true,
-                                //     },
-                                // );
-                            }}>
-                            <Marker
-                                coordinate={{
-                                    latitude: data.app.currentLocation[0],
-                                    longitude: data.app.currentLocation[1],
-                                }}>
-                                <Image
-                                    source={require('../../../assets/img/compass-ai.png')}
-                                    style={[tw`h-10 w-10`]}
-                                />
-                            </Marker>
-                            {/* {data.trip.trip.locations.map((item, index) => {
+                            });
+                            let re = [];
+                            remainingItems.forEach((item, index) => {
+                                if (!item.check) {
+                                    re.push(item);
+                                }
+                            });
+                            setDirections(re);
+                            dispatch({
+                                type: 'setTrip',
+                                payload: {
+                                    ...data.trip.trip,
+                                    locations: remainingItems,
+                                },
+                            });
+                            let y = 100 / data.trip.trip.locations.length;
+                            let x = y * gecilen;
+
+                            setYuzde(x);
+                        }}>
+                        <Marker coordinate={cl}>
+                            <Image
+                                source={require('../../../assets/img/compass-ai.png')}
+                                style={[tw`h-10 w-10`]}
+                            />
+                        </Marker>
+                        {data.trip.trip.locations.map((item, index) => {
+                            if (index != 0) {
                                 return (
                                     <Marker
                                         identifier={'Marker_' + index}
@@ -370,47 +326,44 @@ export default function DriverTrip() {
                                         coordinate={item}
                                     />
                                 );
-                            })} */}
-                            {directions.length > 1 ? (
-                                <MapViewDirections
-                                    language={data.app.lang == 'gb' ? 'en' : data.app.lang}
-                                    optimizeWaypoints={true}
-                                    origin={{
-                                        latitude: data.app.currentLocation[0],
-                                        longitude: data.app.currentLocation[1],
-                                    }}
-                                    waypoints={
-                                        directions.length > 2 ? directions.slice(1, -1) : undefined
+                            }
+                        })}
+                        {directions.length > 1 ? (
+                            <MapViewDirections
+                                language={data.app.lang == 'gb' ? 'en' : data.app.lang}
+                                optimizeWaypoints={true}
+                                origin={cl}
+                                waypoints={
+                                    directions.length > 2 ? directions.slice(1, -1) : undefined
+                                }
+                                destination={
+                                    directions.length == 1
+                                        ? undefined
+                                        : directions[directions.length - 1]
+                                }
+                                apikey={config.mapApi}
+                                strokeWidth={10}
+                                mode="DRIVING"
+                                precision={'high'}
+                                strokeColor="#0f365e"
+                                resetOnChange={false}
+                                onReady={(result) => {
+                                    if (result.legs[0].steps[0]) {
+                                        setStep(result.legs[0].steps[0]);
+                                    } else {
+                                        setStep(null);
                                     }
-                                    destination={
-                                        directions.length == 1
-                                            ? undefined
-                                            : directions[directions.length - 1]
+                                    if (result.legs[0].steps[1]) {
+                                        setStep2(result.legs[0].steps[1]);
+                                    } else {
+                                        setStep2(null);
                                     }
-                                    apikey={config.mapApi}
-                                    strokeWidth={10}
-                                    mode="DRIVING"
-                                    precision={'high'}
-                                    strokeColor="#0f365e"
-                                    resetOnChange={false}
-                                    onReady={(result) => {
-                                        if (result.legs[0].steps[0]) {
-                                            setStep(result.legs[0].steps[0]);
-                                        } else {
-                                            setStep(null);
-                                        }
-                                        if (result.legs[0].steps[1]) {
-                                            setStep2(result.legs[0].steps[1]);
-                                        } else {
-                                            setStep2(null);
-                                        }
-                                        setDuration(result.legs[0].duration.value);
-                                        setDistance(result.legs[0].distance.value);
-                                    }}
-                                />
-                            ) : null}
-                        </MapView>
-                    ) : null}
+                                    setDuration(result.legs[0].duration.value);
+                                    setDistance(result.legs[0].distance.value);
+                                }}
+                            />
+                        ) : null}
+                    </MapView>
 
                     <View
                         style={[
@@ -486,7 +439,13 @@ export default function DriverTrip() {
                                 tw`rounded-md items-center justify-center flex-row py-3 w-[27%]`,
                             ]}>
                             <Text style={[stil('text', data.app.theme), tw`  font-semibold`]}>
-                                {act_duration} {l[data.app.lang].min}
+                                {(
+                                    (new Date().getTime() -
+                                        parseInt(parseInt(data.trip.trip.start_time) * 1000)) /
+                                    1000 /
+                                    60
+                                ).toFixed(0)}{' '}
+                                {l[data.app.lang].min}
                             </Text>
                         </View>
                     </View>
@@ -554,18 +513,10 @@ export default function DriverTrip() {
                                 onPress={() => {
                                     harita.current.fitToCoordinates(
                                         [
-                                            {
-                                                latitude: data.app.currentLocation[0],
-                                                longitude: data.app.currentLocation[1],
-                                            },
-                                            data.trip.trip.locations.length > 0
-                                                ? data.trip.trip.locations[
-                                                      data.trip.trip.locations.length - 1
-                                                  ]
-                                                : {
-                                                      latitude: data.app.currentLocation[0],
-                                                      longitude: data.app.currentLocation[1],
-                                                  },
+                                            cl,
+                                            directions.length > 0
+                                                ? directions[directions.length - 1]
+                                                : cl,
                                         ],
                                         {
                                             edgePadding: {
