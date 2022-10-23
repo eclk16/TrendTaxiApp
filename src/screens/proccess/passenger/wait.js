@@ -18,7 +18,8 @@ export default function PassengerWait() {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     const harita = React.useRef(null);
-
+    const [distance, setDistance] = React.useState(0);
+    const [duration, setDuration] = React.useState(0);
     const [h, setH] = React.useState({
         ust: 4,
         alt: 1,
@@ -32,7 +33,30 @@ export default function PassengerWait() {
     });
 
     const [bigImage, setBigImage] = React.useState(false);
+    function degreesToRadians(degrees) {
+        var radians = (degrees * Math.PI) / 180;
+        return radians;
+    }
+    function calcDistance(startingCoords, destinationCoords) {
+        let startingLat = degreesToRadians(startingCoords.latitude);
+        let startingLong = degreesToRadians(startingCoords.longitude);
+        let destinationLat = degreesToRadians(destinationCoords.latitude);
+        let destinationLong = degreesToRadians(destinationCoords.longitude);
 
+        // Radius of the Earth in kilometers
+        let radius = 6571;
+
+        // Haversine equation
+        let distanceInKilometers =
+            Math.acos(
+                Math.sin(startingLat) * Math.sin(destinationLat) +
+                    Math.cos(startingLat) *
+                        Math.cos(destinationLat) *
+                        Math.cos(startingLong - destinationLong),
+            ) * radius;
+
+        return distanceInKilometers;
+    }
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
@@ -45,7 +69,9 @@ export default function PassengerWait() {
                         initialRegion={region}
                         showsUserLocation
                         zoomEnabled={true}
+                        showsCompass={false}
                         enableZoomControl={true}
+                        followsUserLocation={true}
                         showsMyLocationButton={false}
                         //user location change
                         onUserLocationChange={(e) => {
@@ -60,23 +86,38 @@ export default function PassengerWait() {
                         }}
                         rotateEnabled={true}
                         showsTraffic>
-                        <Marker
-                            coordinate={{
-                                latitude: parseFloat(data.trip.trip.driver.last_latitude),
-                                longitude: parseFloat(data.trip.trip.driver.last_longitude),
-                            }}>
-                            <Image
-                                source={{
-                                    uri:
-                                        config.imageBaseUrl +
-                                        data.trip.trip.driver.user_data.car.image.replace(
-                                            '2.png',
-                                            '.png',
-                                        ),
+                        {data.trip.trip.driver.last_latitude !== null && (
+                            <Marker
+                                coordinate={{
+                                    latitude: parseFloat(data.trip.trip.driver.last_latitude),
+                                    longitude: parseFloat(data.trip.trip.driver.last_longitude),
                                 }}
-                                style={[tw`h-8 w-16`]}
+                                style={tw`flex items-center justify-center`}>
+                                <View style={[stil('bg', data.app.theme), tw`p-1 rounded-md`]}>
+                                    <Text style={[stil('text', data.app.theme), tw`text-xs`]}>
+                                        {l[data.app.lang].kalan} {(duration / 60).toFixed(2)}{' '}
+                                        {l[data.app.lang].min}
+                                    </Text>
+                                    <Text style={[stil('text', data.app.theme), tw`text-xs`]}>
+                                        {l[data.app.lang].kalan} {(distance / 1000).toFixed(2)}{' '}
+                                        {l[data.app.lang].km}
+                                    </Text>
+                                </View>
+                                <Image
+                                    source={require('../../../assets/img/marker-car.png')}
+                                    style={[
+                                        tw`${Platform.OS == 'ios' ? 'w-10 h-10' : 'w-10 h-10'}`,
+                                    ]}
+                                />
+                            </Marker>
+                        )}
+                        <Marker coordinate={data.trip.trip.locations[0]}>
+                            <Image
+                                source={require('../../../assets/img/marker-1.png')}
+                                style={[tw`h-10 w-10`]}
                             />
                         </Marker>
+
                         {region.last_latitude != 0 && (
                             <MapViewDirections
                                 optimizeWaypoints={true}
@@ -90,6 +131,31 @@ export default function PassengerWait() {
                                 resetOnChange={false}
                             />
                         )}
+
+                        <MapViewDirections
+                            optimizeWaypoints={true}
+                            origin={{
+                                latitude: parseFloat(data.trip.trip.driver.last_latitude),
+                                longitude: parseFloat(data.trip.trip.driver.last_longitude),
+                            }}
+                            destination={data.trip.trip.locations[0]}
+                            apikey={config.mapApi}
+                            // mode walk
+                            mode="WALKING"
+                            strokeWidth={0}
+                            strokeColor="transparent"
+                            resetOnChange={false}
+                            onReady={(result) => {
+                                let dis = 0;
+                                let dur = 0;
+                                result.legs.map((item, index) => {
+                                    dis = dis + item.distance.value;
+                                    dur = dur + item.duration.value;
+                                });
+                                setDistance(dis);
+                                setDuration(dur);
+                            }}
+                        />
                     </MapView>
 
                     <View
@@ -132,24 +198,81 @@ export default function PassengerWait() {
                             style={[tw`px-2  py-2 rounded-md bg-red-500`]}>
                             <MaterialCommunityIcons name="cancel" size={24} color="#fff" />
                         </TouchableOpacity>
+                        <View style={[tw`flex-row items-center justify-center`]}>
+                            {calcDistance(
+                                {
+                                    latitude: parseFloat(data.trip.trip.driver.last_latitude),
+                                    longitude: parseFloat(data.trip.trip.driver.last_longitude),
+                                },
+                                data.trip.trip.locations[0],
+                            ) < 0.1 && (
+                                <>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            var myHeaders = new Headers();
+                                            myHeaders.append(
+                                                'Authorization',
+                                                'key=AAAAfZtd-kk:APA91bEkNRkI3IZYdHyu9cjRBsXZlpYupj4u-HboijWEb754fHhGs9hFrYvISxmKHLNQFkU4ChNNsKhOSvVI3bymJ1DjpFHrk5klX29BAtXoL8ISakbD_cEGSkLTkHnSUezBt6U3IJ-a',
+                                            );
+                                            myHeaders.append('Content-Type', 'application/json');
 
-                        <TouchableOpacity
-                            style={[stil('bg', data.app.theme), tw`p-2 rounded-md`]}
-                            onPress={() => {
-                                Linking.openURL(
-                                    `tel:+${
-                                        data.auth.userType == 'driver'
-                                            ? data.trip.trip.passenger.user_phone
-                                            : data.trip.trip.driver.user_phone
-                                    }`,
-                                );
-                            }}>
-                            <MaterialCommunityIcons
-                                name="phone"
-                                size={24}
-                                color={stil('text', data.app.theme).color}
-                            />
-                        </TouchableOpacity>
+                                            var raw = JSON.stringify({
+                                                to: data.trip.trip.driver.remember_token,
+                                                notification: {
+                                                    body: 'Men Darhol Kelaman !',
+                                                    title: 'Men Darhol Kelaman !',
+                                                    sound: 'default',
+                                                    importance: 4,
+                                                },
+                                            });
+
+                                            var requestOptions = {
+                                                method: 'POST',
+                                                headers: myHeaders,
+                                                body: raw,
+                                                redirect: 'follow',
+                                            };
+
+                                            fetch(
+                                                'https://fcm.googleapis.com/fcm/send',
+                                                requestOptions,
+                                            )
+                                                .then((response) => response.text())
+                                                .then((result) => {
+                                                    alert(l[data.app.lang].setNotYolcu);
+                                                })
+                                                .catch((error) => console.log('error', error));
+                                        }}
+                                        style={[
+                                            tw`p-2 mr-2 rounded-md `,
+                                            stil('bg', data.app.theme),
+                                        ]}>
+                                        <MaterialCommunityIcons
+                                            name="alarm-bell"
+                                            size={24}
+                                            color={stil('text', data.app.theme).color}
+                                        />
+                                    </TouchableOpacity>
+                                </>
+                            )}
+                            <TouchableOpacity
+                                style={[stil('bg', data.app.theme), tw`p-2 rounded-md`]}
+                                onPress={() => {
+                                    Linking.openURL(
+                                        `tel:+${
+                                            data.auth.userType == 'driver'
+                                                ? data.trip.trip.passenger.user_phone
+                                                : data.trip.trip.driver.user_phone
+                                        }`,
+                                    );
+                                }}>
+                                <MaterialCommunityIcons
+                                    name="phone"
+                                    size={24}
+                                    color={stil('text', data.app.theme).color}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     <View
                         style={[
@@ -195,7 +318,7 @@ export default function PassengerWait() {
                                 ]}>
                                 {' '}
                                 :{' '}
-                                {data.trip.trip
+                                {data.trip.trip.driver.user_name
                                     ? data.trip.trip.driver.user_name.split(' ')[0]
                                     : null}
                             </Text>
@@ -204,7 +327,22 @@ export default function PassengerWait() {
                             <TouchableOpacity
                                 onPress={() => {
                                     harita.current.fitToCoordinates(
-                                        [region, data.trip.trip.locations[0]],
+                                        [
+                                            region,
+                                            {
+                                                latitude: parseFloat(
+                                                    data.trip.trip.driver.last_latitude !== null
+                                                        ? data.trip.trip.driver.last_latitude
+                                                        : data.trip.trip.locations[0].latitude,
+                                                ),
+                                                longitude: parseFloat(
+                                                    data.trip.trip.driver.last_longitude !== null
+                                                        ? data.trip.trip.driver.last_longitude
+                                                        : data.trip.trip.locations[0].longitude,
+                                                ),
+                                            },
+                                            data.trip.trip.locations[0],
+                                        ],
                                         {
                                             edgePadding: {
                                                 top: 100,
@@ -270,7 +408,10 @@ export default function PassengerWait() {
                                         stil('text', data.app.theme),
                                         tw`font-semibold text-base ml-4`,
                                     ]}>
-                                    {data.trip.trip.driver.user_data.car_plate.toUpperCase()}
+                                    {(data.trip.trip.driver.user_data.car_plate
+                                        ? data.trip.trip.driver.user_data.car_plate
+                                        : ''
+                                    ).toUpperCase()}
                                 </Text>
                             </View>
                             <View style={[tw`flex-row items-center`]}>
@@ -284,8 +425,8 @@ export default function PassengerWait() {
                                         stil('text', data.app.theme),
                                         tw`font-semibold text-base ml-4`,
                                     ]}>
-                                    {data.trip.trip.driver.user_data.car_brand}{' '}
-                                    {data.trip.trip.driver.user_data.car_model}
+                                    {data.trip.trip.driver.user_data.car_brand ?? ''}{' '}
+                                    {data.trip.trip.driver.user_data.car_model ?? ''}
                                 </Text>
                             </View>
                             <View style={[tw`flex-row items-center`]}>

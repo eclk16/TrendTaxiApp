@@ -1,5 +1,13 @@
 {
     "gb":{
+        "setNot":"The information that you have arrived to the passenger has been sent as a notification.",
+        "setNotYolcu":"The information that you have come to the driver has been sent as a notification",
+        "kalan":"Remaning",
+        "y_uz":"Distance to passenger",
+        "hedefsiz":"no destination",
+        "hedefli":"has a destination",
+        "oort":"Time remaining for auto average",
+        "ysabitle":"Click the {icon} to fix the journey screen",
         "balance":"Balance",
         "kalansure":"Remaining usage time",
         "driverLogin" : "Driver Login",
@@ -181,10 +189,19 @@
         "profileEdit": "Profile information has been successfully updated.",
         "dateofbirth":"Date of birth",
         "setPoint":"Set a point",
-        "close":"Close"
+        "close":"Close",
+        "loading":"Loading..."
 
     },
     "ru":{
+        "setNot":"Информация о том, что вы пришли пассажиру отправлена ​​в виде уведомления",
+        "setNotYolcu":"Информация о том, что вы пришли водителю, отправлена ​​в виде уведомления",
+        "kalan":"остаток",
+        "y_uz":"расстояние до пассажира",
+        "hedefsiz":"нет пункта назначения",
+        "hedefli":"имеет пункт назначения",
+        "oort":"Оставшееся время для автоматического усреднения",
+        "ysabitle":"Нажмите {icon}, чтобы исправить экран путешествия",
         "balance":"Баланс",
         "kalansure":"Оставшееся время использования",
         "bekle":"Благодарим за терпение.",
@@ -366,9 +383,18 @@
          "profileEdit": "Информация профиля успешно обновлена.",
          "dateofbirth":"Дата рождения",
          "setPoint":"Установить точку",
-         "close":"Закрыть"
+         "close":"Закрыть",
+         "loading":"Загрузка..."
     },
     "uz":{
+        "setNot":"Yo'lovchiga kelganingiz haqidagi ma'lumot bildirishnoma sifatida yuborildi",
+        "setNotYolcu":"Haydovchiga kelganingiz haqidagi ma'lumot bildirishnoma sifatida yuborildi",
+        "kalan":"Qolgan",
+        "y_uz":"Yo'lovchigacha bo'lgan masofa",
+        "hedefsiz":"Manzil yo'q",
+        "hedefli":"Manzili bor",
+        "oort":"Avtomatik o'rtacha uchun qolgan vaqt",
+        "ysabitle":"Sayohat ekranini tuzatish uchun {icon} tugmasini bosing",
         "balance":"Balans",
         "kalansure":"Qolgan foydalanish vaqti",
         "driverLogin": "Haydovchi Kirish",
@@ -549,6 +575,7 @@
             "profileEdit":"Profil ma'lumotlari muvaffaqiyatli yangilandi.",
             "dateofbirth":"Tug'ilgan kuni",
             "setPoint":"Joylashuvni belgilang",
-            "close":"Yopish"
+            "close":"Yopish",
+            "loading":"Yuklanmoqda..."
     }
 }

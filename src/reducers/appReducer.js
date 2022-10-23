@@ -1,7 +1,7 @@
 const INITIAL_STATE = {
     theme: 'light',
     mapTheme: 'light',
-    lang: 'gb',
+    lang: 'uz',
     currentLocation: [],
     isLoading: true,
     isActive: true,

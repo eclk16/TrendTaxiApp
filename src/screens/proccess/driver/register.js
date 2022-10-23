@@ -198,8 +198,6 @@ export default function DriverRegister() {
             license_image: images.license_image_upload,
             driver_license_image: images.driver_license_image_upload,
             car_usage_license_image: images.car_usage_license_image_upload,
-            user_status: 1,
-            user_balance: 100000,
         })
             .then((response) => {
                 dispatch({type: 'setUser', payload: response.data.response});

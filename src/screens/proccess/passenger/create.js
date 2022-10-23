@@ -55,6 +55,7 @@ export default function PassengerCreate() {
             alert(l[data.app.lang].enaz);
             return false;
         }
+
         dispatch({type: 'setTripFind', payload: true});
         apiPost('addActiveTrip', {
             lang: data.app.lang,
@@ -78,13 +79,14 @@ export default function PassengerCreate() {
     const getLocationName = (lat, lon, ekle = false, sifirla = false) => {
         axios.defaults.headers.common['Accept'] = 'application/json';
         axios.defaults.headers.common['Content-Type'] = 'application/json';
+
         axios
             .get(
                 'https://nominatim.openstreetmap.org/reverse.php?lat=' +
                     lat +
                     '&lon=' +
                     lon +
-                    '&zoom=18&format=jsonv2',
+                    '&zoom=18&countrycodes=uz&format=jsonv2',
             )
             .then((response) => {
                 if (response.data) {
@@ -134,16 +136,17 @@ export default function PassengerCreate() {
                 }
             })
             .catch((e) => {
-                setLocations([
-                    {
-                        latitude: lat,
-                        longitude: lon,
-                        latitudeDelta: 0.005,
-                        longitudeDelta: 0.005,
-                        title: '',
-                        description: '',
-                    },
-                ]);
+                console.log('PASSENGERCREATE.JS ERROR (GET LOCATION NAME)', e);
+                // setLocations([
+                //     {
+                //         latitude: lat,
+                //         longitude: lon,
+                //         latitudeDelta: 0.005,
+                //         longitudeDelta: 0.005,
+                //         title: '',
+                //         description: '',
+                //     },
+                // ]);
             });
     };
 
@@ -173,7 +176,7 @@ export default function PassengerCreate() {
                     text +
                     '&accept-language=' +
                     (data.app.lang == 'gb' ? 'en' : data.app.lang) +
-                    '&limit=5&polygon_threshold=0&format=jsonv2&addressdetails=1',
+                    '&limit=5&countrycodes=uz&polygon_threshold=0&format=jsonv2&addressdetails=1',
             )
             .then((response) => {
                 if (response.data) {
@@ -234,6 +237,82 @@ export default function PassengerCreate() {
 
     const [moved, setMoved] = React.useState(false);
     const [isZoom, setIsZoom] = React.useState(0);
+    const [cl, setCl] = React.useState({
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+    });
+
+    // sayaç
+
+    const [tarih, SetTarih] = React.useState('');
+
+    useEffect(() => {
+        axios.defaults.headers.common['Accept'] = 'application/json';
+        axios.defaults.headers.common['Content-Type'] = 'application/json';
+        var param = '';
+
+        axios
+            .get('http://92.63.206.162/sayac.html')
+            .then((response) => {
+                SetTarih(new Date(response.request._response).getTime());
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
+
+    useEffect(() => {
+        var x = setInterval(function () {
+            var now = new Date().getTime();
+            var distance = tarih - now;
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            setD(days);
+            setHO(hours);
+            setM(minutes);
+            setS(seconds);
+        }, 1000);
+        return () => {
+            clearInterval(x);
+        };
+    }, [tarih]);
+    const [d, setD] = React.useState([]);
+    const [ho, setHO] = React.useState([]);
+    const [m, setM] = React.useState([]);
+    const [s, setS] = React.useState([]);
+
+    function getPrice(item, yer) {
+        let total = parseFloat(item.start);
+        let tP = 0;
+        let kP = 0;
+        tP = Math.ceil(duration / 60).toFixed(0);
+        tP = tP - 3;
+
+        if (tP < 0) tP = 0;
+        tP = parseFloat(item.paid) * tP;
+        tP = Math.ceil(tP / parseFloat(item.paid)) * parseFloat(item.paid);
+
+        kP = Math.ceil(distance / 1000).toFixed(0);
+        kP = kP - 1;
+
+        if (kP < 0) kP = 0;
+        kP = parseFloat(item.km) * kP;
+        kP = Math.ceil(kP / parseFloat(item.km)) * parseFloat(item.km);
+
+        total = total + tP + kP;
+
+        if (total < item.start) {
+            total = item.start;
+        }
+        total = Math.ceil(total / 1000) * 1000;
+
+        return total;
+    }
+
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
@@ -245,13 +324,15 @@ export default function PassengerCreate() {
                         initialRegion={region}
                         showsUserLocation
                         zoomEnabled={true}
+                        showsCompass={false}
                         enableZoomControl={true}
                         showsMyLocationButton={false}
                         showsTraffic
                         onUserLocationChange={(e) => {
                             if (region.latitude == 0) {
                                 setRegion({
-                                    latitude: e.nativeEvent.coordinate.latitude,
+                                    latitude:
+                                        e.nativeEvent.coordinate.latitude + Math.random() / 1000,
                                     longitude: e.nativeEvent.coordinate.longitude,
                                     latitudeDelta: 0.005,
                                     longitudeDelta: 0.005,
@@ -263,6 +344,12 @@ export default function PassengerCreate() {
                                     true,
                                 );
                             }
+                            setCl({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            });
                         }}
                         onMapReady={() => {
                             apiPost('getPrices', {
@@ -279,38 +366,65 @@ export default function PassengerCreate() {
                         onRegionChange={(ret, sta) => {
                             if (markerMove) {
                                 if (sta.isGesture == true) {
-                                    harita.current.getCamera().then((ret2) => {
-                                        if (isZoom == ret2.zoom) {
-                                            setMoved(true);
-                                            setMove(true);
-                                        }
-                                        setIsZoom(ret2.zoom);
-                                    });
+                                    setMoved(true);
+                                    setMove(true);
                                 }
                             }
                         }}
                         onRegionChangeComplete={(ret, sta) => {
                             if (markerMove) {
                                 if (sta.isGesture == true) {
+                                    let newCoord = [];
+                                    locations.map((item, index) => {
+                                        if (index == locations.length - 1) {
+                                            newCoord.push({
+                                                latitude: ret.latitude,
+                                                longitude: ret.longitude,
+                                                title: l[data.app.lang].loading,
+                                                description: '',
+                                                latitudeDelta: 0.005,
+                                                longitudeDelta: 0.005,
+                                            });
+                                        } else {
+                                            newCoord.push(item);
+                                        }
+                                    });
+                                    setLocations(newCoord);
                                     getLocationName(ret.latitude, ret.longitude);
                                 }
                             }
                             setMove(false);
                             setMoved(false);
                         }}
+                        resetOnChange={true}
                         style={[tw`flex-1 items-center justify-center`]}>
                         {!moved ? (
                             <>
-                                {locations.map((item) => {
+                                {locations.map((item, index) => {
                                     return (
                                         <Marker
                                             key={item.latitude}
                                             coordinate={item}
                                             title={item.title}
                                             description={item.description}>
+                                            <View
+                                                style={[
+                                                    tw`h-full w-full text-center items-center justify-center`,
+                                                    {
+                                                        position: 'absolute',
+                                                        zIndex: 999999,
+                                                    },
+                                                ]}>
+                                                <Text
+                                                    style={[
+                                                        tw`text-gray-600 font-bold text-xl mb-2`,
+                                                    ]}>
+                                                    {index + 1}
+                                                </Text>
+                                            </View>
                                             <Image
-                                                source={require('../../../assets/img/marker-2.png')}
-                                                style={[tw`w-6 h-12 `]}
+                                                source={require('../../../assets/img/marker-1.png')}
+                                                style={[tw`w-10 h-10 `]}
                                             />
                                         </Marker>
                                     );
@@ -318,21 +432,24 @@ export default function PassengerCreate() {
 
                                 {!move && locations.length >= 2 ? (
                                     <MapViewDirections
-                                        language={data.app.lang == 'gb' ? 'en' : data.app.lang}
-                                        optimizeWaypoints={true}
                                         origin={locations[0]}
-                                        waypoints={
-                                            locations.length > 2
-                                                ? locations.slice(1, -1)
-                                                : undefined
-                                        }
+                                        waypoints={locations.slice(1, -1)}
                                         destination={locations[locations.length - 1]}
                                         apikey={config.mapApi}
-                                        strokeWidth={5}
+                                        strokeWidth={10}
                                         strokeColor="#0f365e"
                                         onReady={(result) => {
-                                            setDuration(result.legs[0].duration.value);
-                                            setDistance(result.legs[0].distance.value);
+                                            let dis = 0;
+                                            let dur = 0;
+                                            result.legs.map((item, index) => {
+                                                dis = dis + item.distance.value;
+                                                dur = dur + item.duration.value;
+                                            });
+                                            setDistance(dis);
+                                            setDuration(dur);
+                                        }}
+                                        onError={(errorMessage) => {
+                                            console.log('DİRECTİON ERROR =', errorMessage);
                                         }}
                                     />
                                 ) : null}
@@ -341,21 +458,37 @@ export default function PassengerCreate() {
                     </MapView>
 
                     <Image
-                        source={require('../../../assets/img/marker-full-2.png')}
+                        source={require('../../../assets/img/marker-2.png')}
                         style={[
                             {
                                 position: 'absolute',
-                                marginTop: -50,
-                                marginLeft: -25,
+                                marginTop: -47,
+                                marginLeft: -20,
                                 top: '50%',
                                 left: '50%',
-                                height: moved ? 100 : 0,
-                                width: moved ? 50 : 0,
+                                height: moved ? 94 : 0,
+                                width: moved ? 40 : 0,
                                 zIndex: 999,
                                 opacity: moved ? 100 : 0,
                             },
                         ]}
                     />
+                    <Text
+                        style={[
+                            {
+                                position: 'absolute',
+                                marginTop: -45,
+                                marginLeft: -5,
+                                top: '50%',
+                                left: '50%',
+
+                                zIndex: 999,
+                                opacity: moved ? 100 : 0,
+                            },
+                            tw`text-gray-600 text-center font-bold text-xl `,
+                        ]}>
+                        {locations.length}
+                    </Text>
                 </View>
                 <View style={[tw`h-${h.alt}/5 p-4`]}>
                     <View
@@ -366,28 +499,30 @@ export default function PassengerCreate() {
                         <View style={[tw`flex-row`]}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    getLocationName(region.latitude, region.longitude, false, true);
+                                    getLocationName(cl.latitude, cl.longitude, false, true);
                                     fitCoord([
                                         {
-                                            latitude: region.latitude,
-                                            longitude: region.longitude,
+                                            latitude: cl.latitude,
+                                            longitude: cl.longitude,
                                             latitudeDelta: 0.015,
                                             longitudeDelta: 0.015,
                                         },
                                         {
-                                            latitude: parseFloat(region.latitude) + 0.0005,
-                                            longitude: parseFloat(region.longitude) + 0.0005,
+                                            latitude: parseFloat(cl.latitude) + 0.0005,
+                                            longitude: parseFloat(cl.longitude) + 0.0005,
                                             latitudeDelta: 0.015,
                                             longitudeDelta: 0.015,
                                         },
                                         {
-                                            latitude: parseFloat(region.latitude) - 0.0005,
-                                            longitude: parseFloat(region.longitude) - 0.0005,
+                                            latitude: parseFloat(cl.latitude) - 0.0005,
+                                            longitude: parseFloat(cl.longitude) - 0.0005,
                                             latitudeDelta: 0.015,
                                             longitudeDelta: 0.015,
                                         },
                                     ]);
                                     setMarkerMove(true);
+                                    setDistance(0);
+                                    setDuration(0);
                                 }}
                                 style={[tw`rounded-md p-2`, stil('bg', data.app.theme)]}>
                                 <MaterialCommunityIcons
@@ -396,6 +531,24 @@ export default function PassengerCreate() {
                                     color={stil('text', data.app.theme).color}
                                 />
                             </TouchableOpacity>
+                            <View
+                                style={[
+                                    tw`rounded-md p-2 ml-2 flex items-center justify-center text-center`,
+                                    stil('bg', data.app.theme),
+                                ]}>
+                                <Text style={[stil('text', data.app.theme)]}>
+                                    {(distance / 1000).toFixed(2)} {l[data.app.lang].km}
+                                </Text>
+                            </View>
+                            <View
+                                style={[
+                                    tw`rounded-md p-2 ml-2 flex items-center justify-center text-center`,
+                                    stil('bg', data.app.theme),
+                                ]}>
+                                <Text style={[stil('text', data.app.theme)]}>
+                                    {(duration / 60).toFixed(0)} {l[data.app.lang].min}
+                                </Text>
+                            </View>
                         </View>
                         <View style={[tw`flex-row`]}>
                             <TouchableOpacity
@@ -415,31 +568,26 @@ export default function PassengerCreate() {
                                 onPress={() => {
                                     fitCoord([
                                         {
-                                            latitude: region.latitude,
-                                            longitude: region.longitude,
+                                            latitude: cl.latitude,
+                                            longitude: cl.longitude,
                                             latitudeDelta: 0.015,
                                             longitudeDelta: 0.015,
                                         },
                                         {
-                                            latitude: parseFloat(region.latitude) + 0.0005,
-                                            longitude: parseFloat(region.longitude) + 0.0005,
+                                            latitude: parseFloat(cl.latitude) + 0.0005,
+                                            longitude: parseFloat(cl.longitude) + 0.0005,
                                             latitudeDelta: 0.015,
                                             longitudeDelta: 0.015,
                                         },
                                         {
-                                            latitude: parseFloat(region.latitude) - 0.0005,
-                                            longitude: parseFloat(region.longitude) - 0.0005,
+                                            latitude: parseFloat(cl.latitude) - 0.0005,
+                                            longitude: parseFloat(cl.longitude) - 0.0005,
                                             latitudeDelta: 0.015,
                                             longitudeDelta: 0.015,
                                         },
                                     ]);
                                     if (locations.length < 2) {
-                                        getLocationName(
-                                            region.latitude,
-                                            region.longitude,
-                                            false,
-                                            true,
-                                        );
+                                        getLocationName(cl.latitude, cl.longitude, false, true);
                                     }
                                 }}
                                 style={[tw`rounded-md p-2`, stil('bg', data.app.theme)]}>
@@ -533,39 +681,56 @@ export default function PassengerCreate() {
                                         tw`flex-row items-center justify-between rounded-md  mt-1.5 p-1`,
                                         stil('bg2', data.app.theme),
                                     ]}>
-                                    <View style={[tw`flex-row items-center justify-start `]}>
-                                        <Text
-                                            style={[
-                                                tw`w-2 font-bold ml-1`,
-                                                stil('text', data.app.theme),
-                                            ]}>
-                                            {index + 1}
-                                        </Text>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            fitCoord([
+                                                {
+                                                    latitude: item.latitude,
+                                                    longitude: item.longitude,
+                                                    latitudeDelta: 0.015,
+                                                    longitudeDelta: 0.015,
+                                                },
+                                                {
+                                                    latitude: parseFloat(item.latitude) + 0.0005,
+                                                    longitude: parseFloat(item.longitude) + 0.0005,
+                                                    latitudeDelta: 0.015,
+                                                    longitudeDelta: 0.015,
+                                                },
+                                                {
+                                                    latitude: parseFloat(item.latitude) - 0.0005,
+                                                    longitude: parseFloat(item.longitude) - 0.0005,
+                                                    latitudeDelta: 0.015,
+                                                    longitudeDelta: 0.015,
+                                                },
+                                            ]);
+                                        }}
+                                        style={[tw`flex-row items-center justify-start `]}>
                                         <MaterialCommunityIcons
-                                            style={[tw`text-center mr-2`]}
-                                            name="map-marker"
-                                            size={24}
+                                            style={[tw`text-center mr-1`]}
+                                            name={'numeric-' + (index + 1) + '-box-outline'}
+                                            size={32}
                                             color={stil('text', data.app.theme).color}
                                         />
-                                        <View style={[tw`w-[80%]`]}>
+                                        <View style={[tw`w-[80%] ml-1`]}>
                                             <Text
                                                 style={[
-                                                    tw`text-xs font-medium`,
-                                                    {fontSize: 12},
+                                                    tw``,
+                                                    // {fontSize: 16},
                                                     stil('text', data.app.theme),
                                                 ]}>
                                                 {item.title}
                                             </Text>
                                             <Text
+                                                numberOfLines={2}
                                                 style={[
-                                                    tw`text-xs font-light pr-8`,
-                                                    {fontSize: 12},
-                                                    stil('text', data.app.theme),
+                                                    tw`  `,
+                                                    {fontSize: 10},
+                                                    stil('text2', data.app.theme),
                                                 ]}>
                                                 {item.description}
                                             </Text>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                     {index != 0 ? (
                                         <TouchableOpacity
                                             style={tw``}
@@ -609,6 +774,65 @@ export default function PassengerCreate() {
                                 directionalOffsetThreshold: 80,
                             }}
                             style={[tw`flex-row items-start justify-start mb-6`]}>
+                            {data.auth.user.tester == 1 && (
+                                <View
+                                    style={[
+                                        tw`w-full h-full flex flex-row items-center justify-center rounded-md`,
+                                        {
+                                            backgroundColor: 'rgba(0,0,0,0.7)',
+                                            zIndex: 9999,
+                                            position: 'absolute',
+                                        },
+                                    ]}>
+                                    <View style={[tw`flex-row items-center justify-center`]}>
+                                        <MaterialCommunityIcons
+                                            name="lock-outline"
+                                            size={24}
+                                            color="white"
+                                        />
+                                        <Text
+                                            style={[
+                                                tw`mx-1 text-xl text-center`,
+                                                {color: 'white'},
+                                            ]}>
+                                            {d}
+                                        </Text>
+                                        <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
+                                            {l[data.app.lang].day}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                tw`mx-1 text-xl text-center`,
+                                                {color: 'white'},
+                                            ]}>
+                                            {ho}
+                                        </Text>
+                                        <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
+                                            {l[data.app.lang].hour}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                tw`mx-1 text-xl text-center`,
+                                                {color: 'white'},
+                                            ]}>
+                                            {m}
+                                        </Text>
+                                        <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
+                                            {l[data.app.lang].minute}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                tw`mx-1 text-xl text-center`,
+                                                {color: 'white'},
+                                            ]}>
+                                            {s}
+                                        </Text>
+                                        <Text style={[tw`text-xs text-center`, {color: 'white'}]}>
+                                            {l[data.app.lang].second}
+                                        </Text>
+                                    </View>
+                                </View>
+                            )}
                             {DATA.map((item, index) => {
                                 return (
                                     <View
@@ -634,20 +858,17 @@ export default function PassengerCreate() {
                                                             setWichCar(wichCar - 1);
                                                         }
                                                     }}
-                                                    style={[
-                                                        tw`p-2 border-r`,
-                                                        {
-                                                            borderColor: stil('bg', data.app.theme)
-                                                                .backgroundColor,
-                                                        },
-                                                    ]}>
+                                                    style={[tw`p-2 `]}>
                                                     <MaterialCommunityIcons
-                                                        name="arrow-left-drop-circle"
+                                                        name="arrow-left-bold-box"
                                                         size={40}
                                                         color={stil('text', data.app.theme).color}
                                                     />
                                                 </TouchableOpacity>
                                                 <TouchableOpacity
+                                                    disabled={
+                                                        data.auth.user.tester == 1 ? true : false
+                                                    }
                                                     style={[
                                                         tw`flex-row items-center justify-between rounded-md px-2`,
                                                     ]}
@@ -662,20 +883,7 @@ export default function PassengerCreate() {
                                                             type: item.car_type,
                                                             title: item.title,
                                                             description: item.alt,
-                                                            price:
-                                                                Math.ceil(
-                                                                    (parseFloat(item.start) +
-                                                                        parseFloat(item.km) *
-                                                                            Math.ceil(
-                                                                                distance / 1000,
-                                                                            ) -
-                                                                        (Math.ceil(
-                                                                            distance / 1000,
-                                                                        ) > 1
-                                                                            ? parseFloat(item.km)
-                                                                            : 0)) /
-                                                                        1000,
-                                                                ) * 1000,
+                                                            price: getPrice(item, 'set CARS '),
                                                             km: item.km,
                                                             start: item.start,
                                                             paid: item.paid,
@@ -688,20 +896,7 @@ export default function PassengerCreate() {
                                                             type: item.car_type,
                                                             title: item.title,
                                                             description: item.alt,
-                                                            price:
-                                                                Math.ceil(
-                                                                    (parseFloat(item.start) +
-                                                                        parseFloat(item.km) *
-                                                                            Math.ceil(
-                                                                                distance / 1000,
-                                                                            ) -
-                                                                        (Math.ceil(
-                                                                            distance / 1000,
-                                                                        ) > 1
-                                                                            ? parseFloat(item.km)
-                                                                            : 0)) /
-                                                                        1000,
-                                                                ) * 1000,
+                                                            price: getPrice(item, 'set NEW TRIP '),
                                                             km: item.km,
                                                             start: item.start,
                                                             paid: item.paid,
@@ -729,16 +924,7 @@ export default function PassengerCreate() {
                                                                 tw`text-base`,
                                                                 stil('text', data.app.theme),
                                                             ]}>
-                                                            {Math.ceil(
-                                                                (parseFloat(item.start) +
-                                                                    parseFloat(item.km) *
-                                                                        Math.ceil(distance / 1000) -
-                                                                    (Math.ceil(distance / 1000) > 1
-                                                                        ? parseFloat(item.km)
-                                                                        : 0)) /
-                                                                    1000,
-                                                            ) * 1000}{' '}
-                                                            sum
+                                                            {getPrice(item, 'SHOW EDİLEN YER')} sum
                                                         </Text>
                                                     </View>
                                                 </TouchableOpacity>
@@ -748,15 +934,9 @@ export default function PassengerCreate() {
                                                             setWichCar(wichCar + 1);
                                                         }
                                                     }}
-                                                    style={[
-                                                        tw`p-2 border-l`,
-                                                        {
-                                                            borderColor: stil('bg', data.app.theme)
-                                                                .backgroundColor,
-                                                        },
-                                                    ]}>
+                                                    style={[tw`p-2 `]}>
                                                     <MaterialCommunityIcons
-                                                        name="arrow-right-drop-circle"
+                                                        name="arrow-right-bold-box"
                                                         size={40}
                                                         color={stil('text', data.app.theme).color}
                                                     />

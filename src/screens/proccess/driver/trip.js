@@ -141,20 +141,17 @@ export default function DriverTrip() {
     useEffect(() => {
         getValue('TTDistance').then((tt) => {
             if (tt) {
-                let p = 0;
-                p =
-                    parseFloat(data.trip.trip.driver.user_data.car.start) -
-                    parseFloat(data.trip.trip.driver.user_data.car.km);
-                p = p + parseFloat(tt) * parseFloat(data.trip.trip.driver.user_data.car.km);
-                p = Math.ceil(p / 500) * 500;
-                if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
-                    p = parseFloat(data.trip.trip.driver.user_data.car.start);
-                }
                 if (parseFloat(tt) > 0) {
-                    if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
-                        p = parseFloat(data.trip.trip.driver.user_data.car.start);
-                    }
-                    setPrice(p.toFixed(2));
+                    setPrice(
+                        getPrice(
+                            {
+                                start: data.trip.trip.driver.user_data.car.start,
+                                km: data.trip.trip.driver.user_data.car.km,
+                                paid: data.trip.trip.driver.user_data.car.paid,
+                            },
+                            tt,
+                        ).toFixed(2),
+                    );
 
                     setACTDistance(parseFloat(tt).toFixed(2));
                 }
@@ -162,31 +159,81 @@ export default function DriverTrip() {
         });
     }, []);
 
+    // function getPrice(item, dis) {
+    //     let dur = new Date().getTime() / 1000;
+    //     dur = dur - data.trip.trip.start_time;
+
+    //     let total = item.start;
+    //     let tP = 0;
+    //     let kP = 0;
+    //     tP = item.paid * Math.ceil(dur / 60).toFixed(0);
+    //     tP = tP - 3;
+    //     if (tP < 0) tP = 0;
+    //     tP = Math.ceil(tP / item.paid) * item.paid;
+
+    //     kP = item.km * Math.ceil(dis).toFixed(0);
+    //     console.log(kP, dis);
+    //     kP = kP - 1;
+    //     if (kP < 0) kP = 0;
+    //     kP = Math.ceil(kP / item.km) * item.km;
+    //     total = tP + kP;
+    //     if (total < item.start) {
+    //         total = item.start;
+    //     }
+    //     total = Math.ceil(total / 500) * 500;
+
+    //     return total;
+    // }
+    function getPrice(item, dis) {
+        let dur = new Date().getTime() / 1000;
+        dur = dur - data.trip.trip.start_time;
+
+        let total = parseFloat(item.start);
+        let tP = 0;
+        let kP = 0;
+        tP = Math.ceil(dur / 60).toFixed(0);
+        tP = tP - 3;
+
+        if (tP < 0) tP = 0;
+        tP = parseFloat(item.paid) * tP;
+        tP = Math.ceil(tP / parseFloat(item.paid)) * parseFloat(item.paid);
+
+        kP = Math.ceil(dis / 1000).toFixed(0);
+        kP = kP - 1;
+
+        if (kP < 0) kP = 0;
+        kP = parseFloat(item.km) * kP;
+        kP = Math.ceil(kP / parseFloat(item.km)) * parseFloat(item.km);
+
+        total = total + tP + kP;
+
+        if (total < item.start) {
+            total = item.start;
+        }
+        total = Math.ceil(total / 1000) * 1000;
+
+        return total;
+    }
+
     function hesapla(l) {
         getValue('TTLocation').then((ttl) => {
             if (ttl) {
                 let d = calcDistance(JSON.parse(ttl), l);
                 if (d !== undefined) {
                     if (d > 0.005) {
-                        let p = 0;
                         getValue('TTDistance').then((tt) => {
                             if (tt) {
-                                p =
-                                    parseFloat(data.trip.trip.driver.user_data.car.start) -
-                                    parseFloat(data.trip.trip.driver.user_data.car.km);
-                                p =
-                                    p +
-                                    (d + parseFloat(tt)) *
-                                        parseFloat(data.trip.trip.driver.user_data.car.km);
-                                p = Math.ceil(p / 500) * 500;
-                                if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
-                                    p = parseFloat(data.trip.trip.driver.user_data.car.start);
-                                }
                                 if (parseFloat(d) > 0) {
-                                    if (p < parseFloat(data.trip.trip.driver.user_data.car.start)) {
-                                        p = parseFloat(data.trip.trip.driver.user_data.car.start);
-                                    }
-                                    setPrice(p.toFixed(2));
+                                    setPrice(
+                                        getPrice(
+                                            {
+                                                start: data.trip.trip.driver.user_data.car.start,
+                                                km: data.trip.trip.driver.user_data.car.km,
+                                                paid: data.trip.trip.driver.user_data.car.paid,
+                                            },
+                                            parseFloat(d) + parseFloat(tt),
+                                        ).toFixed(2),
+                                    );
                                     setValue(
                                         'TTDistance',
                                         (parseFloat(d) + parseFloat(tt)).toString(),
@@ -212,7 +259,7 @@ export default function DriverTrip() {
 
     const [directions, setDirections] = React.useState([]);
 
-    const [rotate, setRotate] = React.useState(false);
+    const [rotate, setRotate] = React.useState(true);
 
     const [yuzde, setYuzde] = React.useState(0);
 
@@ -220,6 +267,30 @@ export default function DriverTrip() {
         latitude: 0,
         longitude: 0,
     });
+    const [speed, setSpeed] = React.useState(0);
+
+    const [ortCalistir, setOrtCalistir] = React.useState(false);
+    const [oKalan, setOKalan] = React.useState(0);
+    useEffect(() => {
+        let kalan = 5;
+
+        let intervalKalan = setInterval(() => {
+            if (!rotate) {
+                if (kalan > 0) {
+                    setOKalan(kalan);
+                    kalan = kalan - 1;
+                } else {
+                    clearInterval(intervalKalan);
+                    setRotate(true);
+                }
+            }
+        }, 1000);
+
+        return () => {
+            clearInterval(intervalKalan);
+            kalan = 5;
+        };
+    }, [rotate, ortCalistir]);
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
@@ -229,6 +300,7 @@ export default function DriverTrip() {
                         provider={PROVIDER_GOOGLE}
                         style={{flex: 1}}
                         region={region}
+                        showsCompass={false}
                         initialRegion={region}
                         showsUserLocation
                         zoomEnabled={true}
@@ -242,6 +314,10 @@ export default function DriverTrip() {
                             }
                         }}
                         onUserLocationChange={(e) => {
+                            console.log({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                            });
                             if (region.latitude == 0) {
                                 setRegion({
                                     latitude: e.nativeEvent.coordinate.latitude,
@@ -254,10 +330,10 @@ export default function DriverTrip() {
                                 latitude: e.nativeEvent.coordinate.latitude,
                                 longitude: e.nativeEvent.coordinate.longitude,
                             });
-
+                            setSpeed(e.nativeEvent.coordinate.speed);
                             if (rotate) {
                                 harita.current?.animateCamera({
-                                    heading: e.nativeEvent.heading,
+                                    heading: e.nativeEvent.coordinate.heading,
                                     center: {
                                         latitude: e.nativeEvent.coordinate.latitude,
                                         longitude: e.nativeEvent.coordinate.longitude,
@@ -273,31 +349,27 @@ export default function DriverTrip() {
                             });
 
                             let remainingItems = [];
+                            let re = [];
                             let gecilen = 0;
                             data.trip.trip.locations.map((item, index) => {
                                 if (item.check) {
                                     gecilen = gecilen + 1;
-                                    console.log('arttı');
                                     remainingItems.push(item);
                                 } else {
                                     let mesafe = calcDistance(item, {
                                         latitude: e.nativeEvent.coordinate.latitude,
                                         longitude: e.nativeEvent.coordinate.longitude,
                                     });
-                                    if (mesafe < 0.04) {
+                                    if (mesafe < 0.015) {
                                         gecilen = gecilen + 1;
                                         remainingItems.push({...item, check: 1});
                                     } else {
-                                        remainingItems.push(item);
+                                        remainingItems.push({...item});
+                                        re.push(item);
                                     }
                                 }
                             });
-                            let re = [];
-                            remainingItems.forEach((item, index) => {
-                                if (!item.check) {
-                                    re.push(item);
-                                }
-                            });
+
                             setDirections(re);
                             dispatch({
                                 type: 'setTrip',
@@ -311,34 +383,51 @@ export default function DriverTrip() {
 
                             setYuzde(x);
                         }}>
-                        <Marker coordinate={cl}>
+                        {/* <Marker coordinate={cl}>
                             <Image
                                 source={require('../../../assets/img/compass-ai.png')}
                                 style={[tw`h-10 w-10`]}
                             />
-                        </Marker>
+                        </Marker> */}
                         {data.trip.trip.locations.map((item, index) => {
                             if (index != 0) {
                                 return (
                                     <Marker
                                         identifier={'Marker_' + index}
                                         key={index}
-                                        coordinate={item}
-                                    />
+                                        coordinate={item}>
+                                        <View
+                                            style={[
+                                                tw`h-full w-full text-center items-center justify-center`,
+                                                {
+                                                    position: 'absolute',
+                                                    zIndex: 999999,
+                                                },
+                                            ]}>
+                                            <Text
+                                                style={[tw`text-gray-600 font-bold text-xl mb-2`]}>
+                                                {index}
+                                            </Text>
+                                        </View>
+                                        <Image
+                                            source={require('../../../assets/img/marker-1.png')}
+                                            style={[tw`w-10 h-10 `]}
+                                        />
+                                    </Marker>
                                 );
                             }
                         })}
-                        {directions.length > 1 ? (
+                        {directions.length > 0 && data.trip.trip.locations.length > 1 ? (
                             <MapViewDirections
                                 language={data.app.lang == 'gb' ? 'en' : data.app.lang}
                                 optimizeWaypoints={true}
                                 origin={cl}
                                 waypoints={
-                                    directions.length > 2 ? directions.slice(1, -1) : undefined
+                                    directions.length > 1 ? directions.slice(1, -1) : undefined
                                 }
                                 destination={
                                     directions.length == 1
-                                        ? undefined
+                                        ? directions[0]
                                         : directions[directions.length - 1]
                                 }
                                 apikey={config.mapApi}
@@ -364,7 +453,34 @@ export default function DriverTrip() {
                             />
                         ) : null}
                     </MapView>
-
+                    {!rotate && (
+                        <View
+                            style={[
+                                tw`flex w-full items-center justify-center bg-gray-100 opacity-50`,
+                                {
+                                    position: 'absolute',
+                                    zIndex: 999999,
+                                    bottom: 100,
+                                },
+                            ]}>
+                            <View style={[tw`flex-row items-center justify-center`]}>
+                                <Text>{l[data.app.lang].ysabitle.split('{icon}')[0]}</Text>
+                                <MaterialCommunityIcons
+                                    name="arrow-up-bold-hexagon-outline"
+                                    size={24}
+                                    color="black"
+                                />
+                                <Text>{l[data.app.lang].ysabitle.split('{icon}')[1]}</Text>
+                            </View>
+                            {oKalan > 0 && (
+                                <View style={[tw`flex-row items-center justify-center`]}>
+                                    <Text>
+                                        {l[data.app.lang].oort} : {oKalan}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    )}
                     <View
                         style={[
                             tw`flex-row items-center justify-between mx-4`,
@@ -377,6 +493,12 @@ export default function DriverTrip() {
                         ]}>
                         <View
                             style={[
+                                {position: 'absolute', top: -0, zIndex: 999998998989},
+
+                                tw`rounded-md items-center opacity-75  justify-center w-full flex-row py-3 px-4`,
+                            ]}></View>
+                        <View
+                            style={[
                                 tw`flex-row items-center justify-between rounded-md px-3 py-1 `,
 
                                 {
@@ -387,6 +509,37 @@ export default function DriverTrip() {
                                     right: 0,
                                 },
                             ]}>
+                            <View
+                                style={[
+                                    tw` w-full  rounded-md  flex-row items-center justify-between`,
+                                    {
+                                        top: -20,
+                                        position: 'absolute',
+                                    },
+                                ]}>
+                                <Text style={[tw`text-black`]}>
+                                    {l[data.app.lang].kalan} {(distance / 1000).toFixed(2)}{' '}
+                                    {l[data.app.lang].km}
+                                </Text>
+                                <Text style={[tw`text-black`]}>
+                                    {l[data.app.lang].kalan} {(duration / 60).toFixed(1)}{' '}
+                                    {l[data.app.lang].min}
+                                </Text>
+                            </View>
+                            <Text
+                                style={[
+                                    tw` text-black text-center w-full text-2xl opacity-70 font-bold ml-3 `,
+                                    {
+                                        // top: 0,
+                                        zIndex: 99999,
+                                        position: 'absolute',
+                                    },
+                                ]}>
+                                {price < parseFloat(data.trip.trip.est_price) + 2500
+                                    ? data.trip.trip.est_price
+                                    : price}{' '}
+                                sum
+                            </Text>
                             <View
                                 style={[
                                     tw`bg-green-700 rounded-md mx-3`,
@@ -449,32 +602,37 @@ export default function DriverTrip() {
                             </Text>
                         </View>
                     </View>
-                    {step !== null ? (
-                        <View
-                            style={[
-                                {position: 'absolute', top: '10%', right: 0},
-                                tw`flex-row items-center rounded-md p-4 mr-4`,
-                                stil('bg', data.app.theme),
-                            ]}>
-                            <MaterialCommunityIcons
-                                name={arrow(step2 ? step2.maneuver : step.maneuver)}
-                                size={64}
-                                color={stil('text', data.app.theme).color}
-                            />
-                            <View style={[tw`flex items-center justify-between ml-4`]}>
-                                <Text
-                                    style={[
-                                        stil('text', data.app.theme),
-                                        tw`text-base font-bold mb-1`,
-                                    ]}>
-                                    {step.distance.text}
-                                </Text>
-                                <Text style={[stil('text', data.app.theme), tw`text-xs mb-1`]}>
-                                    {step.duration.text}
-                                </Text>
-                            </View>
-                        </View>
-                    ) : null}
+
+                    <View
+                        style={[
+                            {position: 'absolute', top: '10%', right: 0},
+                            tw`rounded-md`,
+                            stil('bg', data.app.theme),
+                        ]}>
+                        {step !== null ? (
+                            <>
+                                <View style={[tw`flex-row items-center rounded-md p-2 pb-0 mr-2`]}>
+                                    <MaterialCommunityIcons
+                                        name={arrow(step.maneuver)}
+                                        size={64}
+                                        color={stil('text', data.app.theme).color}
+                                    />
+                                    <View style={[tw`flex items-center justify-between ml-2`]}>
+                                        <Text style={[stil('text', data.app.theme), tw`mb-1`]}>
+                                            {step.distance.text}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                stil('text', data.app.theme),
+                                                tw`text-xs mb-1`,
+                                            ]}>
+                                            {step.duration.text}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                        ) : null}
+                    </View>
                 </View>
                 <View style={[tw`h-${h.alt}/5 pb-4 px-4 pt-2`]}>
                     <View style={[tw`flex-row items-center justify-between`]}>
@@ -498,6 +656,23 @@ export default function DriverTrip() {
                         </View>
 
                         <View style={[tw`flex-row mb-2`]}>
+                            <TouchableOpacity
+                                style={[stil('bg2', data.app.theme), tw`p-2 mr-2 rounded-md`]}
+                                onPress={() => {
+                                    Linking.openURL(
+                                        `tel:+${
+                                            data.auth.userType == 'driver'
+                                                ? data.trip.trip.passenger.user_phone
+                                                : data.trip.trip.driver.user_phone
+                                        }`,
+                                    );
+                                }}>
+                                <MaterialCommunityIcons
+                                    name="phone"
+                                    size={24}
+                                    color={stil('text', data.app.theme).color}
+                                />
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => {
                                     setRotate(true);
@@ -528,6 +703,7 @@ export default function DriverTrip() {
                                             animated: true,
                                         },
                                     );
+                                    setRotate(false);
                                 }}
                                 style={[tw`rounded-md p-2 `, stil('bg2', data.app.theme)]}>
                                 <MaterialCommunityIcons
@@ -632,7 +808,13 @@ export default function DriverTrip() {
                                 {act_distance} {l[data.app.lang].km}
                             </Text>
                             <Text style={[tw`font-bold text-lg`, stil('text', data.app.theme)]}>
-                                {act_duration} {l[data.app.lang].min}
+                                {(
+                                    (new Date().getTime() -
+                                        parseInt(parseInt(data.trip.trip.start_time) * 1000)) /
+                                    1000 /
+                                    60
+                                ).toFixed(0)}{' '}
+                                {l[data.app.lang].min}
                             </Text>
                         </View>
                     </View>
@@ -647,7 +829,11 @@ export default function DriverTrip() {
                             </Text>
                             <Text
                                 style={[tw`font-bold text-4xl mt-3`, stil('text', data.app.theme)]}>
-                                {price} sum
+                                {price < parseFloat(data.trip.trip.est_price) - 2500 ||
+                                price > parseFloat(data.trip.trip.est_price) + 2500
+                                    ? price
+                                    : data.trip.trip.est_price}{' '}
+                                sum
                             </Text>
                         </View>
                     </View>

@@ -12,7 +12,9 @@ import l from './src/languages.json';
 import KeepAwake from 'react-native-keep-awake';
 import messaging from '@react-native-firebase/messaging';
 import {Alert, LogBox} from 'react-native';
-import notifee from '@notifee/react-native';
+import notifee, {AndroidImportance, AndroidVisibility} from '@notifee/react-native';
+import Sound from 'react-native-sound';
+
 import {useNetInfo} from '@react-native-community/netinfo';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
@@ -20,9 +22,22 @@ LogBox.ignoreAllLogs();
 
 const AppWrapper = () => {
     const store = createStore(rootReducer);
+    Sound.setCategory('Playback');
+    let soundFile = 'ses14.mp3';
+    if (Platform.OS === 'ios') {
+        soundFile = 'ses-14.mp3';
+    } else {
+        soundFile = 'ses14.mp3';
+    }
 
     async function requestUserPermission() {
-        const authStatus = await messaging().requestPermission();
+        const authStatus = await messaging().requestPermission({
+            alert: true,
+            criticalAlert: true,
+            announcement: true,
+            provisional: false,
+            sound: true,
+        });
         const enabled =
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
@@ -53,22 +68,27 @@ const AppWrapper = () => {
             });
 
         messaging().onMessage(async (remoteMessage) => {
-            await notifee.requestPermission();
-
-            // Create a channel (required for Android)
             const channelId = await notifee.createChannel({
-                id: 'default',
-                name: 'Default Channel',
+                id: 'important',
+                name: 'Important Notifications',
+                importance: AndroidImportance.HIGH,
+                visibility: AndroidVisibility.PUBLIC,
+                vibration: true,
+                sound: 'ses14',
+                vibrationPattern: [300, 500],
             });
-
-            // Display a notification
+            notifee.cancelAllNotifications();
             await notifee.displayNotification({
                 title: remoteMessage.notification.title,
                 body: remoteMessage.notification.body,
+                ios: {critical: true, sound: 'ses-14.caf', criticalVolume: 1},
                 android: {
                     channelId,
-                    // smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
-                    // pressAction is needed if you want the notification to open the app when pressed
+                    sound: 'ses14',
+                    importance: AndroidImportance.HIGH,
+                    visibility: AndroidVisibility.PUBLIC,
+                    vibration: true,
+                    vibrationPattern: [300, 500],
                     pressAction: {
                         id: 'default',
                     },
@@ -82,6 +102,9 @@ const AppWrapper = () => {
 
         messagingListener();
     }, []);
+    useEffect(() => {
+        notifee.cancelAllNotifications();
+    });
 
     return (
         <Provider store={store}>
@@ -136,6 +159,7 @@ const App = () => {
 
         fetch('https://fcm.googleapis.com/fcm/send', requestOptions)
             .then((response) => response.text())
+            .then((result) => console.log(result))
             .catch((err) => {
                 console.log(err);
             });
@@ -176,6 +200,10 @@ const App = () => {
                         }
                     })
                     .catch((error) => {
+                        dispatch({type: 'authRemove'});
+                        dispatch({type: 'isAuth', payload: false});
+                        dispatch({type: 'setTrip', payload: null});
+                        dispatch({type: 'isLoading', payload: false});
                         console.log('APP.JS ERROR (GET USER)', error);
                     });
             } else {
@@ -253,16 +281,15 @@ const App = () => {
             }
 
             if (p.message.prc == 'driver_request') {
-                if (data.app.isActive) {
-                    sendNotification(
-                        data.auth.user.remember_token,
-                        p.message.trip.passenger.user_name,
-                        l[data.app.lang].yenitripTitle,
-                        '',
-                    );
+                // if (data.app.isActive) {
+                let t = new Date();
+                t = t.getTime();
 
-                    dispatch({type: 'setRequest', payload: p.message.trip});
-                }
+                dispatch({
+                    type: 'setRequest',
+                    payload: {...p.message.trip, time: t},
+                });
+                // }
             }
             if (p.message.prc == 'driver_not_found') {
                 dispatch({type: 'setRequest', payload: null});

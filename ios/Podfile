@@ -31,13 +31,13 @@ target 'TrendTaxi' do
   $static_framework += [
     'react-native-maps',
     'react-native-google-maps',
-    # 'Google-Maps-iOS-Utils',
+    'Google-Maps-iOS-Utils',
     'GoogleMaps',
   ]
 
   pod 'react-native-google-maps', :path => rn_maps_path
   pod 'GoogleMaps'
-  # pod 'Google-Maps-iOS-Utils'
+  pod 'Google-Maps-iOS-Utils'
   pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'
   pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
   pod 'RNSound', :path => '../node_modules/react-native-sound'

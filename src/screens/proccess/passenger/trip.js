@@ -31,96 +31,24 @@ export default function PassengerTrip() {
     });
 
     const [region, setRegion] = React.useState({
-        latitude: data.app.currentLocation[0],
-        longitude: data.app.currentLocation[1],
+        latitude: 0,
+        longitude: 0,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005,
-        first: false,
     });
-    const [locations, setLocations] = React.useState([]);
-
-    function getRotation(prevPos, curPos) {
-        if (!prevPos) {
-            return 0;
-        }
-        const xDiff = curPos.latitude - prevPos.latitude;
-        const yDiff = curPos.longitude - prevPos.longitude;
-        return (Math.atan2(yDiff, xDiff) * 180.0) / Math.PI;
-    }
 
     const [eski, setEski] = React.useState(null);
 
     const [step, setStep] = React.useState(null);
     const [step2, setStep2] = React.useState(null);
-    const [hesapLocations, setHesapLocations] = React.useState([]);
 
-    function arrow(iicon = null) {
-        let icon = iicon;
-        if (icon != null) {
-            icon = icon.replace('-', '_').replace('-', '_').replace('-', '_');
-            icon = icon.toUpperCase();
-
-            switch (icon) {
-                case 'TURN_SLIGHT_LEFT':
-                    return 'arrow-left-top';
-                    break;
-                case 'TURN_SHARP_LEFT':
-                    return 'arrow-left-top-bold';
-                    break;
-                case 'UTURN_LEFT':
-                    return 'arrow-u-down-left';
-                    break;
-                case 'TURN_LEFT':
-                    return 'arrow-left-top';
-                    break;
-                case 'TURN_SLIGHT_RIGHT':
-                    return 'arrow-right-top';
-                    break;
-                case 'TURN_SHARP_RIGHT':
-                    return 'arrow-right-top-bold';
-                    break;
-                case 'UTURN_RIGHT':
-                    return 'arrow-u-down-right';
-                    break;
-                case 'TURN_RIGHT':
-                    return 'arrow-right-top';
-                    break;
-                case 'STRAIGHT':
-                    return 'arrow-up';
-                    break;
-                case 'RAMP_LEFT':
-                    return 'arrow-left-top';
-                    break;
-                case 'RAMP_RIGHT':
-                    return 'arrow-right-top';
-                    break;
-                case 'MERGE':
-                    return 'arrow-up';
-                    break;
-                case 'FORK_LEFT':
-                    return 'arrow-left-top';
-                    break;
-                case 'FORK_RIGHT':
-                    return 'arrow-right-top';
-                    break;
-                case 'FERRY':
-                    return 'aaaaaa';
-                    break;
-                case 'FERRY_TRAIN':
-                    return 'aaaaaa';
-                    break;
-                case 'ROUNDABOUT_LEFT':
-                    return 'arrow-left-top';
-                    break;
-                case 'ROUNDABOUT_RIGHT':
-                    return 'arrow-right-top';
-                    break;
-                default:
-                    return 'arrow-up';
-                    break;
-            }
-        } else return 'arrow-up';
-    }
+    const [heading, setHeading] = React.useState(0);
+    const [cl, setCl] = React.useState({
+        latitude: 0,
+        longitude: 0,
+    });
+    const [rotate, setRotate] = React.useState(true);
+    const [directions, setDirections] = React.useState([]);
 
     function degreesToRadians(degrees) {
         var radians = (degrees * Math.PI) / 180;
@@ -147,188 +75,195 @@ export default function PassengerTrip() {
 
         return distanceInKilometers;
     }
-    const [price, setPrice] = React.useState(0);
+    const [head, setHead] = React.useState(0);
 
-    const [modalVisible, setModalVisible] = React.useState(false);
-
-    const [heading, setHeading] = React.useState(0);
-
+    const [ortCalistir, setOrtCalistir] = React.useState(false);
+    const [oKalan, setOKalan] = React.useState(0);
     useEffect(() => {
-        if (region == null && data.app.currentLocation.length > 0) {
-            setRegion({
-                latitude: data.app.currentLocation[0],
-                longitude: data.app.currentLocation[1],
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
-                first: false,
-            });
-        }
-        try {
-            if (rotate) {
-                harita.current?.animateCamera({
-                    heading: heading,
-                    center: {
-                        latitude: data.app.currentLocation[0],
-                        longitude: data.app.currentLocation[1],
-                    },
-                    pitch: 45,
-                    zoom: 19,
-                });
+        let kalan = 5;
+
+        let intervalKalan = setInterval(() => {
+            if (!rotate) {
+                if (kalan > 0) {
+                    setOKalan(kalan);
+                    kalan = kalan - 1;
+                } else {
+                    clearInterval(intervalKalan);
+                    setRotate(true);
+                }
             }
-        } catch (error) {}
+        }, 1000);
+
         return () => {
-            false;
+            clearInterval(intervalKalan);
+            kalan = 5;
         };
-    }, [data.app.currentLocation, heading, rotate]);
-
-    const [rotate, setRotate] = React.useState(false);
-
-    const watchPosition = () => {
-        const PassengerTripWP = Geolocation.watchPosition(
-            (position) => {
-                dispatch({
-                    type: 'loc',
-                    payload: [position.coords.latitude, position.coords.longitude],
-                });
-                setHeading(position.coords.heading);
-            },
-            (error) => {
-                // Alert.alert('WatchPosition Error', JSON.stringify(error))
-            },
-            {
-                enableHighAccuracy: true,
-                //accuracy
-                distanceFilter: 1,
-                timeout: 20000,
-                maximumAge: 0,
-            },
-        );
-        setSubscriptionId(PassengerTripWP);
-    };
-
-    const clearWatch = () => {
-        subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
-        setSubscriptionId(null);
-    };
-    useEffect(() => {
-        watchPosition();
-        return () => {
-            clearWatch();
-        };
-    }, []);
-
-    const [subscriptionId, setSubscriptionId] = React.useState(null);
+    }, [rotate, ortCalistir]);
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-4/5`]}>
-                    {data.app.currentLocation.length > 0 ? (
-                        <MapView
-                            ref={harita}
-                            provider={PROVIDER_GOOGLE}
-                            style={{flex: 1}}
-                            region={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            initialRegion={{
-                                latitude: data.app.currentLocation[0],
-                                longitude: data.app.currentLocation[1],
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            }}
-                            showsUserLocation={false}
-                            zoomEnabled={true}
-                            enableZoomControl={true}
-                            showsMyLocationButton={false}
-                            rotateEnabled={true}
-                            showsTraffic
-                            onRegionChange={(ret, sta) => {
-                                if (sta.isGesture == true) {
-                                    setRotate(false);
-                                }
-                            }}
-                            onMapReady={() => {
-                                harita.current.fitToCoordinates(
-                                    [
-                                        {
-                                            latitude: data.app.currentLocation[0]
-                                                ? data.app.currentLocation[0]
-                                                : data.trip.trip.locations[0].latitude,
-                                            longitude: data.app.currentLocation[1]
-                                                ? data.app.currentLocation[1]
-                                                : data.trip.trip.locations[0].longitude,
-                                        },
-                                        ...data.trip.trip.locations,
-                                    ],
-                                    {
-                                        edgePadding: {
-                                            top: 100,
-                                            right: 100,
-                                            bottom: 100,
-                                            left: 100,
-                                        },
-                                        animated: true,
+                    <MapView
+                        ref={harita}
+                        provider={PROVIDER_GOOGLE}
+                        style={{flex: 1}}
+                        region={region}
+                        initialRegion={region}
+                        showsUserLocation
+                        zoomEnabled={true}
+                        enableZoomControl={true}
+                        showsMyLocationButton={false}
+                        showsCompass={false}
+                        rotateEnabled={true}
+                        showsTraffic
+                        onRegionChange={(ret, sta) => {
+                            if (sta.isGesture == true) {
+                                setRotate(false);
+                            }
+                        }}
+                        onUserLocationChange={(e) => {
+                            if (region.latitude == 0) {
+                                setRegion({
+                                    latitude: e.nativeEvent.coordinate.latitude,
+                                    longitude: e.nativeEvent.coordinate.longitude,
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 0.005,
+                                });
+                            }
+                            setCl({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                            });
+                            if (rotate) {
+                                harita.current?.animateCamera({
+                                    heading: e.nativeEvent.coordinate.heading,
+                                    center: {
+                                        latitude: e.nativeEvent.coordinate.latitude,
+                                        longitude: e.nativeEvent.coordinate.longitude,
                                     },
-                                );
-                            }}>
-                            <Marker
-                                coordinate={{
-                                    latitude: data.app.currentLocation[0],
-                                    longitude: data.app.currentLocation[1],
-                                }}>
-                                <Image
-                                    source={require('../../../assets/img/compass-ai.png')}
-                                    style={[tw`h-10 w-10`]}
-                                />
-                            </Marker>
+                                    pitch: 45,
+                                    zoom: 19,
+                                });
+                            }
 
-                            {data.trip.trip.locations.length >= 1 ? (
-                                <MapViewDirections
-                                    language={data.app.lang == 'gb' ? 'en' : data.app.lang}
-                                    optimizeWaypoints={true}
-                                    origin={{
-                                        latitude: data.app.currentLocation[0],
-                                        longitude: data.app.currentLocation[1],
-                                    }}
-                                    waypoints={
-                                        data.trip.trip.locations.length > 2
-                                            ? data.trip.trip.locations.slice(1, -1)
-                                            : undefined
+                            let remainingItems = [];
+                            let re = [];
+                            let gecilen = 0;
+                            data.trip.trip.locations.map((item, index) => {
+                                if (item.check) {
+                                    gecilen = gecilen + 1;
+                                    remainingItems.push(item);
+                                } else {
+                                    let mesafe = calcDistance(item, {
+                                        latitude: e.nativeEvent.coordinate.latitude,
+                                        longitude: e.nativeEvent.coordinate.longitude,
+                                    });
+                                    if (mesafe < 0.015) {
+                                        gecilen = gecilen + 1;
+                                        remainingItems.push({...item, check: 1});
+                                    } else {
+                                        remainingItems.push({...item});
+                                        re.push(item);
                                     }
-                                    destination={
-                                        data.trip.trip.locations.length == 1
-                                            ? undefined
-                                            : data.trip.trip.locations[
-                                                  data.trip.trip.locations.length - 1
-                                              ]
-                                    }
-                                    apikey={config.mapApi}
-                                    strokeWidth={10}
-                                    mode="DRIVING"
-                                    precision={'high'}
-                                    strokeColor="#0f365e"
-                                    resetOnChange={false}
-                                    onReady={(result) => {
-                                        if (result.legs[0].steps[0]) {
-                                            setStep(result.legs[0].steps[0]);
-                                        } else {
-                                            setStep(null);
-                                        }
-                                        if (result.legs[0].steps[1]) {
-                                            setStep2(result.legs[0].steps[1]);
-                                        } else {
-                                            setStep2(null);
-                                        }
-                                        setDuration(result.legs[0].duration.value);
-                                        setDistance(result.legs[0].distance.value);
-                                    }}
+                                }
+                            });
+
+                            setDirections(re);
+                            dispatch({
+                                type: 'setTrip',
+                                payload: {
+                                    ...data.trip.trip,
+                                    locations: remainingItems,
+                                },
+                            });
+                            let y = 100 / data.trip.trip.locations.length;
+                            let x = y * gecilen;
+                        }}>
+                        {/* <Marker coordinate={cl}>
+                            <Image
+                                source={require('../../../assets/img/compass-ai.png')}
+                                style={[tw`h-10 w-10`]}
+                            />
+                        </Marker> */}
+                        {data.trip.trip.locations.map((item, index) => {
+                            if (index != 0) {
+                                return (
+                                    <Marker
+                                        identifier={'Marker_' + index}
+                                        key={index}
+                                        coordinate={item}>
+                                        <View
+                                            style={[
+                                                tw`h-full w-full text-center items-center justify-center`,
+                                                {
+                                                    position: 'absolute',
+                                                    zIndex: 999999,
+                                                },
+                                            ]}>
+                                            <Text
+                                                style={[tw`text-gray-600 font-bold text-3xl mb-2`]}>
+                                                {index}
+                                            </Text>
+                                        </View>
+                                        <Image
+                                            source={require('../../../assets/img/marker-1.png')}
+                                            style={[tw`w-16 h-16 `]}
+                                        />
+                                    </Marker>
+                                );
+                            }
+                        })}
+                        {directions.length > 0 && data.trip.trip.locations.length > 1 ? (
+                            <MapViewDirections
+                                language={data.app.lang == 'gb' ? 'en' : data.app.lang}
+                                optimizeWaypoints={true}
+                                origin={cl}
+                                waypoints={
+                                    directions.length > 2 ? directions.slice(1, -1) : undefined
+                                }
+                                destination={
+                                    directions.length == 1
+                                        ? directions[0]
+                                        : directions[directions.length - 1]
+                                }
+                                apikey={config.mapApi}
+                                strokeWidth={10}
+                                mode="DRIVING"
+                                precision={'high'}
+                                strokeColor="#0f365e"
+                                resetOnChange={false}
+                                onReady={(result) => {}}
+                            />
+                        ) : null}
+                    </MapView>
+                    {!rotate && (
+                        <View
+                            style={[
+                                tw`flex w-full items-center justify-center bg-gray-100 opacity-50`,
+                                {
+                                    position: 'absolute',
+                                    zIndex: 999999,
+                                    bottom: 100,
+                                },
+                            ]}>
+                            <View style={[tw`flex-row items-center justify-center`]}>
+                                <Text>{l[data.app.lang].ysabitle.split('{icon}')[0]}</Text>
+                                <MaterialCommunityIcons
+                                    name="arrow-up-bold-hexagon-outline"
+                                    size={24}
+                                    color="black"
                                 />
-                            ) : null}
-                        </MapView>
-                    ) : null}
+                                <Text>{l[data.app.lang].ysabitle.split('{icon}')[1]}</Text>
+                            </View>
+                            {oKalan > 0 && (
+                                <View style={[tw`flex-row items-center justify-center`]}>
+                                    <Text>
+                                        {l[data.app.lang].oort} : {oKalan}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    )}
                 </View>
                 <View style={[tw`h-1/5 pb-4 px-4 pt-2`]}>
                     <View style={[tw`flex-row items-center justify-between`]}>
@@ -353,6 +288,23 @@ export default function PassengerTrip() {
 
                         <View style={[tw`flex-row mb-2`]}>
                             <TouchableOpacity
+                                style={[stil('bg2', data.app.theme), tw`p-2 mr-2 rounded-md`]}
+                                onPress={() => {
+                                    Linking.openURL(
+                                        `tel:+${
+                                            data.auth.userType == 'driver'
+                                                ? data.trip.trip.passenger.user_phone
+                                                : data.trip.trip.driver.user_phone
+                                        }`,
+                                    );
+                                }}>
+                                <MaterialCommunityIcons
+                                    name="phone"
+                                    size={24}
+                                    color={stil('text', data.app.theme).color}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
                                 onPress={() => {
                                     setRotate(true);
                                 }}
@@ -367,18 +319,10 @@ export default function PassengerTrip() {
                                 onPress={() => {
                                     harita.current.fitToCoordinates(
                                         [
-                                            {
-                                                latitude: data.app.currentLocation[0],
-                                                longitude: data.app.currentLocation[1],
-                                            },
-                                            data.trip.trip.locations.length > 0
-                                                ? data.trip.trip.locations[
-                                                      data.trip.trip.locations.length - 1
-                                                  ]
-                                                : {
-                                                      latitude: data.app.currentLocation[0],
-                                                      longitude: data.app.currentLocation[1],
-                                                  },
+                                            cl,
+                                            directions.length > 0
+                                                ? directions[directions.length - 1]
+                                                : cl,
                                         ],
                                         {
                                             edgePadding: {
@@ -390,6 +334,7 @@ export default function PassengerTrip() {
                                             animated: true,
                                         },
                                     );
+                                    setRotate(false);
                                 }}
                                 style={[tw`rounded-md p-2 `, stil('bg2', data.app.theme)]}>
                                 <MaterialCommunityIcons

@@ -26,7 +26,7 @@ export default function Home() {
     return (
         <>
             <StatusBarComponent />
-            {data.auth.user.user_status == 0 ? (
+            {data.auth.user.user_status == 0 && data.auth.user.user_name === '' ? (
                 <Register />
             ) : (
                 <>

@@ -17,7 +17,13 @@ function PermissionSelect() {
     const [bildirim, setBildirim] = React.useState(null);
 
     async function requestUserPermission() {
-        const authStatus = await messaging().requestPermission();
+        const authStatus = await messaging().requestPermission({
+            alert: true,
+            criticalAlert: true,
+            announcement: true,
+            provisional: false,
+            sound: true,
+        });
         const enabled =
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;

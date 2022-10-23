@@ -14,6 +14,10 @@ export const useTheme = StyleSheet.create({
             color: 'rgba(194,228,255,1)',
             fontFamily: 'Poppins-Regular',
         },
+        text2: {
+            color: 'rgba(194,228,255,.7)',
+            fontFamily: 'Poppins-Regular',
+        },
     },
     light: {
         bg: {
@@ -26,6 +30,10 @@ export const useTheme = StyleSheet.create({
         },
         text: {
             color: 'rgba(15, 54, 94,1)',
+            fontFamily: 'Poppins-Regular',
+        },
+        text: {
+            color: 'rgba(15, 54, 94,.7)',
             fontFamily: 'Poppins-Regular',
         },
     },

@@ -16,6 +16,7 @@ import StatusBarComponent from '../../components/global/status';
 import PermissionSelect from './permissionSelect';
 import LoginTypeSelect from './loginTypeSelect';
 import LoginScreen from './loginScreen';
+import {getValue} from '../../async';
 
 export default function Welcome() {
     const data = useSelector((state) => state);
@@ -46,12 +47,13 @@ export default function Welcome() {
 
     useEffect(() => {
         const abortController = new AbortController();
-        if (data.app.lang) {
-            setStep(2);
-        }
-        if (data.app.theme) {
-            setStep(4);
-        }
+        getValue('TrendTaxiLang').then((lang) => {
+            if (lang) setStep(2);
+            getValue('TrendTaxiTheme').then((theme) => {
+                if (theme) setStep(4);
+            });
+        });
+
         return () => {
             abortController.abort();
             false;

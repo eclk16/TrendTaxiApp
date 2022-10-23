@@ -120,6 +120,7 @@ export default function ProfileEdit() {
                         uri: config.imageBaseUrl + response.data.response.user_data.user_image,
                     });
                 alert(l[data.app.lang].profileEdit);
+                navigation.navigate('Profile');
             })
             .catch((error) => {
                 console.log('PROFİLEEDT.JS ERROR (UPDATE USER)', error);

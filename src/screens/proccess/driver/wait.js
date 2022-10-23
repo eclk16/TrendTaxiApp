@@ -13,6 +13,8 @@ import {apiPost} from '../../../axios';
 import config from '../../../app.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from '@react-native-community/geolocation';
+import axios from 'axios';
+import {set} from 'immer/dist/internal';
 //burayafont yükle gelecek
 
 export default function DriverWait() {
@@ -43,58 +45,70 @@ export default function DriverWait() {
             trip_id: data.trip.tripRequest.id,
         }).catch((error) => {
             console.log('DRİVERWAİT.JS ERROR (ONAYLA)', error);
+            dispatch({type: 'setRequest', payload: null});
+            dispatch({type: 'ia', payload: true});
+            setLocations([]);
+
+            setH({
+                ust: 5,
+                alt: 1,
+            });
+            fitContent();
         });
     };
 
+    const [timer, setTimer] = React.useState(0);
     useEffect(() => {
-        var activeInt = setInterval(() => {
-            if (data.app.isActive) {
-                if (data.trip.trip === null && data.trip.tripRequest === null) {
-                    apiPost('updateUser', {
-                        id: data.auth.userId,
-                        is_active: 'active',
-                        token: data.auth.userToken,
-                        last_latitude: data.app.currentLocation[0],
-                        last_longitude: data.app.currentLocation[1],
-                    })
-                        .then(() => {})
-                        .catch((error) => {
-                            console.log('DRİVERWAİT.JS ERROR (UPDATE USER 1)', error);
-                        });
-                } else {
-                    clearInterval(activeInt);
-                    apiPost('updateUser', {
-                        id: data.auth.userId,
-                        is_active: 'inactive',
-                        token: data.auth.userToken,
-                        last_latitude: data.app.currentLocation[0],
-                        last_longitude: data.app.currentLocation[1],
-                    })
-                        .then(() => {})
-                        .catch((error) => {
-                            console.log('DRİVERWAİT.JS ERROR (UPDATE USER 2)', error);
-                        });
-                }
+        setInterval(() => {
+            setTimer(timer + 1);
+        }, 15000);
+    }, []);
+
+    useEffect(() => {
+        if (data.app.isActive) {
+            if (data.trip.trip === null && data.trip.tripRequest === null) {
+                apiPost('updateUser', {
+                    id: data.auth.userId,
+                    is_active: 'active',
+                    token: data.auth.userToken,
+                    last_latitude: cl.latitude,
+                    last_longitude: cl.longitude,
+                })
+                    .then(() => {})
+                    .catch((error) => {
+                        console.log('DRİVERWAİT.JS ERROR (UPDATE USER 1)', error);
+                    });
             } else {
-                clearInterval(activeInt);
                 apiPost('updateUser', {
                     id: data.auth.userId,
                     is_active: 'inactive',
                     token: data.auth.userToken,
-                    last_latitude: data.app.currentLocation[0],
-                    last_longitude: data.app.currentLocation[1],
+                    last_latitude: cl.latitude,
+                    last_longitude: cl.longitude,
                 })
                     .then(() => {})
                     .catch((error) => {
-                        console.log('DRİVERWAİT.JS ERROR (UPDATE USER 3)', error);
+                        console.log('DRİVERWAİT.JS ERROR (UPDATE USER 2)', error);
                     });
             }
-        }, 15000);
+        } else {
+            apiPost('updateUser', {
+                id: data.auth.userId,
+                is_active: 'inactive',
+                token: data.auth.userToken,
+                last_latitude: cl.latitude,
+                last_longitude: cl.longitude,
+            })
+                .then(() => {})
+                .catch((error) => {
+                    console.log('DRİVERWAİT.JS ERROR (UPDATE USER 3)', error);
+                });
+        }
 
         return () => {
-            clearInterval(activeInt);
+            false;
         };
-    }, [data.app.isActive]);
+    }, [data.app.isActive, timer]);
 
     useEffect(() => {
         let pint = setInterval(() => {
@@ -112,22 +126,24 @@ export default function DriverWait() {
 
     useEffect(() => {
         const abortController = new AbortController();
-        let kalan = 10;
-        let interr = setInterval(() => {
-            kalan = kalan - 1;
-            if (kalan < 0) {
-                dispatch({type: 'setRequest', payload: null});
-                dispatch({type: 'ia', payload: true});
-                setLocations([]);
-                setH({
-                    ust: 5,
-                    alt: 1,
-                });
-                fitContent();
-            }
-            setTimeoutSn(kalan);
-        }, 1000);
-        if (!data.trip.tripRequest) {
+
+        // let kalan = 10;
+        // let interr = setInterval(() => {
+        //     kalan = kalan - 1;
+        //     if (kalan < 0) {
+        //         dispatch({type: 'setRequest', payload: null});
+        //         dispatch({type: 'ia', payload: true});
+        //         setLocations([]);
+        //         setH({
+        //             ust: 5,
+        //             alt: 1,
+        //         });
+        //         fitContent();
+        //     }
+        //     setTimeoutSn(kalan);
+        // }, 1000);
+        if (data.trip.tripRequest === null || data.trip.tripRequest.kalan <= 0) {
+            dispatch({type: 'setRequest', payload: null});
             dispatch({type: 'ia', payload: true});
             setH({
                 ust: 5,
@@ -136,64 +152,72 @@ export default function DriverWait() {
             setTimeoutSn(10);
             setLocations([]);
             fitContent();
-            clearInterval(interr);
+            // clearInterval(interr);
         } else {
+            setTimeoutSn(data.trip.tripRequest.kalan);
+
             dispatch({type: 'ia', payload: false});
-            let sound = new Sound(soundFile, Sound.MAIN_BUNDLE, () => {
-                sound.play(() => {
-                    sound.play();
+
+            // if (data.trip.tripRequest.kalan <= 0) {
+            //     dispatch({type: 'setRequest', payload: null});
+            //     dispatch({type: 'ia', payload: true});
+            //     setLocations([]);
+            //     setH({
+            //         ust: 5,
+            //         alt: 1,
+            //     });
+            //     fitContent();
+            // } else {
+            if (h.ust === 5) {
+                setH({
+                    ust: 4,
+                    alt: 2,
                 });
-            });
-            setH({
-                ust: 4,
-                alt: 1,
-            });
-            setLocations([data.trip.tripRequest.locations[0]]);
-            harita.current.fitToCoordinates(
-                [
-                    data.trip.tripRequest.locations[0],
-                    {
-                        latitude: data.app.currentLocation[0],
-                        longitude: data.app.currentLocation[1],
-                        latitudeDelta: 0.015,
-                        longitudeDelta: 0.015,
-                    },
-                ],
-                {
+                let sound = new Sound(soundFile, Sound.MAIN_BUNDLE, () => {
+                    sound.play(() => {
+                        sound.play();
+                    });
+                });
+
+                setLocations([data.trip.tripRequest.locations[0]]);
+                harita.current.fitToCoordinates([cl, data.trip.tripRequest.locations[0]], {
                     edgePadding: {
-                        top: 100,
+                        top: 150,
                         right: 100,
-                        bottom: 100,
+                        bottom: 150,
                         left: 100,
                     },
                     animated: true,
-                },
-            );
+                });
+            }
+            // }
         }
 
         return () => {
             abortController.abort();
-            clearInterval(interr);
+            // clearInterval(interr);
         };
     }, [data.trip.tripRequest]);
 
     const [region, setRegion] = React.useState({
-        latitude: 0,
-        longitude: 0,
+        latitude: 41.32195,
+        longitude: 69.26926,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005,
     });
 
     const fitContent = () => {
-        harita.current.fitToCoordinates([region], {
-            edgePadding: {
-                top: 250,
-                right: 250,
-                bottom: 250,
-                left: 250,
-            },
-            animated: true,
-        });
+        if (cl.latitude != 0 && cl.longitude != 0) {
+            harita.current.fitToCoordinates([cl], {
+                edgePadding: {
+                    top: 250,
+                    right: 250,
+                    bottom: 250,
+                    left: 250,
+                },
+                animated: true,
+            });
+        }
     };
 
     useEffect(() => {
@@ -224,12 +248,65 @@ export default function DriverWait() {
 
     const [hours, setHours] = React.useState([]);
     const [minute, setMinute] = React.useState([]);
+    const [cl, setCl] = React.useState({
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+    });
+
+    // SAYAÇ
+
+    const [tarih, SetTarih] = React.useState('');
+
+    useEffect(() => {
+        axios.defaults.headers.common['Accept'] = 'application/json';
+        axios.defaults.headers.common['Content-Type'] = 'application/json';
+        var param = '';
+
+        axios
+            .get('http://92.63.206.162/sayac.html')
+            .then((response) => {
+                SetTarih(new Date(response.request._response).getTime());
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
+
+    useEffect(() => {
+        var x = setInterval(function () {
+            var now = new Date().getTime();
+            var distance = tarih - now;
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            setD(days);
+            setHO(hours);
+            setM(minutes);
+            setS(seconds);
+        }, 1000);
+        return () => {
+            clearInterval(x);
+        };
+    }, [tarih]);
+
+    const [d, setD] = React.useState([]);
+    const [ho, setHO] = React.useState([]);
+    const [m, setM] = React.useState([]);
+    const [s, setS] = React.useState([]);
+
+    const [distance, setDistance] = React.useState(0);
+    const [duration, setDuration] = React.useState(0);
 
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/6`]}>
                     <MapView
+                        loadingEnabled={true}
+                        key={data.trip.trip}
                         ref={harita}
                         provider={PROVIDER_GOOGLE}
                         style={{flex: 1}}
@@ -237,46 +314,53 @@ export default function DriverWait() {
                         initialRegion={region}
                         showsUserLocation
                         zoomEnabled={true}
+                        showsCompass={false}
+                        // followsUserLocation={true}
                         enableZoomControl={true}
                         showsMyLocationButton={false}
                         onUserLocationChange={(e) => {
-                            if (region.latitude == 0) {
-                                setRegion({
-                                    latitude: e.nativeEvent.coordinate.latitude,
-                                    longitude: e.nativeEvent.coordinate.longitude,
-                                    latitudeDelta: 0.005,
-                                    longitudeDelta: 0.005,
-                                });
-                            }
+                            setRegion({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            });
+
+                            setCl({
+                                latitude: e.nativeEvent.coordinate.latitude,
+                                longitude: e.nativeEvent.coordinate.longitude,
+                                latitudeDelta: 0.005,
+                                longitudeDelta: 0.005,
+                            });
                         }}
                         showsTraffic>
-                        {locations.map((item, index) => {
-                            return (
-                                <Marker
-                                    identifier={'Marker_' + index}
-                                    key={index}
-                                    coordinate={item}
-                                    title={item.title}
-                                    description={item.description}>
-                                    <Image
-                                        source={require('../../../assets/img/people.png')}
-                                        style={[tw`h-14 w-7`]}
-                                    />
-                                </Marker>
-                            );
-                        })}
+                        {data.trip.tripRequest !== null ? (
+                            <Marker coordinate={data.trip.tripRequest.locations[0]}>
+                                <Image
+                                    source={require('../../../assets/img/marker-people.png')}
+                                    style={[tw`h-10 w-10`]}
+                                />
+                            </Marker>
+                        ) : null}
 
-                        {locations.length >= 1 ? (
+                        {data.trip.tripRequest !== null ? (
                             <MapViewDirections
-                                origin={{
-                                    latitude: data.app.currentLocation[0],
-                                    longitude: data.app.currentLocation[1],
-                                }}
-                                destination={locations[0]}
+                                origin={cl}
+                                destination={data.trip.tripRequest.locations[0]}
                                 apikey={config.mapApi}
                                 strokeWidth={5}
                                 strokeColor="#0f365e"
                                 optimizeWaypoints={true}
+                                onReady={(result) => {
+                                    let dis = 0;
+                                    let dur = 0;
+                                    result.legs.map((item, index) => {
+                                        dis = dis + item.distance.value;
+                                        dur = dur + item.duration.value;
+                                    });
+                                    setDistance(dis);
+                                    setDuration(dur);
+                                }}
                             />
                         ) : null}
                     </MapView>
@@ -296,6 +380,49 @@ export default function DriverWait() {
                     </View>
                 </View>
                 <View style={[tw`h-${h.alt}/6 pb-4 px-4 pt-2 flex justify-center`]}>
+                    {data.auth.user.tester == 1 && (
+                        <View
+                            style={[
+                                tw`w-full h-full mx-4 flex flex-row items-center justify-center rounded-md`,
+                                {
+                                    backgroundColor: 'rgba(0,0,0,0.7)',
+                                    zIndex: 9999,
+                                    position: 'absolute',
+                                },
+                            ]}>
+                            <View style={[tw`flex-row items-center justify-center`]}>
+                                <MaterialCommunityIcons
+                                    name="lock-outline"
+                                    size={24}
+                                    color="white"
+                                />
+                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
+                                    {d}
+                                </Text>
+                                <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
+                                    {l[data.app.lang].day}
+                                </Text>
+                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
+                                    {ho}
+                                </Text>
+                                <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
+                                    {l[data.app.lang].hour}
+                                </Text>
+                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
+                                    {m}
+                                </Text>
+                                <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
+                                    {l[data.app.lang].minute}
+                                </Text>
+                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
+                                    {s}
+                                </Text>
+                                <Text style={[tw`text-xs text-center`, {color: 'white'}]}>
+                                    {l[data.app.lang].second}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
                     <View style={[tw`flex-row items-center justify-between  mb-4`]}>
                         <Text style={[stil('text', data.app.theme), tw`text-base`]}>
                             {l[data.app.lang].kalansure} :
@@ -365,91 +492,102 @@ export default function DriverWait() {
                                                             tw`font-semibold text-center p-2`,
                                                             stil('text', data.app.theme),
                                                         ]}>
-                                                        {data.trip.tripRequest.passenger.user_name}
+                                                        {data.trip.tripRequest !== null &&
+                                                            data.trip.tripRequest.passenger
+                                                                .user_name}
                                                     </Text>
                                                 </View>
                                                 <View style={[tw`flex`]}>
-                                                    {data.trip.tripRequest.Gosterzaman ||
-                                                    data.trip.tripRequest.Gosterkm ||
-                                                    data.trip.tripRequest.Gostertutar ? (
+                                                    <View
+                                                        style={[
+                                                            stil('bg2', data.app.theme),
+                                                            tw`flex-row justify-between items-center my-2 p-2 rounded-md`,
+                                                        ]}>
                                                         <View
                                                             style={[
-                                                                stil('bg2', data.app.theme),
-                                                                tw`flex-row justify-between items-center my-2 p-2 rounded-md`,
+                                                                tw`  mb-1  items-center flex-row`,
+
+                                                                stil('text', data.app.theme),
                                                             ]}>
-                                                            <View
+                                                            <Text
                                                                 style={[
-                                                                    tw`   mb-1 items-center flex-row`,
-
                                                                     stil('text', data.app.theme),
+                                                                    tw`font-bold text-center `,
                                                                 ]}>
-                                                                {data.trip.tripRequest
-                                                                    .Gosterzaman ? (
-                                                                    <Text
-                                                                        style={[
-                                                                            stil(
-                                                                                'text',
-                                                                                data.app.theme,
-                                                                            ),
-                                                                            tw`font-bold text-center `,
-                                                                        ]}>
-                                                                        {
-                                                                            data.trip.tripRequest
-                                                                                .est_duration
-                                                                        }{' '}
-                                                                        min
-                                                                    </Text>
-                                                                ) : null}
-                                                            </View>
-                                                            <View
-                                                                style={[
-                                                                    tw`  mb-1  items-center flex-row`,
-
-                                                                    stil('text', data.app.theme),
-                                                                ]}>
-                                                                {data.trip.tripRequest.Gosterkm ? (
-                                                                    <Text
-                                                                        style={[
-                                                                            stil(
-                                                                                'text',
-                                                                                data.app.theme,
-                                                                            ),
-                                                                            tw`font-bold text-center `,
-                                                                        ]}>
-                                                                        {
-                                                                            data.trip.tripRequest
-                                                                                .est_distance
-                                                                        }{' '}
-                                                                        km
-                                                                    </Text>
-                                                                ) : null}
-                                                            </View>
-                                                            <View
-                                                                style={[
-                                                                    tw`  mb-1 items-center flex-row`,
-
-                                                                    stil('text', data.app.theme),
-                                                                ]}>
-                                                                {data.trip.tripRequest
-                                                                    .Gostertutar ? (
-                                                                    <Text
-                                                                        style={[
-                                                                            stil(
-                                                                                'text',
-                                                                                data.app.theme,
-                                                                            ),
-                                                                            tw`font-bold text-center `,
-                                                                        ]}>
-                                                                        {
-                                                                            data.trip.tripRequest
-                                                                                .est_price
-                                                                        }{' '}
-                                                                        sum
-                                                                    </Text>
-                                                                ) : null}
-                                                            </View>
+                                                                {l[data.app.lang].y_uz}
+                                                            </Text>
                                                         </View>
-                                                    ) : null}
+
+                                                        <View
+                                                            style={[
+                                                                tw`  mb-1  items-center flex-row`,
+
+                                                                stil('text', data.app.theme),
+                                                            ]}>
+                                                            <Text
+                                                                style={[
+                                                                    stil('text', data.app.theme),
+                                                                    tw`font-bold text-center `,
+                                                                ]}>
+                                                                {(distance / 1000).toFixed(2)} km
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                    <View
+                                                        style={[
+                                                            stil('bg2', data.app.theme),
+                                                            tw`flex-row justify-between items-center my-2 p-2 rounded-md`,
+                                                        ]}>
+                                                        <View
+                                                            style={[
+                                                                tw`  mb-1  items-center flex-row`,
+
+                                                                stil('text', data.app.theme),
+                                                            ]}>
+                                                            <Text
+                                                                style={[
+                                                                    stil('text', data.app.theme),
+                                                                    tw`font-bold text-center `,
+                                                                ]}>
+                                                                {data.trip.tripRequest
+                                                                    .est_distance > 0
+                                                                    ? l[data.app.lang].hedefli
+                                                                    : l[data.app.lang].hedefsiz}
+                                                            </Text>
+                                                        </View>
+                                                        <View
+                                                            style={[
+                                                                tw`   mb-1 items-center flex-row`,
+
+                                                                stil('text', data.app.theme),
+                                                            ]}>
+                                                            <Text
+                                                                style={[
+                                                                    stil('text', data.app.theme),
+                                                                    tw`font-bold text-center `,
+                                                                ]}>
+                                                                {data.trip.tripRequest.est_duration}{' '}
+                                                                min
+                                                            </Text>
+                                                        </View>
+
+                                                        <View
+                                                            style={[
+                                                                tw`  mb-1  items-center flex-row`,
+
+                                                                stil('text', data.app.theme),
+                                                            ]}>
+                                                            <Text
+                                                                style={[
+                                                                    stil('text', data.app.theme),
+                                                                    tw`font-bold text-center `,
+                                                                ]}>
+                                                                {data.trip.tripRequest.est_distance}{' '}
+                                                                km
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+
                                                     {data.trip.tripRequest.Gosterlokasyonlar ? (
                                                         <>
                                                             {data.trip.tripRequest.locations.map(
@@ -656,13 +794,7 @@ export default function DriverWait() {
                                             onPress={() => {
                                                 let time = new Date().getTime() / 1000;
                                                 time = time + 86400;
-                                                console.log({
-                                                    id: data.auth.userId,
-                                                    active_time: parseInt(time),
-                                                    driver_active: 'active',
-                                                    dusBalance: data.auth.user.user_data.car.fee,
-                                                    token: data.auth.userToken,
-                                                });
+
                                                 apiPost('updateUser', {
                                                     id: data.auth.userId,
                                                     active_time: parseInt(time),
@@ -681,6 +813,10 @@ export default function DriverWait() {
                                                                         type: 'setUser',
                                                                         payload:
                                                                             response.data.response,
+                                                                    });
+                                                                    dispatch({
+                                                                        type: 'ia',
+                                                                        payload: true,
                                                                     });
                                                                 }
                                                             })
