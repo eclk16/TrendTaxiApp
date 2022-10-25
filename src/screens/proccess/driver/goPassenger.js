@@ -178,6 +178,9 @@ export default function DriverGoPassenger() {
                         showsCompass={false}
                         showsMyLocationButton={false}
                         showsTraffic
+                        userLocationPriority={'high'}
+                        userLocationUpdateInterval={1000}
+                        userLocationFastestInterval={1000}
                         onUserLocationChange={(e) => {
                             if (region.latitude == 0) {
                                 setRegion({

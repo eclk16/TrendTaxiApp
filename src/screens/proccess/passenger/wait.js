@@ -74,6 +74,9 @@ export default function PassengerWait() {
                         followsUserLocation={true}
                         showsMyLocationButton={false}
                         //user location change
+                        userLocationPriority={'high'}
+                        userLocationUpdateInterval={1000}
+                        userLocationFastestInterval={1000}
                         onUserLocationChange={(e) => {
                             if (region.latitude == 0) {
                                 setRegion({

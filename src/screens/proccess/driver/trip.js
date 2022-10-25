@@ -192,13 +192,12 @@ export default function DriverTrip() {
         let tP = 0;
         let kP = 0;
         tP = Math.ceil(dur / 60).toFixed(0);
-        tP = tP - 3;
 
         if (tP < 0) tP = 0;
         tP = parseFloat(item.paid) * tP;
         tP = Math.ceil(tP / parseFloat(item.paid)) * parseFloat(item.paid);
 
-        kP = Math.ceil(dis / 1000).toFixed(0);
+        kP = Math.ceil(dis).toFixed(0);
         kP = kP - 1;
 
         if (kP < 0) kP = 0;
@@ -291,6 +290,33 @@ export default function DriverTrip() {
             kalan = 5;
         };
     }, [rotate, ortCalistir]);
+
+    //TESTTTt
+    useEffect(() => {
+        if (
+            calcDistance(cl, data.trip.trip.locations[data.trip.trip.locations.length - 1]) < 0.151
+        ) {
+            if (
+                parseFloat(data.trip.trip.est_distance) * 0.9 < parseFloat(act_distance) &&
+                parseFloat(data.trip.trip.est_distance) * 1.1 > parseFloat(act_distance)
+            ) {
+                console.log('HEMEN HEMEN YAKINDAYIZ', data.trip.trip.est_price);
+            } else {
+                console.log(
+                    parseFloat(data.trip.trip.est_distance) * 0.9 < parseFloat(act_distance),
+                    parseFloat(data.trip.trip.est_distance) * 1.1 > parseFloat(act_distance),
+                    'YAKINDA DEGILIZ',
+                    price,
+                    act_distance,
+                    parseFloat(data.trip.trip.est_distance) * 0.9,
+                    parseFloat(data.trip.trip.est_distance) * 1.1,
+                );
+            }
+        } else {
+            console.log('YAKLAŞMADIK CO', price);
+        }
+    }, [price, act_distance]);
+
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
@@ -308,6 +334,9 @@ export default function DriverTrip() {
                         showsMyLocationButton={false}
                         rotateEnabled={true}
                         showsTraffic
+                        userLocationPriority={'high'}
+                        userLocationUpdateInterval={1000}
+                        userLocationFastestInterval={1000}
                         onRegionChange={(ret, sta) => {
                             if (sta.isGesture == true) {
                                 setRotate(false);
@@ -829,10 +858,17 @@ export default function DriverTrip() {
                             </Text>
                             <Text
                                 style={[tw`font-bold text-4xl mt-3`, stil('text', data.app.theme)]}>
-                                {price < parseFloat(data.trip.trip.est_price) - 2500 ||
-                                price > parseFloat(data.trip.trip.est_price) + 2500
-                                    ? price
-                                    : data.trip.trip.est_price}{' '}
+                                {calcDistance(
+                                    cl,
+                                    data.trip.trip.locations[data.trip.trip.locations.length - 1],
+                                ) < 0.151
+                                    ? parseFloat(data.trip.trip.est_distance) * 0.9 <
+                                          parseFloat(act_distance) &&
+                                      parseFloat(data.trip.trip.est_distance) * 1.1 >
+                                          parseFloat(act_distance)
+                                        ? data.trip.trip.est_price
+                                        : price
+                                    : price}
                                 sum
                             </Text>
                         </View>
@@ -863,7 +899,20 @@ export default function DriverTrip() {
                                     token: data.auth.userToken,
                                     id: data.auth.userId,
                                     trip_id: data.trip.trip.id,
-                                    act_price: price,
+                                    act_price:
+                                        calcDistance(
+                                            cl,
+                                            data.trip.trip.locations[
+                                                data.trip.trip.locations.length - 1
+                                            ],
+                                        ) < 0.151
+                                            ? parseFloat(data.trip.trip.est_distance) * 0.9 <
+                                                  parseFloat(act_distance) &&
+                                              parseFloat(data.trip.trip.est_distance) * 1.1 >
+                                                  parseFloat(act_distance)
+                                                ? data.trip.trip.est_price
+                                                : price
+                                            : price,
                                     act_time: act_duration,
                                     act_distance: act_distance,
                                     end_time: new Date().getTime() / 1000,

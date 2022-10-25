@@ -736,7 +736,7 @@
 				CODE_SIGN_ENTITLEMENTS = TrendTaxi/TrendTaxi.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 72;
+				CURRENT_PROJECT_VERSION = 75;
 				DEVELOPMENT_TEAM = 59RU5858GL;
 				ENABLE_BITCODE = NO;
 				GCC_NO_COMMON_BLOCKS = NO;
@@ -764,7 +764,7 @@
 					/usr/lib/swift,
 					"\"$(PODS_ROOT)/../../node_modules/react-native-maps/lib/ios/AirMaps\"",
 				);
-				MARKETING_VERSION = 1.9.7;
+				MARKETING_VERSION = 1.9.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -788,7 +788,7 @@
 				CODE_SIGN_ENTITLEMENTS = TrendTaxi/TrendTaxi.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 72;
+				CURRENT_PROJECT_VERSION = 75;
 				DEVELOPMENT_TEAM = 59RU5858GL;
 				GCC_NO_COMMON_BLOCKS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -815,7 +815,7 @@
 					/usr/lib/swift,
 					"\"$(PODS_ROOT)/../../node_modules/react-native-maps/lib/ios/AirMaps\"",
 				);
-				MARKETING_VERSION = 1.9.7;
+				MARKETING_VERSION = 1.9.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",

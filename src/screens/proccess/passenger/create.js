@@ -290,7 +290,6 @@ export default function PassengerCreate() {
         let tP = 0;
         let kP = 0;
         tP = Math.ceil(duration / 60).toFixed(0);
-        tP = tP - 3;
 
         if (tP < 0) tP = 0;
         tP = parseFloat(item.paid) * tP;
@@ -328,6 +327,9 @@ export default function PassengerCreate() {
                         enableZoomControl={true}
                         showsMyLocationButton={false}
                         showsTraffic
+                        userLocationPriority={'high'}
+                        userLocationUpdateInterval={1000}
+                        userLocationFastestInterval={1000}
                         onUserLocationChange={(e) => {
                             if (region.latitude == 0) {
                                 setRegion({

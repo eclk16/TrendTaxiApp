@@ -116,6 +116,9 @@ export default function PassengerTrip() {
                         showsCompass={false}
                         rotateEnabled={true}
                         showsTraffic
+                        userLocationPriority={'high'}
+                        userLocationUpdateInterval={1000}
+                        userLocationFastestInterval={1000}
                         onRegionChange={(ret, sta) => {
                             if (sta.isGesture == true) {
                                 setRotate(false);

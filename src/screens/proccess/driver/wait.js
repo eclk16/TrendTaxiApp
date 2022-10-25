@@ -14,7 +14,7 @@ import config from '../../../app.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
-import {set} from 'immer/dist/internal';
+
 //burayafont yükle gelecek
 
 export default function DriverWait() {
@@ -312,6 +312,9 @@ export default function DriverWait() {
                         style={{flex: 1}}
                         region={region}
                         initialRegion={region}
+                        userLocationPriority={'high'}
+                        userLocationUpdateInterval={1000}
+                        userLocationFastestInterval={1000}
                         showsUserLocation
                         zoomEnabled={true}
                         showsCompass={false}
