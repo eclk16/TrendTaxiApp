@@ -41,24 +41,6 @@ export default function DriverRegister() {
     const {animatedHandleHeight, animatedSnapPoints, animatedContentHeight, handleContentLayout} =
         useBottomSheetDynamicSnapPoints(initialSnapPoints);
 
-    handleBackButtonClick = () => {
-        let back = 1;
-        if (step > 1) {
-            back = parseInt(step) - 1;
-            setStep(back);
-            return true;
-        }
-    };
-
-    useEffect(() => {
-        const abortController = new AbortController();
-        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
-        return () => {
-            abortController.abort();
-            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-        };
-    }, [step]);
-
     useEffect(() => {
         const abortController = new AbortController();
         if (data.auth.user.user_name != '') {
@@ -72,6 +54,7 @@ export default function DriverRegister() {
         })
             .then((response) => {
                 setDATA(response.data.response);
+                console.log(response.data.response);
             })
             .catch((error) => {
                 console.log('REGİTSTER.JS ERROR (GETPRİCES)', error);
