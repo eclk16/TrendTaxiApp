@@ -7,11 +7,13 @@ buildscript {
         buildToolsVersion = "31.0.0"
         minSdkVersion = 21
         compileSdkVersion = 31
+        appCompatVersion = "1.4.2"      // Or higher.  Required for new AndroidX compatibility.
         targetSdkVersion = 31
         ndkVersion = "21.4.7075529"
         // playServicesVersion = "18.1.0"
         androidXCore="1.7.0"
         googlePlayServicesVersion = "16.0.0"
+        googlePlayServicesLocationVersion = "20.0.0"  // Or higher.
         supportLibVersion = "28.0.0"
         androidMapsUtilsVersion = "2.4.0"
 
@@ -59,5 +61,13 @@ allprojects {
         }
         google()
         maven { url 'https://www.jitpack.io' }
+        maven {
+            // Required for react-native-background-geolocation
+            url("${project(':react-native-background-geolocation').projectDir}/libs")
+        }
+        maven {
+            // Required for react-native-background-fetch
+            url("${project(':react-native-background-fetch').projectDir}/libs")
+        }
     }
 }

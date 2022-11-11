@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 
 import ModalMenu from '../../components/global/menu';
@@ -23,6 +23,7 @@ export default function Home() {
     const data = useSelector((state) => state);
     const dispatch = useDispatch();
     const [point, setPoint] = React.useState(3);
+
     return (
         <>
             <StatusBarComponent />

@@ -34,11 +34,13 @@ function LanguageSelect() {
         dispatch({type: 'lang', payload: code});
     }
     return (
-        <View>
-            <Text style={[tw`mb-6 text-center font-medium`, stil('text', data.app.theme)]}>
-                {l[data.app.lang].dilSec}
-            </Text>
-            <View style={[tw`mx-6`]}>
+        <View style={[tw``]}>
+            <View style={[tw`flex-row items-center justify-center`]}>
+                <Text style={[tw`mb-4 text-center w-[80%]`, stil('text', data.app.theme)]}>
+                    {l[data.app.lang].dilSec}
+                </Text>
+            </View>
+            <View style={[tw`mx-4`]}>
                 {LANGS.map((item, index) => {
                     return (
                         <TouchableOpacity

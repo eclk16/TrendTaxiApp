@@ -17,8 +17,6 @@ const hasPermissionIOS = async () => {
         {text: 'Go to Settings', onPress: openSetting},
         {text: "Don't Use Location", onPress: () => {}},
     ]);
-
-    return false;
 };
 
 const hasLocationPermission = async () => {
@@ -74,8 +72,6 @@ const hasLocationPermission = async () => {
         );
         ToastAndroid.show('Location permission revoked by user.', ToastAndroid.LONG);
     }
-
-    return false;
 };
 
 export const izinal = async () => {

@@ -7,6 +7,9 @@ const INITIAL_STATE = {
     status: null,
     tripRequest: null,
     tripFind: false,
+    distance: 0,
+    yon: null,
+    yon2: null,
 };
 const tripReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
@@ -20,6 +23,11 @@ const tripReducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 trip: action.payload,
             };
+        case 'setLoc':
+            return {
+                ...state,
+                locations: [...action.payload],
+            };
         case 'setTripFind':
             return {
                 ...state,
@@ -29,6 +37,21 @@ const tripReducer = (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 tripRequest: action.payload,
+            };
+        case 'setDistance':
+            return {
+                ...state,
+                distance: action.payload,
+            };
+        case 'setYon':
+            return {
+                ...state,
+                yon: action.payload,
+            };
+        case 'setYon2':
+            return {
+                ...state,
+                yon2: action.payload,
             };
         default:
             return state;

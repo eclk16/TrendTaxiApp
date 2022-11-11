@@ -8,7 +8,7 @@ function StatusBarComponent() {
     return (
         <StatusBar
             backgroundColor={stil('bg', data.app.theme).backgroundColor}
-            barStyle={data.app.theme == 'dark' ? 'light-content' : 'dark-content'}
+            barStyle="light-content"
         />
     );
 }

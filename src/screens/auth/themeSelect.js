@@ -14,16 +14,18 @@ function ThemeSelect() {
     const data = useSelector((state) => state);
 
     function setTheme(theme) {
-        setValue('TrendTaxiTheme', theme);
-        dispatch({type: 'theme', payload: theme});
+        // setValue('TrendTaxiTheme', theme);
+        // dispatch({type: 'theme', payload: theme});
     }
 
     return (
         <>
-            <Text style={[tw`mb-6 text-center font-medium`, stil('text', data.app.theme)]}>
-                {l[data.app.lang].temaSec}
-            </Text>
-            <View style={[tw`mx-6`]}>
+            <View style={[tw`flex-row items-center justify-center`]}>
+                <Text style={[tw`mb-4 text-center w-[80%]`, stil('text', data.app.theme)]}>
+                    {l[data.app.lang].temaSec}
+                </Text>
+            </View>
+            <View style={[tw`mx-4`]}>
                 <TouchableOpacity
                     key={0}
                     style={[

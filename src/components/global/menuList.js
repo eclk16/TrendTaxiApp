@@ -104,11 +104,14 @@ export const list2 = [
         hidden: true,
     },
     {
+        type: 'seperator',
+    },
+    {
         icon: 'account',
         text: 'faq',
         navigate: 'Faq',
         header: true,
-        hidden: true,
+        hidden: false,
     },
     // {
     //     icon: 'google-analytics',
@@ -121,6 +124,9 @@ export const list2 = [
         text: 'settings',
         navigate: 'Settings',
         header: true,
-        hidden: true,
+        hidden: false,
+    },
+    {
+        type: 'seperator',
     },
 ];

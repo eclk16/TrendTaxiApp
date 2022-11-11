@@ -5,12 +5,18 @@ import {stil} from '../../utils';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import l from '../../languages.json';
-import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
 import {getUniqueId} from 'react-native-device-info';
 
 //burayafont yükle gelecek
 
-import {Text, TouchableOpacity, View, ActivityIndicator} from 'react-native';
+import {
+    Text,
+    TouchableOpacity,
+    View,
+    ActivityIndicator,
+    TextInput,
+    KeyboardAvoidingView,
+} from 'react-native';
 import {apiPost} from '../../axios';
 function LoginScreen() {
     const dispatch = useDispatch();
@@ -116,13 +122,13 @@ function LoginScreen() {
 
     return (
         <>
-            <Text style={[tw`mb-6 text-center font-medium`, stil('text', data.app.theme)]}>
+            <Text style={[tw`mb-4 text-center font-medium`, stil('text', data.app.theme)]}>
                 {smsOnay ? l[data.app.lang].smsGir : l[data.app.lang].TelefonGir}
             </Text>
-            <View style={[tw`mx-6`]}>
+            <View style={[tw`mx-4`]}>
                 {smsOnay ? (
                     <>
-                        <BottomSheetTextInput
+                        <TextInput
                             autoFocus={true}
                             placeholder="_ _ _ _ _ _"
                             placeholderTextColor={stil('text', data.app.theme).color}
@@ -141,7 +147,7 @@ function LoginScreen() {
                     </>
                 ) : (
                     <>
-                        <BottomSheetTextInput
+                        <TextInput
                             autoFocus={true}
                             placeholder="+___-__-___-__-__"
                             placeholderTextColor={stil('text', data.app.theme).color}
@@ -159,47 +165,44 @@ function LoginScreen() {
                         />
                     </>
                 )}
-                {userPhone.length < 17 ? null : (
-                    <TouchableOpacity
-                        disabled={loading}
-                        onPress={() => {
-                            {
-                                smsOnay ? smsOnayFunction() : loginFunction();
-                            }
-                        }}
-                        style={[
-                            stil('bg', data.app.theme),
-                            tw`rounded-md p-4 mt-4 flex-row items-center justify-center`,
-                        ]}>
-                        {loading ? (
-                            <ActivityIndicator
-                                size={18}
+
+                <TouchableOpacity
+                    disabled={loading || userPhone.length < 17}
+                    onPress={() => {
+                        {
+                            smsOnay ? smsOnayFunction() : loginFunction();
+                        }
+                    }}
+                    style={[
+                        stil('bg', data.app.theme),
+                        tw`rounded-md p-4 mt-4 flex-row items-center justify-center ${
+                            loading ? 'opacity-30' : ''
+                        } ${userPhone.length < 17 ? 'opacity-30' : ''}`,
+                    ]}>
+                    {loading ? (
+                        <ActivityIndicator size={18} color={stil('text', data.app.theme).color} />
+                    ) : smsOnay ? (
+                        <>
+                            <MaterialCommunityIcons
+                                name="check"
+                                size={20}
                                 color={stil('text', data.app.theme).color}
                             />
-                        ) : smsOnay ? (
-                            <>
-                                <MaterialCommunityIcons
-                                    name="check"
-                                    size={20}
-                                    color={stil('text', data.app.theme).color}
-                                />
-                            </>
-                        ) : (
-                            <>
-                                <MaterialCommunityIcons
-                                    name="login"
-                                    size={20}
-                                    color={stil('text', data.app.theme).color}
-                                />
-                            </>
-                        )}
+                        </>
+                    ) : (
+                        <>
+                            <MaterialCommunityIcons
+                                name="login"
+                                size={20}
+                                color={stil('text', data.app.theme).color}
+                            />
+                        </>
+                    )}
 
-                        <Text
-                            style={[stil('text', data.app.theme), tw`ml-2 font-medium text-base`]}>
-                            {smsOnay ? l[data.app.lang].check : l[data.app.lang].login}
-                        </Text>
-                    </TouchableOpacity>
-                )}
+                    <Text style={[stil('text', data.app.theme), tw`ml-2 font-medium text-base`]}>
+                        {smsOnay ? l[data.app.lang].check : l[data.app.lang].login}
+                    </Text>
+                </TouchableOpacity>
             </View>
         </>
     );

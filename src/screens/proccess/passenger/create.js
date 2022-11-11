@@ -99,6 +99,7 @@ export default function PassengerCreate() {
                                     longitude: lon,
                                     latitudeDelta: 0.005,
                                     longitudeDelta: 0.005,
+                                    gecildi: false,
                                     title: response.data.name,
                                     description: response.data.display_name,
                                 },
@@ -112,6 +113,7 @@ export default function PassengerCreate() {
                                         longitude: lon,
                                         latitudeDelta: 0.005,
                                         longitudeDelta: 0.005,
+                                        gecildi: false,
                                         title: response.data.name,
                                         description: response.data.display_name,
                                     });
@@ -128,6 +130,7 @@ export default function PassengerCreate() {
                                 longitude: lon,
                                 latitudeDelta: 0.005,
                                 longitudeDelta: 0.005,
+                                gecildi: false,
                                 title: response.data.name,
                                 description: response.data.display_name,
                             },
@@ -326,12 +329,34 @@ export default function PassengerCreate() {
                         showsCompass={false}
                         enableZoomControl={true}
                         showsMyLocationButton={false}
-                        showsTraffic
+                        showsTraffic={false}
                         userLocationPriority={'high'}
                         userLocationUpdateInterval={1000}
                         userLocationFastestInterval={1000}
                         onUserLocationChange={(e) => {
                             if (region.latitude == 0) {
+                                apiPost('getPrices', {
+                                    lang: data.app.lang,
+                                    token: data.auth.userToken,
+                                    lat: e.nativeEvent.coordinate.latitude,
+                                    lng: e.nativeEvent.coordinate.longitude,
+                                })
+                                    .then((response) => {
+                                        setDATA(response.data.response);
+                                    })
+                                    .catch((error) => {
+                                        console.log('PASSENGERCREATE.JS ERROR (GET PRİCES)', error);
+                                    });
+                                apiPost('updateUser', {
+                                    id: data.auth.userId,
+                                    token: data.auth.userToken,
+                                    last_latitude: e.nativeEvent.coordinate.latitude,
+                                    last_longitude: e.nativeEvent.coordinate.longitude,
+                                })
+                                    .then(() => {})
+                                    .catch((error) => {
+                                        console.log('DRİVERWAİT.JS ERROR (UPDATE USER 1)', error);
+                                    });
                                 setRegion({
                                     latitude:
                                         e.nativeEvent.coordinate.latitude + Math.random() / 1000,
@@ -353,18 +378,6 @@ export default function PassengerCreate() {
                                 longitudeDelta: 0.005,
                             });
                         }}
-                        onMapReady={() => {
-                            apiPost('getPrices', {
-                                lang: data.app.lang,
-                                token: data.auth.userToken,
-                            })
-                                .then((response) => {
-                                    setDATA(response.data.response);
-                                })
-                                .catch((error) => {
-                                    console.log('PASSENGERCREATE.JS ERROR (GET PRİCES)', error);
-                                });
-                        }}
                         onRegionChange={(ret, sta) => {
                             if (markerMove) {
                                 if (sta.isGesture == true) {
@@ -384,6 +397,7 @@ export default function PassengerCreate() {
                                                 longitude: ret.longitude,
                                                 title: l[data.app.lang].loading,
                                                 description: '',
+                                                gecildi: false,
                                                 latitudeDelta: 0.005,
                                                 longitudeDelta: 0.005,
                                             });
@@ -438,8 +452,8 @@ export default function PassengerCreate() {
                                         waypoints={locations.slice(1, -1)}
                                         destination={locations[locations.length - 1]}
                                         apikey={config.mapApi}
-                                        strokeWidth={10}
-                                        strokeColor="#0f365e"
+                                        strokeWidth={14}
+                                        strokeColor="green"
                                         onReady={(result) => {
                                             let dis = 0;
                                             let dur = 0;
@@ -650,6 +664,7 @@ export default function PassengerCreate() {
                                             longitude: region.longitude,
                                             latitudeDelta: 0.005,
                                             longitudeDelta: 0.005,
+                                            gecildi: false,
                                             title: '',
                                             description: '',
                                         },
@@ -660,6 +675,7 @@ export default function PassengerCreate() {
                                             longitude: region.longitude,
                                             latitudeDelta: 0.005,
                                             longitudeDelta: 0.005,
+
                                             title: '',
                                             description: '',
                                         },
@@ -727,7 +743,7 @@ export default function PassengerCreate() {
                                                 style={[
                                                     tw`  `,
                                                     {fontSize: 10},
-                                                    stil('text2', data.app.theme),
+                                                    stil('text', data.app.theme),
                                                 ]}>
                                                 {item.description}
                                             </Text>
@@ -775,7 +791,7 @@ export default function PassengerCreate() {
                                 velocityThreshold: 0.3,
                                 directionalOffsetThreshold: 80,
                             }}
-                            style={[tw`flex-row items-start justify-start mb-6`]}>
+                            style={[tw`flex-row items-start justify-start mb-4`]}>
                             {data.auth.user.tester == 1 && (
                                 <View
                                     style={[
@@ -847,8 +863,7 @@ export default function PassengerCreate() {
                                         ]}>
                                         <View
                                             style={[
-                                                tw` px-2 py-1 rounded-md flex-row justify-between`,
-                                                stil('bg2', data.app.theme),
+                                                tw`bg-green-600  px-2 py-1 rounded-md flex-row justify-between`,
                                             ]}>
                                             <View
                                                 style={[
@@ -864,7 +879,7 @@ export default function PassengerCreate() {
                                                     <MaterialCommunityIcons
                                                         name="arrow-left-bold-box"
                                                         size={40}
-                                                        color={stil('text', data.app.theme).color}
+                                                        color="white"
                                                     />
                                                 </TouchableOpacity>
                                                 <TouchableOpacity
@@ -916,16 +931,11 @@ export default function PassengerCreate() {
                                                     <View style={[tw`flex justify-center`]}>
                                                         <Text
                                                             style={[
-                                                                tw` font-semibold text-base`,
-                                                                stil('text', data.app.theme),
+                                                                tw` font-semibold text-base text-white`,
                                                             ]}>
                                                             {item.title}
                                                         </Text>
-                                                        <Text
-                                                            style={[
-                                                                tw`text-base`,
-                                                                stil('text', data.app.theme),
-                                                            ]}>
+                                                        <Text style={[tw`text-base text-white`]}>
                                                             {getPrice(item, 'SHOW EDİLEN YER')} sum
                                                         </Text>
                                                     </View>
@@ -940,7 +950,7 @@ export default function PassengerCreate() {
                                                     <MaterialCommunityIcons
                                                         name="arrow-right-bold-box"
                                                         size={40}
-                                                        color={stil('text', data.app.theme).color}
+                                                        color="white"
                                                     />
                                                 </TouchableOpacity>
                                             </View>
@@ -1141,6 +1151,7 @@ export default function PassengerCreate() {
                                             longitude: region.longitude,
                                             latitudeDelta: 0.005,
                                             longitudeDelta: 0.005,
+                                            gecildi: false,
                                             title: '',
                                             description: '',
                                         },
@@ -1200,6 +1211,7 @@ export default function PassengerCreate() {
                                                                     ',',
                                                                 )[0],
                                                                 description: item.display_name,
+                                                                gecildi: false,
                                                                 latitude: parseFloat(item.lat),
                                                                 longitude: parseFloat(item.lon),
                                                             },

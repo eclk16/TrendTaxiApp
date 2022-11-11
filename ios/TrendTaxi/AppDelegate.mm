@@ -7,7 +7,7 @@
 #import <React/RCTAppSetupUtils.h>
 #import <Firebase.h>
 #import <GoogleMaps/GoogleMaps.h>
-
+#import <TSBackgroundFetch/TSBackgroundFetch.h>
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -42,6 +42,8 @@
   [GMSServices provideAPIKey:@"AIzaSyBR9U1A1iTIzsVO-lwQnDKLrHNaBq8Vcbg"];
   RCTAppSetupPrepareApp(application);
   
+  
+  
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
 #if RCT_NEW_ARCH_ENABLED
@@ -65,6 +67,9 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
+  // [REQUIRED] Register BackgroundFetch
+  [[TSBackgroundFetch sharedInstance] didFinishLaunching];
   
   
   return YES;

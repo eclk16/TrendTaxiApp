@@ -2,9 +2,18 @@ import React, {useEffect} from 'react';
 
 import {useDispatch, useSelector} from 'react-redux';
 
-import MapView, {PROVIDER_GOOGLE, Marker, Polygon} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker, AnimatedRegion} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import {TouchableOpacity, Text, View, Modal, Image} from 'react-native';
+import {
+    TouchableOpacity,
+    Text,
+    View,
+    Modal,
+    Image,
+    Platform,
+    TextInput,
+    KeyboardAvoidingView,
+} from 'react-native';
 import {stil} from '../../../utils';
 import tw from 'twrnc';
 import l from '../../../languages.json';
@@ -12,16 +21,15 @@ import Sound from 'react-native-sound';
 import {apiPost} from '../../../axios';
 import config from '../../../app.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
-
-//burayafont yükle gelecek
+import TTMap from '../map';
 
 export default function DriverWait() {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
     Sound.setCategory('Playback');
     const harita = React.useRef(null);
+    const markerRef = React.useRef(null);
     const [timeoutSn, setTimeoutSn] = React.useState(10);
     let soundFile = 'ses14.mp3';
     if (Platform.OS === 'ios') {
@@ -29,9 +37,8 @@ export default function DriverWait() {
     } else {
         soundFile = 'ses14.mp3';
     }
-    const [locations, setLocations] = React.useState([]);
     const [h, setH] = React.useState({
-        ust: 5,
+        ust: 6,
         alt: 1,
     });
     const [bakiyeModal, setBakiyeModal] = React.useState(false);
@@ -47,128 +54,44 @@ export default function DriverWait() {
             console.log('DRİVERWAİT.JS ERROR (ONAYLA)', error);
             dispatch({type: 'setRequest', payload: null});
             dispatch({type: 'ia', payload: true});
-            setLocations([]);
 
             setH({
-                ust: 5,
+                ust: 6,
                 alt: 1,
             });
             fitContent();
         });
     };
 
-    const [timer, setTimer] = React.useState(0);
     useEffect(() => {
-        setInterval(() => {
-            setTimer(timer + 1);
-        }, 15000);
-    }, []);
-
-    useEffect(() => {
-        if (data.app.isActive) {
-            if (data.trip.trip === null && data.trip.tripRequest === null) {
-                apiPost('updateUser', {
-                    id: data.auth.userId,
-                    is_active: 'active',
-                    token: data.auth.userToken,
-                    last_latitude: cl.latitude,
-                    last_longitude: cl.longitude,
-                })
-                    .then(() => {})
-                    .catch((error) => {
-                        console.log('DRİVERWAİT.JS ERROR (UPDATE USER 1)', error);
-                    });
-            } else {
-                apiPost('updateUser', {
-                    id: data.auth.userId,
-                    is_active: 'inactive',
-                    token: data.auth.userToken,
-                    last_latitude: cl.latitude,
-                    last_longitude: cl.longitude,
-                })
-                    .then(() => {})
-                    .catch((error) => {
-                        console.log('DRİVERWAİT.JS ERROR (UPDATE USER 2)', error);
-                    });
-            }
-        } else {
-            apiPost('updateUser', {
-                id: data.auth.userId,
-                is_active: 'inactive',
-                token: data.auth.userToken,
-                last_latitude: cl.latitude,
-                last_longitude: cl.longitude,
-            })
-                .then(() => {})
-                .catch((error) => {
-                    console.log('DRİVERWAİT.JS ERROR (UPDATE USER 3)', error);
-                });
-        }
-
-        return () => {
-            false;
-        };
-    }, [data.app.isActive, timer]);
-
-    useEffect(() => {
-        let pint = setInterval(() => {
-            if (data.app.peoples.length > 0) {
-                let p = data.app.peoples;
-                p.shift();
-                dispatch({type: 'setPeoples', payload: p});
-            }
-        }, 15000);
-
-        return () => {
-            clearInterval(pint);
-        };
-    }, [data.app.peoples]);
+        apiPost('updateUser', {
+            id: data.auth.userId,
+            is_active: data.app.isActive ? 'active' : 'inactive',
+            token: data.auth.userToken,
+        })
+            .then((res) => {})
+            .catch((error) => {
+                console.log('DRİVERWAİT.JS ERROR (USEEFFECT)', error);
+            });
+        return () => {};
+    }, [data.app.isActive]);
 
     useEffect(() => {
         const abortController = new AbortController();
-
-        // let kalan = 10;
-        // let interr = setInterval(() => {
-        //     kalan = kalan - 1;
-        //     if (kalan < 0) {
-        //         dispatch({type: 'setRequest', payload: null});
-        //         dispatch({type: 'ia', payload: true});
-        //         setLocations([]);
-        //         setH({
-        //             ust: 5,
-        //             alt: 1,
-        //         });
-        //         fitContent();
-        //     }
-        //     setTimeoutSn(kalan);
-        // }, 1000);
         if (data.trip.tripRequest === null || data.trip.tripRequest.kalan <= 0) {
             dispatch({type: 'setRequest', payload: null});
             dispatch({type: 'ia', payload: true});
             setH({
-                ust: 5,
+                ust: 6,
                 alt: 1,
             });
             setTimeoutSn(10);
-            setLocations([]);
-            fitContent();
-            // clearInterval(interr);
         } else {
             setTimeoutSn(data.trip.tripRequest.kalan);
 
             dispatch({type: 'ia', payload: false});
 
-            // if (data.trip.tripRequest.kalan <= 0) {
-            //     dispatch({type: 'setRequest', payload: null});
-            //     dispatch({type: 'ia', payload: true});
-            //     setLocations([]);
-            //     setH({
-            //         ust: 5,
-            //         alt: 1,
-            //     });
-            //     fitContent();
-            // } else {
-            if (h.ust === 5) {
+            if (h.ust === 6) {
                 setH({
                     ust: 4,
                     alt: 2,
@@ -178,46 +101,24 @@ export default function DriverWait() {
                         sound.play();
                     });
                 });
-
-                setLocations([data.trip.tripRequest.locations[0]]);
-                harita.current.fitToCoordinates([cl, data.trip.tripRequest.locations[0]], {
-                    edgePadding: {
-                        top: 150,
-                        right: 100,
-                        bottom: 150,
-                        left: 100,
-                    },
-                    animated: true,
-                });
             }
-            // }
         }
 
         return () => {
             abortController.abort();
-            // clearInterval(interr);
         };
     }, [data.trip.tripRequest]);
 
-    const [region, setRegion] = React.useState({
-        latitude: 41.32195,
-        longitude: 69.26926,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-    });
-
     const fitContent = () => {
-        if (cl.latitude != 0 && cl.longitude != 0) {
-            harita.current.fitToCoordinates([cl], {
-                edgePadding: {
-                    top: 250,
-                    right: 250,
-                    bottom: 250,
-                    left: 250,
-                },
-                animated: true,
-            });
-        }
+        harita.current.fitToCoordinates([data.app.currentLocation], {
+            edgePadding: {
+                top: 250,
+                right: 250,
+                bottom: 250,
+                left: 250,
+            },
+            animated: true,
+        });
     };
 
     useEffect(() => {
@@ -234,7 +135,6 @@ export default function DriverWait() {
                 setHours(0);
                 setMinute(0);
                 dispatch({type: 'ia', payload: false});
-                // alert('bakiyeniz bitmiştir');
                 setBakiyeModal(true);
             } else {
                 setHours(hours);
@@ -248,12 +148,6 @@ export default function DriverWait() {
 
     const [hours, setHours] = React.useState([]);
     const [minute, setMinute] = React.useState([]);
-    const [cl, setCl] = React.useState({
-        latitude: 0,
-        longitude: 0,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-    });
 
     // SAYAÇ
 
@@ -262,8 +156,6 @@ export default function DriverWait() {
     useEffect(() => {
         axios.defaults.headers.common['Accept'] = 'application/json';
         axios.defaults.headers.common['Content-Type'] = 'application/json';
-        var param = '';
-
         axios
             .get('http://92.63.206.162/sayac.html')
             .then((response) => {
@@ -297,174 +189,199 @@ export default function DriverWait() {
     const [m, setM] = React.useState([]);
     const [s, setS] = React.useState([]);
 
-    const [distance, setDistance] = React.useState(0);
-    const [duration, setDuration] = React.useState(0);
+    useEffect(() => {
+        getLocationName(data.app.currentLocation.latitude, data.app.currentLocation.longitude);
+    }, [data.app.currentLocation]);
 
+    const [locationName, setLocationName] = React.useState('');
+    const getLocationName = (lat, lon, ekle = false, sifirla = false) => {
+        axios.defaults.headers.common['Accept'] = 'application/json';
+        axios.defaults.headers.common['Content-Type'] = 'application/json';
+
+        axios
+            .get(
+                'https://nominatim.openstreetmap.org/reverse.php?lat=' +
+                    lat +
+                    '&lon=' +
+                    lon +
+                    '&zoom=18&countrycodes=uz&format=jsonv2',
+            )
+            .then((response) => {
+                if (response.data) {
+                    setLocationName(response.data.name);
+                }
+            })
+            .catch((e) => {});
+    };
+
+    const [driverConfigModal, setDriverConfigModal] = React.useState(false);
     return (
         <>
             <View style={[{flex: 1}, stil('bg', data.app.theme)]}>
                 <View style={[tw`h-${h.ust}/6`]}>
-                    <MapView
-                        loadingEnabled={true}
-                        key={data.trip.trip}
-                        ref={harita}
-                        provider={PROVIDER_GOOGLE}
-                        style={{flex: 1}}
-                        region={region}
-                        initialRegion={region}
-                        userLocationPriority={'high'}
-                        userLocationUpdateInterval={1000}
-                        userLocationFastestInterval={1000}
-                        showsUserLocation
-                        zoomEnabled={true}
-                        showsCompass={false}
-                        // followsUserLocation={true}
-                        enableZoomControl={true}
-                        showsMyLocationButton={false}
-                        onUserLocationChange={(e) => {
-                            setRegion({
-                                latitude: e.nativeEvent.coordinate.latitude,
-                                longitude: e.nativeEvent.coordinate.longitude,
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            });
-
-                            setCl({
-                                latitude: e.nativeEvent.coordinate.latitude,
-                                longitude: e.nativeEvent.coordinate.longitude,
-                                latitudeDelta: 0.005,
-                                longitudeDelta: 0.005,
-                            });
+                    <TTMap
+                        confisi={{
+                            mbot: '20%',
+                            type: 'DriverWait',
                         }}
-                        showsTraffic>
-                        {data.trip.tripRequest !== null ? (
-                            <Marker coordinate={data.trip.tripRequest.locations[0]}>
-                                <Image
-                                    source={require('../../../assets/img/marker-people.png')}
-                                    style={[tw`h-10 w-10`]}
+                    />
+                </View>
+                <View style={[tw`justify-center flex-row`]}>
+                    <View
+                        style={[
+                            tw` pb-6 w-[100%] px-4 pt-2 flex justify-center  rounded-t-md`,
+                            stil('bg', data.app.theme),
+
+                            {
+                                position: 'absolute',
+                                bottom: 0,
+                            },
+                        ]}>
+                        <View style={[tw`flex-row justify-between items-center  `]}>
+                            <View
+                                style={[tw`flex-row items-center justify-between opacity-70 pb-2`]}>
+                                <MaterialCommunityIcons
+                                    name="map-marker"
+                                    size={20}
+                                    color={stil('text', data.app.theme).color}
                                 />
-                            </Marker>
-                        ) : null}
+                                <Text style={[stil('text', data.app.theme), tw`w-[70%]`]}>
+                                    {locationName}
+                                </Text>
+                                <Text style={[stil('text', data.app.theme), tw`w-[30%]`]}>
+                                    {data.app.currentLocation.latitude.toFixed(6)} ,{' '}
+                                    {data.app.currentLocation.longitude.toFixed(6)}
+                                </Text>
+                            </View>
+                            {/* <TouchableOpacity
+                                onPress={() => {
+                                    setDriverConfigModal(true);
+                                }}>
+                                <MaterialCommunityIcons
+                                    name="dots-horizontal"
+                                    size={32}
+                                    color={stil('text', data.app.theme).color}
+                                />
+                            </TouchableOpacity> */}
+                        </View>
 
-                        {data.trip.tripRequest !== null ? (
-                            <MapViewDirections
-                                origin={cl}
-                                destination={data.trip.tripRequest.locations[0]}
-                                apikey={config.mapApi}
-                                strokeWidth={5}
-                                strokeColor="#0f365e"
-                                optimizeWaypoints={true}
-                                onReady={(result) => {
-                                    let dis = 0;
-                                    let dur = 0;
-                                    result.legs.map((item, index) => {
-                                        dis = dis + item.distance.value;
-                                        dur = dur + item.duration.value;
-                                    });
-                                    setDistance(dis);
-                                    setDuration(dur);
-                                }}
-                            />
-                        ) : null}
-                    </MapView>
-
-                    <View style={[tw`flex-row justify-end items-center absolute right-4 bottom-4`]}>
                         <TouchableOpacity
+                            disabled={data.trip.tripRequest === null ? false : true}
                             onPress={() => {
-                                fitContent();
+                                dispatch({type: 'ia', payload: !data.app.isActive});
                             }}
-                            style={[tw`rounded-md p-2`, stil('bg', data.app.theme)]}>
-                            <MaterialCommunityIcons
-                                name="map-marker-radius"
-                                size={28}
-                                color={stil('text', data.app.theme).color}
-                            />
+                            style={[
+                                tw`h-12 flex-row items-center justify-center rounded-md ${
+                                    data.app.isActive ? 'bg-green-700' : 'bg-gray-700'
+                                }`,
+                                stil('shadow', data.app.theme),
+                            ]}>
+                            <Text style={[tw`text-center text-white `]}>
+                                {/* {l[data.app.lang].status}:{' '} */}
+                                {data.app.isActive
+                                    ? l[data.app.lang].active
+                                    : l[data.app.lang].inactive}{' '}
+                                :
+                            </Text>
+                            <View style={[tw`flex-row items-center justify-center `]}>
+                                <Text style={[tw`mx-1   text-white`, s]}>{hours}</Text>
+                                <Text style={[tw`   text-white`]}>{l[data.app.lang].hour}</Text>
+                                <Text style={[tw`mx-1  text-white`]}>{minute}</Text>
+                                <Text style={[tw`  text-white`]}>{l[data.app.lang].minute}</Text>
+                            </View>
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={[tw`h-${h.alt}/6 pb-4 px-4 pt-2 flex justify-center`]}>
-                    {data.auth.user.tester == 1 && (
+            </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={driverConfigModal}
+                onRequestClose={() => {
+                    setDriverConfigModal(false);
+                }}>
+                <KeyboardAvoidingView
+                    style={[tw`w-full items-center justify-end`]}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                    <View
+                        style={[
+                            tw`h-1/1  flex justify-end`,
+                            {backgroundColor: 'rgba(0,0,0,0.25)'},
+                        ]}>
                         <View
                             style={[
-                                tw`w-full h-full mx-4 flex flex-row items-center justify-center rounded-md`,
-                                {
-                                    backgroundColor: 'rgba(0,0,0,0.7)',
-                                    zIndex: 9999,
-                                    position: 'absolute',
-                                },
+                                tw`flex pb-6 pt-6 justify-center items-center px-4 rounded-t-md`,
+                                stil('bg', data.app.theme),
                             ]}>
-                            <View style={[tw`flex-row items-center justify-center`]}>
-                                <MaterialCommunityIcons
-                                    name="lock-outline"
-                                    size={24}
-                                    color="white"
+                            <View
+                                style={[
+                                    tw`w-full flex-row items-center justify-between rounded-md p-2`,
+                                    stil('bg2', data.app.theme),
+                                    stil('shadow', data.app.theme),
+                                ]}>
+                                <View style={[tw`w-[70%]`]}>
+                                    <Text style={[stil('text', data.app.theme), tw`text-xs`]}>
+                                        {l[data.app.lang].yolcumesafe} :{' '}
+                                    </Text>
+                                </View>
+                                <TextInput
+                                    type="number"
+                                    keyboardType="numeric"
+                                    style={[
+                                        tw`w-[30%] border border-gray-300 rounded-md p-2 bg-white`,
+                                    ]}
+                                    value={
+                                        data.app.driverConfig.getRadius &&
+                                        data.app.driverConfig.getRadius.toString()
+                                    }
+                                    onChangeText={(text) => {
+                                        if (text.length > 0) {
+                                            dispatch({
+                                                type: 'dc',
+                                                payload: {
+                                                    ...data.app.driverConfig,
+                                                    getRadius: parseInt(text),
+                                                },
+                                            });
+                                        } else {
+                                            dispatch({
+                                                type: 'dc',
+                                                payload: {
+                                                    ...data.app.driverConfig,
+                                                    getRadius: undefined,
+                                                },
+                                            });
+                                        }
+                                    }}
+                                    onEndEditing={() => {
+                                        console.log('bitti');
+                                    }}
                                 />
-                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
-                                    {d}
-                                </Text>
-                                <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
-                                    {l[data.app.lang].day}
-                                </Text>
-                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
-                                    {ho}
-                                </Text>
-                                <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
-                                    {l[data.app.lang].hour}
-                                </Text>
-                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
-                                    {m}
-                                </Text>
-                                <Text style={[tw` text-xs text-center`, {color: 'white'}]}>
-                                    {l[data.app.lang].minute}
-                                </Text>
-                                <Text style={[tw`mx-1 text-xl text-center`, {color: 'white'}]}>
-                                    {s}
-                                </Text>
-                                <Text style={[tw`text-xs text-center`, {color: 'white'}]}>
-                                    {l[data.app.lang].second}
-                                </Text>
+                            </View>
+
+                            <View
+                                style={[
+                                    tw`w-full flex-row items-center mt-2 justify-between rounded-md p-2`,
+                                    stil('bg2', data.app.theme),
+                                    stil('shadow', data.app.theme),
+                                ]}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setDriverConfigModal(false);
+                                    }}
+                                    style={[
+                                        tw`w-full flex-row items-center justify-center rounded-md p-2`,
+                                        stil('bg2', data.app.theme),
+                                    ]}>
+                                    <Text style={[stil('text', data.app.theme), tw`text-base`]}>
+                                        {l[data.app.lang].back}{' '}
+                                    </Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                    )}
-                    <View style={[tw`flex-row items-center justify-between  mb-4`]}>
-                        <Text style={[stil('text', data.app.theme), tw`text-base`]}>
-                            {l[data.app.lang].kalansure} :
-                        </Text>
-                        <View style={[tw`flex-row items-center justify-center `]}>
-                            <Text style={[tw`mx-1  text-base`, stil('text', data.app.theme)]}>
-                                {hours}
-                            </Text>
-                            <Text style={[tw`  text-base`, stil('text', data.app.theme)]}>
-                                {l[data.app.lang].hour}
-                            </Text>
-                            <Text style={[tw`mx-1 text-base`, stil('text', data.app.theme)]}>
-                                {minute}
-                            </Text>
-                            <Text style={[tw` text-base`, stil('text', data.app.theme)]}>
-                                {l[data.app.lang].minute}
-                            </Text>
-                        </View>
                     </View>
-
-                    <TouchableOpacity
-                        disabled={data.trip.tripRequest === null ? false : true}
-                        onPress={() => {
-                            dispatch({type: 'ia', payload: !data.app.isActive});
-                        }}
-                        style={[
-                            tw`h-12 w-full items-center justify-center rounded-md ${
-                                data.app.isActive ? 'bg-green-700' : 'bg-gray-700'
-                            }`,
-                        ]}>
-                        <Text style={[tw`text-center text-white font-medium`]}>
-                            {l[data.app.lang].status}:{' '}
-                            {data.app.isActive
-                                ? l[data.app.lang].active
-                                : l[data.app.lang].inactive}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+                </KeyboardAvoidingView>
+            </Modal>
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -472,7 +389,7 @@ export default function DriverWait() {
                 onRequestClose={() => {
                     dispatch({type: 'setRequest', payload: null});
                 }}>
-                <View style={[tw`h-1/1 flex justify-end`, {backgroundColor: 'rgba(0,0,0,0.25)'}]}>
+                <View style={[tw`h-1/1 flex justify-end`, {backgroundColor: 'rgba(0,0,0,0.05)'}]}>
                     <View style={[tw`flex pb-6 pt-2 justify-end px-4`, stil('bg', data.app.theme)]}>
                         <View style={[tw`  items-center justify-center`, ,]}>
                             <View
@@ -483,18 +400,19 @@ export default function DriverWait() {
                                 <View style={[tw`  w-full`]}>
                                     {data.trip.tripRequest != null ? (
                                         <View style={[tw`flex mx-4 items-center justify-center`]}>
-                                            <View style={[tw`mb-4 mx-4 w-full`]}>
+                                            <View style={[tw`mb-2 mx-4 w-full`]}>
                                                 <View
                                                     style={[
-                                                        tw` rounded-md mb-1`,
+                                                        tw` rounded-md mb-2`,
                                                         stil('bg2', data.app.theme),
                                                         stil('text', data.app.theme),
                                                     ]}>
                                                     <Text
                                                         style={[
-                                                            tw`font-semibold text-center p-2`,
+                                                            tw` text-center p-2 text-xs`,
                                                             stil('text', data.app.theme),
                                                         ]}>
+                                                        {data.trip.tripRequest.tarife} -{' '}
                                                         {data.trip.tripRequest !== null &&
                                                             data.trip.tripRequest.passenger
                                                                 .user_name}
@@ -504,18 +422,18 @@ export default function DriverWait() {
                                                     <View
                                                         style={[
                                                             stil('bg2', data.app.theme),
-                                                            tw`flex-row justify-between items-center my-2 p-2 rounded-md`,
+                                                            tw`flex-row justify-between items-center p-2 rounded-md`,
                                                         ]}>
                                                         <View
                                                             style={[
-                                                                tw`  mb-1  items-center flex-row`,
+                                                                tw`    items-center flex-row`,
 
                                                                 stil('text', data.app.theme),
                                                             ]}>
                                                             <Text
                                                                 style={[
                                                                     stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
+                                                                    tw` text-center text-xs`,
                                                                 ]}>
                                                                 {l[data.app.lang].y_uz}
                                                             </Text>
@@ -523,16 +441,16 @@ export default function DriverWait() {
 
                                                         <View
                                                             style={[
-                                                                tw`  mb-1  items-center flex-row`,
+                                                                tw`    items-center flex-row`,
 
                                                                 stil('text', data.app.theme),
                                                             ]}>
                                                             <Text
                                                                 style={[
                                                                     stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
+                                                                    tw` text-center text-xs`,
                                                                 ]}>
-                                                                {(distance / 1000).toFixed(2)} km
+                                                                {data.trip.distance} km
                                                             </Text>
                                                         </View>
                                                     </View>
@@ -543,14 +461,14 @@ export default function DriverWait() {
                                                         ]}>
                                                         <View
                                                             style={[
-                                                                tw`  mb-1  items-center flex-row`,
+                                                                tw`   items-center flex-row`,
 
                                                                 stil('text', data.app.theme),
                                                             ]}>
                                                             <Text
                                                                 style={[
                                                                     stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
+                                                                    tw`text-center text-xs`,
                                                                 ]}>
                                                                 {data.trip.tripRequest
                                                                     .est_distance > 0
@@ -560,14 +478,14 @@ export default function DriverWait() {
                                                         </View>
                                                         <View
                                                             style={[
-                                                                tw`   mb-1 items-center flex-row`,
+                                                                tw`   items-center flex-row`,
 
                                                                 stil('text', data.app.theme),
                                                             ]}>
                                                             <Text
                                                                 style={[
                                                                     stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
+                                                                    tw` text-center text-xs`,
                                                                 ]}>
                                                                 {data.trip.tripRequest.est_duration}{' '}
                                                                 min
@@ -576,14 +494,14 @@ export default function DriverWait() {
 
                                                         <View
                                                             style={[
-                                                                tw`  mb-1  items-center flex-row`,
+                                                                tw`   items-center flex-row`,
 
                                                                 stil('text', data.app.theme),
                                                             ]}>
                                                             <Text
                                                                 style={[
                                                                     stil('text', data.app.theme),
-                                                                    tw`font-bold text-center `,
+                                                                    tw`text-center text-xs`,
                                                                 ]}>
                                                                 {data.trip.tripRequest.est_distance}{' '}
                                                                 km
@@ -624,7 +542,7 @@ export default function DriverWait() {
                                                                             <View>
                                                                                 <Text
                                                                                     style={[
-                                                                                        tw`text-xs font-semibold`,
+                                                                                        tw`text-xs `,
                                                                                         stil(
                                                                                             'text',
                                                                                             data.app
@@ -632,19 +550,6 @@ export default function DriverWait() {
                                                                                         ),
                                                                                     ]}>
                                                                                     {item.title}
-                                                                                </Text>
-                                                                                <Text
-                                                                                    style={[
-                                                                                        tw`text-xs`,
-                                                                                        stil(
-                                                                                            'text',
-                                                                                            data.app
-                                                                                                .theme,
-                                                                                        ),
-                                                                                    ]}>
-                                                                                    {
-                                                                                        item.description
-                                                                                    }
                                                                                 </Text>
                                                                             </View>
                                                                         </View>
@@ -684,7 +589,7 @@ export default function DriverWait() {
                                                     />
                                                     <Text
                                                         style={[
-                                                            tw`font-semibold ml-2 py-4 text-white`,
+                                                            tw` ml-2 py-4 text-white`,
                                                             {zIndex: 9999},
                                                         ]}>
                                                         {l[data.app.lang].check} ({timeoutSn})

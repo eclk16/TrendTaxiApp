@@ -36,13 +36,16 @@ function PermissionSelect() {
 
     return (
         <>
-            <Text style={[tw`mb-6 text-center font-medium`, stil('text', data.app.theme)]}>
-                {l[data.app.lang].izinVer}
-            </Text>
-            <Text style={[tw`my-2 text-xs text-center mx-4`, stil('text', data.app.theme)]}>
-                {l[data.app.lang].konummesaj}
-            </Text>
-            <View style={[tw`m-4 flex justify-center rounded-md`]}>
+            <View style={[tw`flex items-center justify-center`]}>
+                <Text style={[tw` text-center w-[80%]`, stil('text', data.app.theme)]}>
+                    {l[data.app.lang].izinVer}
+                </Text>
+                <Text style={[tw`my-2 text-xs text-center mx-4`, stil('text', data.app.theme)]}>
+                    {l[data.app.lang].konummesaj}
+                </Text>
+            </View>
+
+            <View style={[tw` flex justify-center rounded-md`]}>
                 <TouchableOpacity
                     key={0}
                     style={[

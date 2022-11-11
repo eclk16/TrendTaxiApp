@@ -20,6 +20,17 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string></string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com-trendtaxiuz-app</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationCategoryType</key>
@@ -47,8 +58,14 @@
 	<string>We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>We need your location information in order to bring you together with the driver or passenger and to inform you throughout your journey.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Please Allow Library Usage Services</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.transistorsoft.fetch</string>
+	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Please Allow Library Usage Services</string>
 	<key>UIAppFonts</key>
@@ -101,7 +118,10 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
+		<string>location</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

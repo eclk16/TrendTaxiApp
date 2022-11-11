@@ -57,8 +57,8 @@ export default function Settings() {
     }
 
     function setTheme(theme) {
-        setValue('TrendTaxiTheme', theme);
-        dispatch({type: 'theme', payload: theme});
+        // setValue('TrendTaxiTheme', theme);
+        // dispatch({type: 'theme', payload: theme});
     }
 
     return (
@@ -102,7 +102,7 @@ export default function Settings() {
                     })}
                 </View>
             </>
-            <>
+            {/* <>
                 <Text style={[tw`m-4 text-center`, stil('text', data.app.theme)]}>
                     {l[data.app.lang].temaSec}
                 </Text>
@@ -162,7 +162,7 @@ export default function Settings() {
                         </View>
                     </TouchableOpacity>
                 </View>
-            </>
+            </> */}
             <>
                 <Text style={[tw`m-4 text-center`, stil('text', data.app.theme)]}>
                     {getUniqueId()}

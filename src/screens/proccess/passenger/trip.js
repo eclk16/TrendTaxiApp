@@ -115,7 +115,7 @@ export default function PassengerTrip() {
                         showsMyLocationButton={false}
                         showsCompass={false}
                         rotateEnabled={true}
-                        showsTraffic
+                        showsTraffic={false}
                         userLocationPriority={'high'}
                         userLocationUpdateInterval={1000}
                         userLocationFastestInterval={1000}
@@ -216,26 +216,67 @@ export default function PassengerTrip() {
                                 );
                             }
                         })}
-                        {directions.length > 0 && data.trip.trip.locations.length > 1 ? (
+                        {data.trip.trip.locations.length > 1 ? (
                             <MapViewDirections
-                                language={data.app.lang == 'gb' ? 'en' : data.app.lang}
-                                optimizeWaypoints={true}
-                                origin={cl}
-                                waypoints={
-                                    directions.length > 2 ? directions.slice(1, -1) : undefined
-                                }
+                                resetOnChange={false}
+                                origin={data.app.currentLocation}
+                                waypoints={data.trip.trip.locations.filter(
+                                    (item, index) =>
+                                        index > 0 &&
+                                        index < data.trip.trip.locations.length - 1 &&
+                                        item.gecildi === false,
+                                )}
                                 destination={
-                                    directions.length == 1
-                                        ? directions[0]
-                                        : directions[directions.length - 1]
+                                    data.trip.trip.locations[data.trip.trip.locations.length - 1]
+                                        .gecildi === false
+                                        ? data.trip.trip.locations[
+                                              data.trip.trip.locations.length - 1
+                                          ]
+                                        : undefined
                                 }
                                 apikey={config.mapApi}
-                                strokeWidth={10}
-                                mode="DRIVING"
-                                precision={'high'}
-                                strokeColor="#0f365e"
-                                resetOnChange={false}
-                                onReady={(result) => {}}
+                                strokeWidth={kalanMesafe > 20 ? 16 : 0}
+                                strokeColor="green"
+                                onReady={(result) => {
+                                    let dis = 0;
+                                    let dur = 0;
+                                    result.legs.map((item, index) => {
+                                        dis = dis + item.distance.value;
+                                        dur = dur + item.duration.value;
+                                    });
+                                    setKalanMesafe(dis);
+
+                                    if (data.trip.tripRequest !== null) {
+                                        dispatch({
+                                            type: 'setDistance',
+                                            payload: (parseFloat(dis) / 1000).toFixed(2),
+                                        });
+                                    }
+                                    setKalanSure(dur);
+
+                                    if (result.legs[0].steps[0]) {
+                                        dispatch({
+                                            type: 'setYon',
+                                            payload: result.legs[0].steps[0],
+                                        });
+                                    } else {
+                                        dispatch({
+                                            type: 'setYon',
+                                            payload: null,
+                                        });
+                                    }
+                                    if (result.legs[0].steps[1]) {
+                                        dispatch({
+                                            type: 'setYon2',
+                                            payload: result.legs[0].steps[1],
+                                        });
+                                    } else {
+                                        dispatch({
+                                            type: 'setYon2',
+                                            payload: null,
+                                        });
+                                    }
+                                }}
                             />
                         ) : null}
                     </MapView>

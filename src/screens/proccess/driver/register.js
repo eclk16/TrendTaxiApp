@@ -8,16 +8,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {launchImageLibrary} from 'react-native-image-picker';
 import {getUniqueId} from 'react-native-device-info';
 
-import BottomSheet, {
-    useBottomSheetDynamicSnapPoints,
-    BottomSheetView,
-    BottomSheetTextInput,
-} from '@gorhom/bottom-sheet';
+import BottomSheet, {useBottomSheetDynamicSnapPoints, BottomSheetView} from '@gorhom/bottom-sheet';
 import {apiPost} from '../../../axios';
 //burayafont yükle gelecek
 
 import {
-    BackHandler,
+    TextInput,
     SafeAreaView,
     Text,
     View,
@@ -25,6 +21,7 @@ import {
     TouchableOpacity,
     Modal,
     ActivityIndicator,
+    KeyboardAvoidingView,
 } from 'react-native';
 import StatusBarComponent from '../../../components/global/status';
 
@@ -194,9 +191,9 @@ export default function DriverRegister() {
     };
 
     return (
-        <SafeAreaView style={[stil('bg', data.app.theme), tw`flex-1 items-center justify-start`]}>
+        <SafeAreaView style={[stil('bg', data.app.theme), tw`flex-1 items-center justify-end`]}>
             <StatusBarComponent />
-            <View style={[tw`mt-24 flex items-center justify-center `]}>
+            <View style={[tw` flex items-center justify-center `]}>
                 <Image
                     style={[
                         {
@@ -220,394 +217,399 @@ export default function DriverRegister() {
                     Trend Taxi
                 </Text>
             </View>
-            <BottomSheet
-                ref={bottomSheetRef}
-                snapPoints={animatedSnapPoints}
-                handleHeight={animatedHandleHeight}
-                contentHeight={animatedContentHeight}
-                handleIndicatorStyle={[{display: 'none'}, tw`w-0 m-0 p-0`]}
-                keyboardBehavior="interactive"
-                backgroundStyle={stil('bg2', data.app.theme)}
-                style={[tw`mx-4`, {zIndex: 9999}]}>
-                <BottomSheetView onLayout={handleContentLayout} style={[tw`mx-4 pb-4`]}>
-                    <View>
-                        <Text
-                            style={[
-                                tw`text-center font-semibold text-lg mb-4`,
-                                {letterSpacing: 4},
-                                stil('text', data.app.theme),
-                            ]}>
-                            {l[data.app.lang].dregister}
-                        </Text>
-                    </View>
-                    {step == 1 ? (
+            <KeyboardAvoidingView
+                style={[tw`w-full items-center justify-end`]}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <View
+                    style={[
+                        tw`mx-4 mt-4 mb-6 rounded-md w-[90%]`,
+                        stil('bg2', data.app.theme),
+                        stil('shadow', data.app.theme),
+                    ]}>
+                    <View style={[tw`mx-4 pb-4`]}>
                         <View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].first_name}
-                                </Text>
-                                <BottomSheetTextInput
-                                    placeholder={l[data.app.lang].first_name}
-                                    placeholderTextColor={stil('text', data.app.theme).color}
-                                    style={[
-                                        tw`h-12 px-4 mb-4 rounded-md w-full`,
-                                        stil('text', data.app.theme),
-                                        stil('bg', data.app.theme),
-                                    ]}
-                                    onChangeText={(text) => {
-                                        setName(text);
-                                    }}
-                                    value={name}
-                                />
-                            </View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].phone}
-                                </Text>
-                                <BottomSheetTextInput
-                                    autoFocus={true}
-                                    placeholder="+___-__-___-__-__"
-                                    placeholderTextColor={stil('text', data.app.theme).color}
-                                    style={[
-                                        tw`h-12 rounded-md px-4 mb-4`,
-                                        stil('text', data.app.theme),
-                                        stil('bg', data.app.theme),
-                                    ]}
-                                    onChangeText={(text) => {
-                                        setFormat(text);
-                                    }}
-                                    value={phone}
-                                    maxLength={17}
-                                    keyboardType="numeric"
-                                />
-                            </View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].diu}
-                                </Text>
-                                <TouchableOpacity onPress={() => getPhotoWithPhone('driver')}>
-                                    <View
-                                        style={[
-                                            tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
-                                            stil('bg', data.app.theme),
-                                        ]}>
-                                        <View style={[tw`h-12 w-12`]}>
-                                            {images.driver ? (
-                                                <Image
-                                                    style={[
-                                                        tw`rounded-md`,
-                                                        {height: '100%', width: '100%'},
-                                                    ]}
-                                                    source={images.driver ?? ''}
-                                                />
-                                            ) : null}
-                                        </View>
-                                        <View style={[tw`ml-4`]}>
-                                            <Text style={[tw``, stil('text', data.app.theme)]}>
-                                                {l[data.app.lang].upload}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
+                            <Text
+                                style={[
+                                    tw`text-center font-medium text-base mt-4 mb-2`,
+                                    {letterSpacing: 4},
+                                    stil('text', data.app.theme),
+                                ]}>
+                                {l[data.app.lang].dregister}
+                            </Text>
                         </View>
-                    ) : null}
-                    {step == 2 ? (
-                        <View>
+                        {step == 1 ? (
                             <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].dliu}
-                                </Text>
-                                <TouchableOpacity
-                                    onPress={() => getPhotoWithPhone('license_image')}>
-                                    <View
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].first_name}
+                                    </Text>
+                                    <TextInput
+                                        placeholder={l[data.app.lang].first_name}
+                                        placeholderTextColor={stil('text', data.app.theme).color}
                                         style={[
-                                            tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                            tw`h-12 px-4 mb-4 rounded-md w-full`,
+                                            stil('text', data.app.theme),
                                             stil('bg', data.app.theme),
-                                        ]}>
-                                        <View style={[tw`h-12 w-12`]}>
-                                            {images.license_image ? (
-                                                <Image
-                                                    style={[
-                                                        tw`rounded-md`,
-                                                        {height: '100%', width: '100%'},
-                                                    ]}
-                                                    source={images.license_image ?? ''}
-                                                />
-                                            ) : null}
-                                        </View>
-                                        <View style={[tw`ml-4`]}>
-                                            <Text style={[tw``, stil('text', data.app.theme)]}>
-                                                {l[data.app.lang].upload}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].driu}
-                                </Text>
-                                <TouchableOpacity
-                                    onPress={() => getPhotoWithPhone('driver_license_image')}>
-                                    <View
+                                        ]}
+                                        onChangeText={(text) => {
+                                            setName(text);
+                                        }}
+                                        value={name}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].phone}
+                                    </Text>
+                                    <TextInput
+                                        autoFocus={true}
+                                        placeholder="+___-__-___-__-__"
+                                        placeholderTextColor={stil('text', data.app.theme).color}
                                         style={[
-                                            tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                            tw`h-12 rounded-md px-4 mb-4`,
+                                            stil('text', data.app.theme),
                                             stil('bg', data.app.theme),
-                                        ]}>
-                                        <View style={[tw`h-12 w-12`]}>
-                                            {images.driver_license_image ? (
-                                                <Image
-                                                    style={[
-                                                        tw`rounded-md`,
-                                                        {height: '100%', width: '100%'},
-                                                    ]}
-                                                    source={images.driver_license_image ?? ''}
-                                                />
-                                            ) : null}
-                                        </View>
-                                        <View style={[tw`ml-4`]}>
-                                            <Text style={[tw``, stil('text', data.app.theme)]}>
-                                                {l[data.app.lang].upload}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].cuciu}
-                                </Text>
-                                <TouchableOpacity
-                                    onPress={() => getPhotoWithPhone('car_usage_license_image')}>
-                                    <View
-                                        style={[
-                                            tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
-                                            stil('bg', data.app.theme),
-                                        ]}>
-                                        <View style={[tw`h-12 w-12`]}>
-                                            {images.car_usage_license_image ? (
-                                                <Image
-                                                    style={[
-                                                        tw`rounded-md`,
-                                                        {height: '100%', width: '100%'},
-                                                    ]}
-                                                    source={images.car_usage_license_image ?? ''}
-                                                />
-                                            ) : null}
-                                        </View>
-                                        <View style={[tw`ml-4`]}>
-                                            <Text style={[tw``, stil('text', data.app.theme)]}>
-                                                {l[data.app.lang].upload}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    ) : null}
-                    {step == 3 ? (
-                        <View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].carPlate}
-                                </Text>
-                                <BottomSheetTextInput
-                                    placeholder={l[data.app.lang].carPlate}
-                                    placeholderTextColor={stil('text', data.app.theme).color}
-                                    style={[
-                                        tw`h-12 px-4 mb-4 rounded-md w-full`,
-                                        stil('text', data.app.theme),
-                                        stil('bg', data.app.theme),
-                                    ]}
-                                    onChangeText={(text) => {
-                                        setPlaka(text);
-                                    }}
-                                    value={plaka}
-                                />
-                            </View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].carType}
-                                </Text>
-                                <View style={[tw`flex-row mb-4 items-center justify-between`]}>
-                                    {DATA.map((item, index) => {
-                                        return (
-                                            <TouchableOpacity
-                                                key={index}
-                                                onPress={() => {
-                                                    setCarType(item.car_type);
-                                                }}
-                                                style={[
-                                                    tw`p-3 rounded-md`,
-                                                    stil(
-                                                        carType == item.car_type ? 'bg2' : 'bg',
-                                                        data.app.theme,
-                                                    ),
-                                                    {
-                                                        borderWidth: 1,
-                                                    },
-                                                ]}>
-                                                <Text style={[stil('text', data.app.theme)]}>
-                                                    {item.title}
+                                        ]}
+                                        onChangeText={(text) => {
+                                            setFormat(text);
+                                        }}
+                                        value={phone}
+                                        maxLength={17}
+                                        keyboardType="numeric"
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].diu}
+                                    </Text>
+                                    <TouchableOpacity onPress={() => getPhotoWithPhone('driver')}>
+                                        <View
+                                            style={[
+                                                tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                                stil('bg', data.app.theme),
+                                            ]}>
+                                            <View style={[tw`h-12 w-12`]}>
+                                                {images.driver ? (
+                                                    <Image
+                                                        style={[
+                                                            tw`rounded-md`,
+                                                            {height: '100%', width: '100%'},
+                                                        ]}
+                                                        source={images.driver ?? ''}
+                                                    />
+                                                ) : null}
+                                            </View>
+                                            <View style={[tw`ml-4`]}>
+                                                <Text style={[tw``, stil('text', data.app.theme)]}>
+                                                    {l[data.app.lang].upload}
                                                 </Text>
-                                            </TouchableOpacity>
-                                        );
-                                    })}
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
+                        ) : null}
+                        {step == 2 ? (
                             <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].carBrand}
-                                </Text>
-                                <BottomSheetTextInput
-                                    placeholder={l[data.app.lang].carBrand}
-                                    placeholderTextColor={stil('text', data.app.theme).color}
-                                    style={[
-                                        tw`h-12 px-4 mb-4 rounded-md w-full`,
-                                        stil('text', data.app.theme),
-                                        stil('bg', data.app.theme),
-                                    ]}
-                                    onChangeText={(text) => {
-                                        setCarBrand(text);
-                                    }}
-                                    value={carBrand}
-                                />
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].dliu}
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={() => getPhotoWithPhone('license_image')}>
+                                        <View
+                                            style={[
+                                                tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                                stil('bg', data.app.theme),
+                                            ]}>
+                                            <View style={[tw`h-12 w-12`]}>
+                                                {images.license_image ? (
+                                                    <Image
+                                                        style={[
+                                                            tw`rounded-md`,
+                                                            {height: '100%', width: '100%'},
+                                                        ]}
+                                                        source={images.license_image ?? ''}
+                                                    />
+                                                ) : null}
+                                            </View>
+                                            <View style={[tw`ml-4`]}>
+                                                <Text style={[tw``, stil('text', data.app.theme)]}>
+                                                    {l[data.app.lang].upload}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].driu}
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={() => getPhotoWithPhone('driver_license_image')}>
+                                        <View
+                                            style={[
+                                                tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                                stil('bg', data.app.theme),
+                                            ]}>
+                                            <View style={[tw`h-12 w-12`]}>
+                                                {images.driver_license_image ? (
+                                                    <Image
+                                                        style={[
+                                                            tw`rounded-md`,
+                                                            {height: '100%', width: '100%'},
+                                                        ]}
+                                                        source={images.driver_license_image ?? ''}
+                                                    />
+                                                ) : null}
+                                            </View>
+                                            <View style={[tw`ml-4`]}>
+                                                <Text style={[tw``, stil('text', data.app.theme)]}>
+                                                    {l[data.app.lang].upload}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].cuciu}
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            getPhotoWithPhone('car_usage_license_image')
+                                        }>
+                                        <View
+                                            style={[
+                                                tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                                stil('bg', data.app.theme),
+                                            ]}>
+                                            <View style={[tw`h-12 w-12`]}>
+                                                {images.car_usage_license_image ? (
+                                                    <Image
+                                                        style={[
+                                                            tw`rounded-md`,
+                                                            {height: '100%', width: '100%'},
+                                                        ]}
+                                                        source={
+                                                            images.car_usage_license_image ?? ''
+                                                        }
+                                                    />
+                                                ) : null}
+                                            </View>
+                                            <View style={[tw`ml-4`]}>
+                                                <Text style={[tw``, stil('text', data.app.theme)]}>
+                                                    {l[data.app.lang].upload}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
+                        ) : null}
+                        {step == 3 ? (
                             <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].carModel}
-                                </Text>
-                                <BottomSheetTextInput
-                                    placeholder={l[data.app.lang].carModel}
-                                    placeholderTextColor={stil('text', data.app.theme).color}
-                                    style={[
-                                        tw`h-12 px-4 mb-4 rounded-md w-full`,
-                                        stil('text', data.app.theme),
-                                        stil('bg', data.app.theme),
-                                    ]}
-                                    onChangeText={(text) => {
-                                        setCarModel(text);
-                                    }}
-                                    value={carModel}
-                                />
-                            </View>
-                        </View>
-                    ) : null}
-                    {step == 4 ? (
-                        <View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].dciu}
-                                </Text>
-                                <TouchableOpacity onPress={() => getPhotoWithPhone('car_image_1')}>
-                                    <View
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].carPlate}
+                                    </Text>
+                                    <TextInput
+                                        placeholder={l[data.app.lang].carPlate}
+                                        placeholderTextColor={stil('text', data.app.theme).color}
                                         style={[
-                                            tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                            tw`h-12 px-4 mb-4 rounded-md w-full`,
+                                            stil('text', data.app.theme),
                                             stil('bg', data.app.theme),
-                                        ]}>
-                                        <View style={[tw`h-12 w-12`]}>
-                                            {images.car_image_1 ? (
-                                                <Image
+                                        ]}
+                                        onChangeText={(text) => {
+                                            setPlaka(text);
+                                        }}
+                                        value={plaka}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].carType}
+                                    </Text>
+                                    <View style={[tw`flex-row mb-4 items-center justify-between`]}>
+                                        {DATA.map((item, index) => {
+                                            return (
+                                                <TouchableOpacity
+                                                    key={index}
+                                                    onPress={() => {
+                                                        setCarType(item.car_type);
+                                                    }}
                                                     style={[
-                                                        tw`rounded-md`,
-                                                        {height: '100%', width: '100%'},
-                                                    ]}
-                                                    source={images.car_image_1 ?? ''}
-                                                />
-                                            ) : null}
-                                        </View>
-                                        <View style={[tw`ml-4`]}>
-                                            <Text style={[tw``, stil('text', data.app.theme)]}>
-                                                {l[data.app.lang].upload}
-                                            </Text>
-                                        </View>
+                                                        tw`p-2 rounded-md`,
+                                                        stil(
+                                                            carType == item.car_type ? 'bg2' : 'bg',
+                                                            data.app.theme,
+                                                        ),
+                                                        stil('shadow', data.app.theme),
+                                                    ]}>
+                                                    <Text style={[stil('text', data.app.theme)]}>
+                                                        {item.title}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
                                     </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
-                                    {l[data.app.lang].dciu}
-                                </Text>
-                                <TouchableOpacity onPress={() => getPhotoWithPhone('car_image_2')}>
-                                    <View
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].carBrand}
+                                    </Text>
+                                    <TextInput
+                                        placeholder={l[data.app.lang].carBrand}
+                                        placeholderTextColor={stil('text', data.app.theme).color}
                                         style={[
-                                            tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                            tw`h-12 px-4 mb-4 rounded-md w-full`,
+                                            stil('text', data.app.theme),
                                             stil('bg', data.app.theme),
-                                        ]}>
-                                        <View style={[tw`h-12 w-12`]}>
-                                            {images.car_image_2 ? (
-                                                <Image
-                                                    style={[
-                                                        tw`rounded-md`,
-                                                        {height: '100%', width: '100%'},
-                                                    ]}
-                                                    source={images.car_image_2 ?? ''}
-                                                />
-                                            ) : null}
-                                        </View>
-                                        <View style={[tw`ml-4`]}>
-                                            <Text style={[tw``, stil('text', data.app.theme)]}>
-                                                {l[data.app.lang].upload}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
+                                        ]}
+                                        onChangeText={(text) => {
+                                            setCarBrand(text);
+                                        }}
+                                        value={carBrand}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].carModel}
+                                    </Text>
+                                    <TextInput
+                                        placeholder={l[data.app.lang].carModel}
+                                        placeholderTextColor={stil('text', data.app.theme).color}
+                                        style={[
+                                            tw`h-12 px-4 mb-4 rounded-md w-full`,
+                                            stil('text', data.app.theme),
+                                            stil('bg', data.app.theme),
+                                        ]}
+                                        onChangeText={(text) => {
+                                            setCarModel(text);
+                                        }}
+                                        value={carModel}
+                                    />
+                                </View>
                             </View>
-                        </View>
-                    ) : null}
-                    <View style={[tw`flex-row items-center justify-between mt-4 mb-8`]}>
-                        <TouchableOpacity
-                            onPress={() => {
-                                if (step == 1) {
-                                    dispatch({type: 'authRemove'});
-                                    dispatch({type: 'isAuth', payload: false});
-                                    removeValue('TrendTaxiUser');
-                                } else {
-                                    setStep(step - 1);
-                                }
-                            }}
-                            style={[
-                                tw`flex-row items-center justify-center px-8 py-2 rounded-md`,
-                                stil('bg', data.app.theme),
-                            ]}>
-                            <MaterialCommunityIcons
-                                name="arrow-left-circle"
-                                size={24}
-                                color={stil('text', data.app.theme).color}
-                            />
-                            <Text style={[stil('text', data.app.theme), tw`ml-2`]}>
-                                {l[data.app.lang].back}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => {
-                                if (step == 4) {
-                                    saveDriver();
-                                } else {
-                                    setStep(step + 1);
-                                }
-                            }}
-                            style={[
-                                tw`flex-row items-center justify-center px-8 py-2 rounded-md`,
-                                stil('bg', data.app.theme),
-                            ]}>
-                            <Text style={[stil('text', data.app.theme), tw`mr-2`]}>
-                                {step == 4 ? l[data.app.lang].save : l[data.app.lang].next}
-                            </Text>
-                            {loading ? (
-                                <ActivityIndicator />
-                            ) : (
+                        ) : null}
+                        {step == 4 ? (
+                            <View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].dciu}
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={() => getPhotoWithPhone('car_image_1')}>
+                                        <View
+                                            style={[
+                                                tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                                stil('bg', data.app.theme),
+                                            ]}>
+                                            <View style={[tw`h-12 w-12`]}>
+                                                {images.car_image_1 ? (
+                                                    <Image
+                                                        style={[
+                                                            tw`rounded-md`,
+                                                            {height: '100%', width: '100%'},
+                                                        ]}
+                                                        source={images.car_image_1 ?? ''}
+                                                    />
+                                                ) : null}
+                                            </View>
+                                            <View style={[tw`ml-4`]}>
+                                                <Text style={[tw``, stil('text', data.app.theme)]}>
+                                                    {l[data.app.lang].upload}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <Text style={[tw`ml-1 pb-1`, stil('text', data.app.theme)]}>
+                                        {l[data.app.lang].dciu}
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={() => getPhotoWithPhone('car_image_2')}>
+                                        <View
+                                            style={[
+                                                tw`rounded-md p-2 mb-4 flex-row items-center justify-between`,
+                                                stil('bg', data.app.theme),
+                                            ]}>
+                                            <View style={[tw`h-12 w-12`]}>
+                                                {images.car_image_2 ? (
+                                                    <Image
+                                                        style={[
+                                                            tw`rounded-md`,
+                                                            {height: '100%', width: '100%'},
+                                                        ]}
+                                                        source={images.car_image_2 ?? ''}
+                                                    />
+                                                ) : null}
+                                            </View>
+                                            <View style={[tw`ml-4`]}>
+                                                <Text style={[tw``, stil('text', data.app.theme)]}>
+                                                    {l[data.app.lang].upload}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        ) : null}
+                        <View style={[tw`flex-row items-center justify-between mt-4 `]}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (step == 1) {
+                                        dispatch({type: 'authRemove'});
+                                        dispatch({type: 'isAuth', payload: false});
+                                        removeValue('TrendTaxiUser');
+                                    } else {
+                                        setStep(step - 1);
+                                    }
+                                }}
+                                style={[
+                                    tw`flex-row items-center justify-center px-4 py-2 rounded-md`,
+                                    stil('bg', data.app.theme),
+                                ]}>
                                 <MaterialCommunityIcons
-                                    name={step == 4 ? 'content-save' : 'arrow-right-circle'}
+                                    name="arrow-left-circle"
                                     size={24}
                                     color={stil('text', data.app.theme).color}
                                 />
-                            )}
-                        </TouchableOpacity>
+                                <Text style={[stil('text', data.app.theme), tw`ml-2`]}>
+                                    {l[data.app.lang].back}
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (step == 4) {
+                                        saveDriver();
+                                    } else {
+                                        setStep(step + 1);
+                                    }
+                                }}
+                                style={[
+                                    tw`flex-row items-center justify-center px-4 py-2 rounded-md`,
+                                    stil('bg', data.app.theme),
+                                ]}>
+                                <Text style={[stil('text', data.app.theme), tw`mr-2`]}>
+                                    {step == 4 ? l[data.app.lang].save : l[data.app.lang].next}
+                                </Text>
+                                {loading ? (
+                                    <ActivityIndicator />
+                                ) : (
+                                    <MaterialCommunityIcons
+                                        name={step == 4 ? 'content-save' : 'arrow-right-circle'}
+                                        size={24}
+                                        color={stil('text', data.app.theme).color}
+                                    />
+                                )}
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </BottomSheetView>
-            </BottomSheet>
+                </View>
+            </KeyboardAvoidingView>
             <Modal
                 animationType="fade"
                 transparent={true}

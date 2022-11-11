@@ -1,6 +1,5 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {setValue} from '../../async';
 import {stil} from '../../utils';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,12 +17,12 @@ function LoginTypeSelect({setStep}) {
     };
     return (
         <>
-            <View style={[tw`mx-6`]}>
+            <View style={[tw`mx-4`]}>
                 <TouchableOpacity
                     key={0}
                     style={[
                         stil('bg', data.app.theme),
-                        tw`flex-row items-center mb-1 p-4 rounded-md justify-between`,
+                        tw`flex-row items-center mb-1 p-4 rounded-md justify-center`,
                     ]}
                     onPress={() => {
                         izinal();
@@ -36,7 +35,7 @@ function LoginTypeSelect({setStep}) {
                             size={32}
                             color={stil('text', data.app.theme).color}
                         />
-                        <Text style={[tw` ml-4`, stil('text', data.app.theme)]}>
+                        <Text style={[tw`font-bold ml-2`, stil('text', data.app.theme)]}>
                             {l[data.app.lang].driver}
                         </Text>
                     </View>
@@ -45,7 +44,7 @@ function LoginTypeSelect({setStep}) {
                     key={1}
                     style={[
                         stil('bg', data.app.theme),
-                        tw`flex-row items-center mb-1 p-4 rounded-md justify-between`,
+                        tw`flex-row items-center mb-1 p-4 rounded-md justify-center`,
                     ]}
                     onPress={() => {
                         izinal();
@@ -58,7 +57,7 @@ function LoginTypeSelect({setStep}) {
                             size={32}
                             color={stil('text', data.app.theme).color}
                         />
-                        <Text style={[tw`  ml-4`, stil('text', data.app.theme)]}>
+                        <Text style={[tw` font-bold  ml-2`, stil('text', data.app.theme)]}>
                             {l[data.app.lang].passenger}
                         </Text>
                     </View>

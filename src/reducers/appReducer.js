@@ -1,12 +1,31 @@
 const INITIAL_STATE = {
-    theme: 'light',
-    mapTheme: 'light',
+    theme: 'dark',
+    mapTheme: 'dark',
     lang: 'uz',
-    currentLocation: [],
+    currentLocation: {
+        default: true,
+        accuracy: 5,
+        altitude: 0,
+        altitude_accuracy: -1,
+        ellipsoidal_altitude: 0,
+        floor: 'aaa',
+        heading: -1,
+        heading_accuracy: -1,
+        latitude: 41.299409367279715,
+        longitude: 69.23993027755733,
+        speed: -1,
+        speed_accuracy: -1,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+    },
     isLoading: true,
     isActive: true,
+    locations: [],
     peoples: [],
     drivers: [],
+    driverConfig: {
+        getRadius: 3000,
+    },
     menu: false,
 };
 const appReducer = (state = INITIAL_STATE, action) => {
@@ -17,8 +36,12 @@ const appReducer = (state = INITIAL_STATE, action) => {
             return {...state, mapTheme: action.payload};
         case 'ia':
             return {...state, isActive: action.payload};
+        case 'dc':
+            return {...state, driverConfig: action.payload};
         case 'lang':
             return {...state, lang: action.payload};
+        case 'locations':
+            return {...state, locations: action.payload};
         case 'loc':
             return {...state, currentLocation: action.payload};
         case 'isLoading':

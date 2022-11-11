@@ -44,13 +44,7 @@ const ModalMenu = () => {
                 config={{
                     velocityThreshold: 0.3,
                     directionalOffsetThreshold: 80,
-                }}
-                style={
-                    {
-                        // flex: 1,
-                        // backgroundColor: this.state.backgroundColor,
-                    }
-                }>
+                }}>
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -60,35 +54,37 @@ const ModalMenu = () => {
                     }}>
                     <View
                         style={[
-                            tw`flex-1 justify-end`,
-                            // {backgroundColor: 'rgba(0,0,0,0.55)'}
+                            tw`flex-1 justify-center pb-6 items-center`,
+                            {backgroundColor: 'rgba(0,0,0,0.35)'},
                         ]}>
                         <View
                             style={[
-                                tw`w-full  p-4 rounded-t-md border-b`,
-                                stil('bg', data.app.theme),
+                                tw`w-[90%] p-4 rounded-t-md `,
+                                stil('bg2', data.app.theme),
                                 {borderBottomColor: stil('text', data.app.theme).color},
                             ]}>
                             {data.auth.userId != null ? (
                                 <View>
-                                    <View style={[tw`flex-row justify-start items-start pb-2`]}>
-                                        <Image
-                                            style={[tw`mr-4 rounded-md h-32 w-32`]}
-                                            source={{
-                                                uri:
-                                                    config.imageBaseUrl +
-                                                    data.auth.user?.user_data?.user_image,
-                                            }}
-                                        />
-                                        <View>
-                                            <Text
-                                                style={[
-                                                    tw` text-lg`,
-                                                    stil('text', data.app.theme),
-                                                ]}>
-                                                {data.auth.user.user_name}
-                                            </Text>
-                                            <View style={[tw`flex-row items-center mt-2`]}>
+                                    <View style={[tw`flex justify-center items-center pb-2 pt-2`]}>
+                                        <View style={[stil('shadow', data.app.theme)]}>
+                                            <Image
+                                                style={[tw`rounded-md h-32 w-32`]}
+                                                source={{
+                                                    uri:
+                                                        config.imageBaseUrl +
+                                                        data.auth.user?.user_data?.user_image,
+                                                }}
+                                            />
+                                        </View>
+                                        <Text
+                                            style={[
+                                                tw`text-base font-semibold my-2`,
+                                                stil('text', data.app.theme),
+                                            ]}>
+                                            {data.auth.user.user_name}
+                                        </Text>
+                                        <View style={[tw`flex-row items-center justify-center `]}>
+                                            <View style={[tw`flex-row items-center mx-2`]}>
                                                 <MaterialCommunityIcons
                                                     name="wallet"
                                                     size={24}
@@ -102,7 +98,7 @@ const ModalMenu = () => {
                                                     {data.auth.user.user_balance}
                                                 </Text>
                                             </View>
-                                            <View style={[tw`flex-row items-center mt-2`]}>
+                                            <View style={[tw`flex-row items-center mx-2`]}>
                                                 <MaterialCommunityIcons
                                                     name="map-marker-distance"
                                                     size={24}
@@ -116,7 +112,7 @@ const ModalMenu = () => {
                                                     {data.auth.user.user_tripCount ?? 0}
                                                 </Text>
                                             </View>
-                                            <View style={[tw`flex-row items-center mt-2`]}>
+                                            <View style={[tw`flex-row items-center mx-2`]}>
                                                 <MaterialCommunityIcons
                                                     name="star"
                                                     size={24}
@@ -135,7 +131,14 @@ const ModalMenu = () => {
                                 </View>
                             ) : null}
                         </View>
-                        <View style={[tw`w-full p-4`, stil('bg', data.app.theme)]}>
+                        <View
+                            style={[
+                                tw`w-[90%] p-4 rounded-b-md`,
+                                stil('bg', data.app.theme),
+                                {
+                                    zIndex: 99999,
+                                },
+                            ]}>
                             {list2.map((item, index) => {
                                 return item.type == 'seperator' ? (
                                     <View
@@ -163,11 +166,7 @@ const ModalMenu = () => {
                                             size={24}
                                             color={stil('text', data.app.theme).color}
                                         />
-                                        <Text
-                                            style={[
-                                                tw`ml-4 font-semibold text-base`,
-                                                stil('text', data.app.theme),
-                                            ]}>
+                                        <Text style={[tw`ml-4 `, stil('text', data.app.theme)]}>
                                             {l[data.app.lang][item.text]}
                                         </Text>
                                     </TouchableOpacity>
@@ -175,7 +174,7 @@ const ModalMenu = () => {
                             })}
                             <View
                                 style={[
-                                    tw` rounded-t-md  flex-row items-center justify-between mt-2 pb-8`,
+                                    tw`rounded-t-md  flex-row items-center justify-between mt-2 `,
                                     {borderBottomColor: stil('text', data.app.theme).color},
                                 ]}>
                                 <TouchableOpacity
@@ -217,39 +216,26 @@ const ModalMenu = () => {
                                         size={24}
                                         color={stil('text', data.app.theme).color}
                                     />
+                                    <Text style={[stil('text', data.app.theme), tw`ml-4`]}>
+                                        {l[data.app.lang].logout}
+                                    </Text>
                                 </TouchableOpacity>
-                                <View style={[tw`flex-row`]}>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            setMenu(false);
-                                            navigation.navigate('Faq');
-                                        }}
-                                        style={[
-                                            tw`flex-row p-3 rounded-md items-center justify-center`,
-                                            stil('bg2', data.app.theme),
-                                        ]}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setMenu(false);
+                                    }}
+                                    style={[
+                                        tw`flex-row rounded-md items-center justify-center`,
+                                        // stil('bg2', data.app.theme),
+                                    ]}>
+                                    <View>
                                         <MaterialCommunityIcons
-                                            name="chat-question"
-                                            size={24}
+                                            name="chevron-double-down"
+                                            size={48}
                                             color={stil('text', data.app.theme).color}
                                         />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            setMenu(false);
-                                            navigation.navigate('Settings');
-                                        }}
-                                        style={[
-                                            tw`flex-row p-3 ml-2 rounded-md items-center justify-center`,
-                                            stil('bg2', data.app.theme),
-                                        ]}>
-                                        <MaterialCommunityIcons
-                                            name="cog"
-                                            size={24}
-                                            color={stil('text', data.app.theme).color}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
+                                    </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>

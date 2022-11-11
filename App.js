@@ -11,158 +11,236 @@ import Pusher from 'pusher-js/react-native';
 import l from './src/languages.json';
 import KeepAwake from 'react-native-keep-awake';
 import messaging from '@react-native-firebase/messaging';
-import {Alert, LogBox} from 'react-native';
-import notifee, {AndroidImportance, AndroidVisibility} from '@notifee/react-native';
-import Sound from 'react-native-sound';
-
-import {useNetInfo} from '@react-native-community/netinfo';
+import {Alert, BackHandler, Linking, LogBox, Platform} from 'react-native';
+import config from './src/app.json';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
+LogBox.ignoreLogs(['setNativeProps is deprecated and will be removed in next major release']);
 LogBox.ignoreAllLogs();
+import notifee, {EventType} from '@notifee/react-native';
+
+import BackgroundGeolocation, {Location, Subscription} from 'react-native-background-geolocation';
 
 const AppWrapper = () => {
     const store = createStore(rootReducer);
-    Sound.setCategory('Playback');
-    let soundFile = 'ses14.mp3';
-    if (Platform.OS === 'ios') {
-        soundFile = 'ses-14.mp3';
-    } else {
-        soundFile = 'ses14.mp3';
-    }
+    const [checkApp, setCheckApp] = React.useState(false);
 
-    async function requestUserPermission() {
-        const authStatus = await messaging().requestPermission({
-            alert: true,
-            criticalAlert: true,
-            announcement: true,
-            provisional: false,
-            sound: true,
-        });
-        const enabled =
-            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    getValue('TrendTaxiLang').then((lang) => {
+        let la = 'uz';
+        if (lang) la = lang;
 
-        if (enabled) {
-            // console.log('Authorization status:', enabled);
-        }
-    }
-
-    async function messagingListener() {
-        messaging().onNotificationOpenedApp((remoteMessage) => {
-            console.log(
-                'Notification caused app to open from background state:',
-                remoteMessage.notification,
-            );
-        });
-
-        // Check whether an initial notification is available
-        messaging()
-            .getInitialNotification()
-            .then((remoteMessage) => {
-                if (remoteMessage) {
-                    console.log(
-                        'Notification caused app to open from quit state:',
-                        remoteMessage.notification,
+        fetch('https://application.trendtaxi.uz/api/checkApp')
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.appActive) {
+                    if (Platform.OS == 'ios') {
+                        if (res.IOSversion == config.iosVersion) {
+                            setCheckApp(true);
+                        } else {
+                            Alert.alert(
+                                l[la].guncelleTitle,
+                                l[la].guncelleText,
+                                [
+                                    {
+                                        text: l[la].check,
+                                        onPress: () => {
+                                            Linking.openURL(res.appstore);
+                                        },
+                                    },
+                                ],
+                                {cancelable: false},
+                            );
+                        }
+                    } else if (Platform.OS == 'android') {
+                        if (res.ANDROIDversion == config.androidVersion) {
+                            setCheckApp(true);
+                        } else {
+                            Alert.alert(
+                                l[la].guncelleTitle,
+                                l[la].guncelleText,
+                                [
+                                    {
+                                        text: l[la].check,
+                                        onPress: () => {
+                                            Linking.openURL(res.playstore);
+                                        },
+                                    },
+                                ],
+                                {cancelable: false},
+                            );
+                        }
+                    }
+                } else {
+                    Alert.alert(
+                        l[la].appOfflineTitle,
+                        l[la].appOfflineText,
+                        [
+                            {
+                                text: l[la].check,
+                                onPress: () => {
+                                    BackHandler.exitApp();
+                                },
+                            },
+                        ],
+                        {cancelable: false},
                     );
                 }
-            });
-
-        messaging().onMessage(async (remoteMessage) => {
-            const channelId = await notifee.createChannel({
-                id: 'important',
-                name: 'Important Notifications',
-                importance: AndroidImportance.HIGH,
-                visibility: AndroidVisibility.PUBLIC,
-                vibration: true,
-                sound: 'ses14',
-                vibrationPattern: [300, 500],
-            });
-            notifee.cancelAllNotifications();
-            await notifee.displayNotification({
-                title: remoteMessage.notification.title,
-                body: remoteMessage.notification.body,
-                ios: {critical: true, sound: 'ses-14.caf', criticalVolume: 1},
-                android: {
-                    channelId,
-                    sound: 'ses14',
-                    importance: AndroidImportance.HIGH,
-                    visibility: AndroidVisibility.PUBLIC,
-                    vibration: true,
-                    vibrationPattern: [300, 500],
-                    pressAction: {
-                        id: 'default',
-                    },
-                },
-            });
-        });
-    }
-
-    useEffect(() => {
-        requestUserPermission();
-
-        messagingListener();
-    }, []);
-    useEffect(() => {
-        notifee.cancelAllNotifications();
+            })
+            .catch((err) => {});
     });
 
-    return (
-        <Provider store={store}>
-            <App />
-        </Provider>
-    );
+    return <Provider store={store}>{checkApp ? <App /> : <Loading />}</Provider>;
 };
 
 const App = () => {
     const dispatch = useDispatch();
     const data = useSelector((state) => state);
-    const netInfo = useNetInfo();
-
     const [p, setP] = React.useState(null);
+
+    const setLocation = (location) => {
+        if (location.error !== 0) {
+            let loc = {
+                accuracy: 5,
+                altitude: 0,
+                altitude_accuracy: -1,
+                ellipsoidal_altitude: 0,
+                floor: 'aaa',
+                heading: -1,
+                heading_accuracy: -1,
+                latitude: 41.299409367279715,
+                longitude: 69.23993027755733,
+                speed: -1,
+                speed_accuracy: -1,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+            };
+            if (location.location) {
+                loc = {
+                    ...location.location.coords,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                };
+            } else {
+                loc = {
+                    ...location.coords,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                };
+            }
+            if (loc.latitude && loc.longitude) {
+                dispatch({
+                    type: 'loc',
+                    payload: loc,
+                });
+            }
+        }
+    };
+
+    useEffect(() => {
+        const onLocation = BackgroundGeolocation.onLocation(
+            (location) => {
+                // console.log(Platform.OS, '[onLocation]', location);
+                setLocation(location);
+            },
+            (error) => {
+                console.log('[onLocation] ERROR: ', error);
+            },
+        );
+
+        const onMotionChange = BackgroundGeolocation.onMotionChange(
+            (event) => {
+                // console.log(Platform.OS, '[onMotionChange]', event);
+                setLocation(event);
+            },
+            (error) => {
+                console.log('[onLocation] ERROR: ', error);
+            },
+        );
+
+        if (data.auth.isAuth) {
+            bg();
+            bgstart();
+        }
+
+        return () => {
+            // Remove BackgroundGeolocation event-subscribers when the View is removed or refreshed
+            // during development live-reload.  Without this, event-listeners will accumulate with
+            // each refresh during live-reload.
+            onLocation.remove();
+            onMotionChange.remove();
+        };
+    }, [data.auth.isAuth]);
+
+    // useEffect(() => {
+    //     bgstart();
+    // }, [data.trip]);
+
+    async function bgstart() {
+        await BackgroundGeolocation.stop();
+        await BackgroundGeolocation.start();
+        await BackgroundGeolocation.changePace(true);
+    }
+
+    async function bg() {
+        let token = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(
+            'com.trendtaxiuz',
+            'eclk16',
+            'https://tracker.transistorsoft.com',
+        );
+        BackgroundGeolocation.ready({
+            // transistorAuthorizationToken: token,
+            // locationAuthorizationRequest: 'Always',
+            // Geolocation Config
+            desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+            distanceFilter: 5,
+            foregroundService: true,
+            //disabled notification
+
+            // Activity Recognition
+            stopTimeout: 5,
+
+            trackingMode: BackgroundGeolocation.TRACKING_MODE_LOCATION,
+            AccuracyAuthorization: BackgroundGeolocation.ACCURACY_AUTHORIZATION_FULL,
+            AuthorizationStatus: BackgroundGeolocation.AUTHORIZATION_STATUS_ALWAYS,
+            ActivityType: BackgroundGeolocation.ACTIVITY_TYPE_AUTOMOTIVE_NAVIGATION,
+            // Application config
+            debug: false, // <-- enable this hear sounds for background-geolocation life-cycle.
+            logLevel: BackgroundGeolocation.LOG_LEVEL_OFF,
+            stopOnTerminate: false, // <-- Allow the background-service to continue tracking when user closes the app.
+            startOnBoot: true, // <-- Auto start tracking when device is powered-up.
+            // HTTP / SQLite config
+            url: config.apiBaseUrl + 'setLocation',
+            batchSync: true, // <-- [Default: false] Set true to sync locations to server in a single HTTP request.
+            autoSync: true, // <-- [Default: true] Set true to sync each location to server as it arrives.
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + data.auth.userToken,
+            },
+            method: 'POST',
+            // accessToken: data.auth.userToken,
+            // authorization: {
+            //     accessToken: data.auth.userToken,
+            // },
+            params: {
+                // auth_token: data.auth.userToken, // <-- Optional HTTP params
+                id: data.auth.userId,
+            },
+        })
+            .then((state) => {
+                // console.warn('[ready] SUCCESS: ', state);
+            })
+            .catch((error) => {
+                // console.warn('[ready] ERROR: ', error);
+            });
+    }
 
     async function getNToken(arr) {
         // await messaging().registerDeviceForRemoteMessages();
         const token = await messaging().getToken();
 
-        apiPost('updateUser', {...arr, remember_token: token})
-            .then((res) => {})
-            .catch((err) => {
-                console.log({...arr, remember_token: token});
-                console.log('APP.JS token', err);
-            });
+        apiPost('updateUser', {...arr, remember_token: token});
         return token;
-    }
-
-    function sendNotification(to, body, title, subtitle) {
-        var myHeaders = new Headers();
-        myHeaders.append(
-            'Authorization',
-            'key=AAAAfZtd-kk:APA91bEkNRkI3IZYdHyu9cjRBsXZlpYupj4u-HboijWEb754fHhGs9hFrYvISxmKHLNQFkU4ChNNsKhOSvVI3bymJ1DjpFHrk5klX29BAtXoL8ISakbD_cEGSkLTkHnSUezBt6U3IJ-a',
-        );
-        myHeaders.append('Content-Type', 'application/json');
-
-        var raw = JSON.stringify({
-            to: to,
-            notification: {
-                title: title,
-                body: body,
-                subtitle: subtitle,
-            },
-        });
-
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow',
-        };
-
-        fetch('https://fcm.googleapis.com/fcm/send', requestOptions)
-            .then((response) => response.text())
-            .then((result) => console.log(result))
-            .catch((err) => {
-                console.log(err);
-            });
     }
 
     useEffect(() => {
@@ -170,9 +248,7 @@ const App = () => {
         getValue('TrendTaxiLang').then((lang) => {
             if (lang) dispatch({type: 'lang', payload: lang});
         });
-        getValue('TrendTaxiTheme').then((theme) => {
-            if (theme) dispatch({type: 'theme', payload: theme});
-        });
+
         getValue('TrendTaxiUser').then((user) => {
             if (user) {
                 user = JSON.parse(user);
@@ -182,6 +258,14 @@ const App = () => {
                 })
                     .then((response) => {
                         if (response != false) {
+                            dispatch({
+                                type: 'loc',
+                                payload: {
+                                    ...data.app.currentLocation,
+                                    latitude: parseFloat(response.data.response.last_latitude),
+                                    longitude: parseFloat(response.data.response.last_longitude),
+                                },
+                            });
                             dispatch({type: 'setId', payload: user.id});
                             dispatch({type: 'setToken', payload: user.token});
                             dispatch({type: 'setType', payload: response.data.response.user_type});
@@ -244,9 +328,7 @@ const App = () => {
                     console.log('APP.JS ERROR (GET USER2)', error);
                 });
         }
-        return () => {
-            false;
-        };
+        return () => {};
     }, [data.auth.isAuth]);
 
     useEffect(() => {
@@ -271,15 +353,6 @@ const App = () => {
 
     useEffect(() => {
         if (p != null) {
-            if (p.message.prc == 'bildirim') {
-                sendNotification(
-                    data.auth.user.remember_token,
-                    p.message.body,
-                    p.message.title,
-                    '',
-                );
-            }
-
             if (p.message.prc == 'driver_request') {
                 // if (data.app.isActive) {
                 let t = new Date();
@@ -287,7 +360,11 @@ const App = () => {
 
                 dispatch({
                     type: 'setRequest',
-                    payload: {...p.message.trip, time: t},
+                    payload: {
+                        ...p.message.trip,
+                        time: t,
+                        first: data.trip.tripRequest === null ? true : false,
+                    },
                 });
                 // }
             }
@@ -384,7 +461,7 @@ const App = () => {
         };
     }, [data.auth.userId]);
 
-    return <>{data.app.isLoading || !netInfo.isConnected.toString() ? <Loading /> : <Router />}</>;
+    return <>{data.app.isLoading ? <Loading /> : <Router />}</>;
 };
 
 export default AppWrapper;
