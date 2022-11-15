@@ -244,7 +244,10 @@ export default function DriverTrip() {
                                     tw`rounded-md items-center justify-center flex-row p-3 `,
                                 ]}>
                                 <Text style={[stil('text', data.app.theme), tw` font-semibold `]}>
-                                    {price} sum
+                                    {data.trip.trip.locations.length > 1
+                                        ? data.trip.trip.est_price
+                                        : price}{' '}
+                                    sum
                                 </Text>
                             </View>
                             <View

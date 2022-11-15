@@ -203,24 +203,7 @@ export default function DriverGoPassenger() {
                                                     title: 'Taxi Sizni Kutmoqda !',
                                                 },
                                                 data: {
-                                                    json: {
-                                                        body:
-                                                            data.trip.trip.driver.user_data
-                                                                .car_plate +
-                                                            ' | ' +
-                                                            data.trip.trip.driver.user_data
-                                                                .car_brand +
-                                                            ' | ' +
-                                                            data.trip.trip.driver.user_data
-                                                                .car_model,
-                                                        title: 'Taxi Sizni Kutmoqda !',
-                                                        android: {},
-                                                        ios: {
-                                                            critical: true,
-                                                            sound: 'ses-14.caf',
-                                                            criticalVolume: 1,
-                                                        },
-                                                    },
+                                                    type: 'driverArrived',
                                                 },
                                             });
 

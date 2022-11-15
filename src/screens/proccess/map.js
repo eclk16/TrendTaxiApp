@@ -99,7 +99,7 @@ export default function TTMap({confisi}) {
                     return 'arrow-up';
                     break;
             }
-        } else return 'arrow-up';
+        } else return 'road-variant';
     }
 
     function degreesToRadians(degrees) {
@@ -640,9 +640,11 @@ export default function TTMap({confisi}) {
                         tw`h-18 w-18 rounded-full border-[2] border-blue-500 bg-white flex items-center justify-center`,
                     ]}>
                     <Text style={[tw`text-black font-bold text-2xl`]}>
-                        {data.app.currentLocation.speed > 23
-                            ? ((data.app.currentLocation.speed * 60 * 60) / 1000).toFixed(0)
-                            : '- -'}
+                        {parseFloat((data.app.currentLocation.speed * 60 * 60) / 1000) > 25 ? (
+                            ((data.app.currentLocation.speed * 60 * 60) / 1000).toFixed(0)
+                        ) : (
+                            <MaterialCommunityIcons name="snail" size={32} color="black" />
+                        )}
                     </Text>
                 </View>
             </View>

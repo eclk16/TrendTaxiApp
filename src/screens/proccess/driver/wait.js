@@ -88,6 +88,13 @@ export default function DriverWait() {
             setTimeoutSn(10);
         } else {
             setTimeoutSn(data.trip.tripRequest.kalan);
+            dispatch({
+                type: 'setDistance',
+                payload: calcDistance(
+                    data.app.currentLocation,
+                    data.trip.tripRequest.locations[0],
+                ).toFixed(2),
+            });
 
             dispatch({type: 'ia', payload: false});
 
@@ -120,6 +127,31 @@ export default function DriverWait() {
             animated: true,
         });
     };
+
+    function degreesToRadians(degrees) {
+        var radians = (degrees * Math.PI) / 180;
+        return radians;
+    }
+    function calcDistance(startingCoords, destinationCoords) {
+        let startingLat = degreesToRadians(startingCoords.latitude);
+        let startingLong = degreesToRadians(startingCoords.longitude);
+        let destinationLat = degreesToRadians(destinationCoords.latitude);
+        let destinationLong = degreesToRadians(destinationCoords.longitude);
+
+        // Radius of the Earth in kilometers
+        let radius = 6571;
+
+        // Haversine equation
+        let distanceInKilometers =
+            Math.acos(
+                Math.sin(startingLat) * Math.sin(destinationLat) +
+                    Math.cos(startingLat) *
+                        Math.cos(destinationLat) *
+                        Math.cos(startingLong - destinationLong),
+            ) * radius;
+
+        return distanceInKilometers;
+    }
 
     useEffect(() => {
         var x = setInterval(function () {
@@ -487,8 +519,10 @@ export default function DriverWait() {
                                                                     stil('text', data.app.theme),
                                                                     tw` text-center text-xs`,
                                                                 ]}>
-                                                                {data.trip.tripRequest.est_duration}{' '}
-                                                                min
+                                                                {data.trip.tripRequest
+                                                                    .est_distance > 0 &&
+                                                                    data.trip.tripRequest
+                                                                        .est_duration + ' min'}
                                                             </Text>
                                                         </View>
 
@@ -503,8 +537,10 @@ export default function DriverWait() {
                                                                     stil('text', data.app.theme),
                                                                     tw`text-center text-xs`,
                                                                 ]}>
-                                                                {data.trip.tripRequest.est_distance}{' '}
-                                                                km
+                                                                {data.trip.tripRequest
+                                                                    .est_distance > 0 &&
+                                                                    data.trip.tripRequest
+                                                                        .est_distance + ' km'}
                                                             </Text>
                                                         </View>
                                                     </View>

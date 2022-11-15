@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.trendtaxiuz"
-    android:versionCode="26"
-    android:versionName="26"
+    android:versionCode="29"
+    android:versionName="29"
     tools:ignore="ExtraText">
 
     <uses-permission android:name="android.permission.INTERNET" />

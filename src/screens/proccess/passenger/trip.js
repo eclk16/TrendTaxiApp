@@ -24,6 +24,8 @@ export default function PassengerTrip() {
 
     const [act_distance, setACTDistance] = React.useState(0);
     const [act_duration, setACTDuration] = React.useState(0);
+    const [kalanMesafe, setKalanMesafe] = React.useState(0);
+    const [kalanSure, setKalanSure] = React.useState(0);
 
     const [h, setH] = React.useState({
         ust: 4,
@@ -235,7 +237,7 @@ export default function PassengerTrip() {
                                         : undefined
                                 }
                                 apikey={config.mapApi}
-                                strokeWidth={kalanMesafe > 20 ? 16 : 0}
+                                strokeWidth={kalanMesafe > 20 ? 14 : 0}
                                 strokeColor="green"
                                 onReady={(result) => {
                                     let dis = 0;

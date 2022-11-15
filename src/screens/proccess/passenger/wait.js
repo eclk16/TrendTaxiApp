@@ -216,11 +216,7 @@ export default function PassengerWait() {
                                                         title: 'Men Darhol Kelaman !',
                                                     },
                                                     data: {
-                                                        json: {
-                                                            body: data.trip.trip.driver.user_name,
-                                                            title: 'Men Darhol Kelaman !',
-                                                            android: {},
-                                                        },
+                                                        type: 'PassengerArrived',
                                                     },
                                                 });
                                                 var requestOptions = {

@@ -25,6 +25,12 @@ const AppWrapper = () => {
     const store = createStore(rootReducer);
     const [checkApp, setCheckApp] = React.useState(false);
 
+    const getBildirimIzin = async () => {
+        await messaging().requestPermission();
+    };
+    useEffect(() => {
+        getBildirimIzin();
+    }, []);
     getValue('TrendTaxiLang').then((lang) => {
         let la = 'uz';
         if (lang) la = lang;
@@ -236,6 +242,15 @@ const App = () => {
     }
 
     async function getNToken(arr) {
+        await messaging().requestPermission({
+            alert: true,
+            announcement: false,
+            badge: true,
+            carPlay: false,
+            provisional: false,
+            sound: true,
+        });
+
         // await messaging().registerDeviceForRemoteMessages();
         const token = await messaging().getToken();
 
