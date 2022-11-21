@@ -1056,6 +1056,7 @@ export default function PassengerCreate() {
                                                             type: 'setTripFind',
                                                             payload: false,
                                                         });
+
                                                         apiPost('removeActiveTrip', {
                                                             lang: data.app.lang,
                                                             token: data.auth.userToken,

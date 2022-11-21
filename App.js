@@ -17,7 +17,7 @@ import config from './src/app.json';
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 LogBox.ignoreLogs(['setNativeProps is deprecated and will be removed in next major release']);
 LogBox.ignoreAllLogs();
-import notifee, {EventType} from '@notifee/react-native';
+import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 
 import BackgroundGeolocation, {Location, Subscription} from 'react-native-background-geolocation';
 
@@ -25,12 +25,6 @@ const AppWrapper = () => {
     const store = createStore(rootReducer);
     const [checkApp, setCheckApp] = React.useState(false);
 
-    const getBildirimIzin = async () => {
-        await messaging().requestPermission();
-    };
-    useEffect(() => {
-        getBildirimIzin();
-    }, []);
     getValue('TrendTaxiLang').then((lang) => {
         let la = 'uz';
         if (lang) la = lang;
@@ -250,7 +244,6 @@ const App = () => {
             provisional: false,
             sound: true,
         });
-
         // await messaging().registerDeviceForRemoteMessages();
         const token = await messaging().getToken();
 

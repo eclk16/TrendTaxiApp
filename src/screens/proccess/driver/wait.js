@@ -30,7 +30,7 @@ export default function DriverWait() {
     Sound.setCategory('Playback');
     const harita = React.useRef(null);
     const markerRef = React.useRef(null);
-    const [timeoutSn, setTimeoutSn] = React.useState(10);
+    const [timeoutSn, setTimeoutSn] = React.useState(15);
     let soundFile = 'ses14.mp3';
     if (Platform.OS === 'ios') {
         soundFile = 'ses-14.mp3';
@@ -85,7 +85,7 @@ export default function DriverWait() {
                 ust: 6,
                 alt: 1,
             });
-            setTimeoutSn(10);
+            setTimeoutSn(15);
         } else {
             setTimeoutSn(data.trip.tripRequest.kalan);
             dispatch({
